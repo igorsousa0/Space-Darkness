@@ -1,2 +1,2 @@
-# Escuridão Espacial
+Escuridão Espacial
 Genero: nave/tiro;
