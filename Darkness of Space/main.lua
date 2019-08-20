@@ -15,7 +15,7 @@ physics.setGravity( 0, 0 )
 
 math.randomseed( os.time() )
 
-local lives = 3
+local lives = 5
 local score = 0
 local died = false
 
@@ -121,6 +121,7 @@ local sheet_flameball = graphics.newImageSheet( "/Sprites/Boss/flameball.png", s
 local bossMage = display.newSprite(mainGroup, sheet_bossMage, sequences_bossMage)
 bossMage.x = display.contentCenterX
 bossMage.y = display.contentCenterY - 220
+bossMage.myName = "boss"
 bossMage:scale(2,2)
 bossMage:setSequence("normalMage")
 bossMage:play()
@@ -134,6 +135,19 @@ ship.myName = "ship"
 ship:scale(2.5,2.5)
 ship:setSequence("normalShip")
 ship:play()
+
+-- HP UI --
+local hp_glass = display.newImageRect(uiGroup, "/UI/Hp/Glass1.png", 18,110 )
+hp_glass.x = display.contentCenterX - 135
+hp_glass.y = display.contentCenterY + 210
+hp_glass.alpha = 0.9
+
+
+local hp_player = display.newImageRect(uiGroup, "/UI/Hp/Health1.png", 17,110 )
+hp_player.x = display.contentCenterX - 135
+hp_player.y = display.contentCenterY + 210
+hp_player.alpha = 0.6
+
 
 -- Função de movimentação da Nave --
 local function dragShip( event )
@@ -184,6 +198,45 @@ local function fireLaser()
     flameball:play()
 end
 
+local function restoreShip()
+ 
+    ship.isBodyActive = false
+ 
+    -- Fade in the ship
+    transition.to( ship, { alpha=1, time=4000,
+        onComplete = function()
+            ship.isBodyActive = true
+            died = false
+        end
+    } )
+end
+
+local function onCollision( event )
+ 
+    if ( event.phase == "began" ) then
+ 
+        local obj1 = event.object1
+        local obj2 = event.object2
+
+        if ( ( obj1.myName == "ship" and obj2.myName == "flameball" ) or
+        ( obj1.myName == "flameball" and obj2.myName == "ship" ) )
+        then
+            if ( died == false ) then
+                died = true
+                lives = lives - 1
+                hp_player.height = hp_player.height - 22
+                if ( lives == 0 ) then
+                    display.remove( ship )
+                else
+                    ship.alpha = 0.5
+                    timer.performWithDelay( 1000, restoreShip )
+                end
+            end
+        end
+    end    
+end
+
 timer.performWithDelay( 2000, fireLaser, 0 )
 timer.performWithDelay( 300, bossMove, 0 )
 ship:addEventListener( "touch", dragShip )
+Runtime:addEventListener( "collision", onCollision )
