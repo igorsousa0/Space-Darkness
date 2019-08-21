@@ -32,6 +32,9 @@ local background = display.newImageRect(backGroup ,"/Background/1/back.png", 360
 background.x = display.contentCenterX
 background.y = display.contentCenterY
 
+local explosionAttack
+local offsetRectParams = { halfWidth=10, halfHeight=10}
+
 local sheet_options_ship =
 {
     width = 16,
@@ -51,6 +54,24 @@ local sheet_options_flameball =
     width = 32,
     height = 32,
     numFrames = 4
+}
+
+local sheet_options_explosionAttack =
+{
+    width = 512,
+    height = 512,
+    numFrames = 64
+}
+
+local sequences_explosionAttack = {
+    {
+        name = "standAnimation",
+        start = 1,
+        count = 64,
+        time = 650,
+        loopCount = 0,
+        loopDirection = "forward"
+    }
 }
 
 local sequences_flameball = {
@@ -116,6 +137,7 @@ local sequences_ship = {
 local sheet_ship = graphics.newImageSheet( "/Sprites/Ship/ship.png", sheet_options_ship )
 local sheet_bossMage = graphics.newImageSheet( "/Sprites/Boss/disciple.png", sheet_options_bossMage)
 local sheet_flameball = graphics.newImageSheet( "/Sprites/Boss/flameball.png", sheet_options_flameball )
+local sheet_explosionAttack = graphics.newImageSheet( "/Sprites/Effects/explosion 3.png", sheet_options_explosionAttack )
 
 -- Primeiro Boss --
 local bossMage = display.newSprite(mainGroup, sheet_bossMage, sequences_bossMage)
@@ -163,6 +185,7 @@ local function dragShip( event )
         -- Move the ship to the new touch position
         ship.x = event.x - ship.touchOffsetX
         ship.y = event.y - ship.touchOffsetY 
+        print(ship.y)
         if (ship.x < display.contentCenterX) then 
             ship:setSequence("leftShip")
             ship:play()
@@ -198,6 +221,19 @@ local function fireLaser()
     flameball:play()
 end
 
+local function bossAttack()
+    explosionAttack = display.newSprite(mainGroup ,sheet_explosionAttack, sequences_explosionAttack)
+    physics.addBody( explosionAttack, "dynamic", { box=offsetRectParams } )
+    explosionAttack.isBullet = true
+    explosionAttack.myName = "explosion"
+    explosionAttack.x = math.random(25, 295)
+    explosionAttack.y = math.random(116, 494)
+    transition.to(explosionAttack, {time=500, 
+    onComplete = function() display.remove(explosionAttack) end
+    })
+    explosionAttack:scale(0.4,0.4)
+    explosionAttack:play()
+end
 local function restoreShip()
  
     ship.isBodyActive = false
@@ -219,7 +255,9 @@ local function onCollision( event )
         local obj2 = event.object2
 
         if ( ( obj1.myName == "ship" and obj2.myName == "flameball" ) or
-        ( obj1.myName == "flameball" and obj2.myName == "ship" ) )
+        ( obj1.myName == "flameball" and obj2.myName == "ship" ) or
+        ( obj1.myName == "ship" and obj2.myName == "explosion" ) or
+        ( obj1.myName == "explosion" and obj2.myName == "ship" ))
         then
             if ( died == false ) then
                 died = true
@@ -236,7 +274,17 @@ local function onCollision( event )
     end    
 end
 
+local function spriteListener( event )
+ 
+    local thisSprite = event.target  -- "event.target" references the sprite
+    print(thisSprite)
+
+end
+
+
 timer.performWithDelay( 2000, fireLaser, 0 )
+timer.performWithDelay( 1000, bossAttack, 0 )
 timer.performWithDelay( 300, bossMove, 0 )
 ship:addEventListener( "touch", dragShip )
 Runtime:addEventListener( "collision", onCollision )
+
