@@ -14,7 +14,7 @@ local died = false
 
 local bossTable = {}
 local gameLoopTimer
-local bossLife = 1
+local bossLife = 20
 local livesText
 local scoreText
 local pauseTest = 0
@@ -138,7 +138,7 @@ local sheet_explosionAttack = graphics.newImageSheet( "/Sprites/Effects/explosio
 -- Primeiro Boss --
 local bossMage = display.newSprite(mainGroup, sheet_bossMage, sequences_bossMage)
 bossMage.x = display.contentCenterX
-bossMage.y = display.contentCenterY - 220
+bossMage.y = display.contentCenterY - 200
 bossMage.myName = "boss"
 bossMage:scale(2,2)
 bossMage:setSequence("normalMage")
@@ -155,21 +155,33 @@ ship:setSequence("normalShip")
 ship:play()
 
 -- UI --
-local hp_glass = display.newImageRect(uiGroup, "/UI/Hp/Glass1.png", 18,110 )
-hp_glass.x = display.contentCenterX - 135
-hp_glass.y = display.contentCenterY + 210
+local hp_glass = display.newImageRect(uiGroup, "/UI/Hp/Glass3.png", 90,18 )
+hp_glass.x = display.contentCenterX - 105
+hp_glass.y = display.contentCenterY - 260
 hp_glass.alpha = 0.9
 
-
-local hp_player = display.newImageRect(uiGroup, "/UI/Hp/Health1.png", 17,110 )
-hp_player.x = display.contentCenterX - 135
-hp_player.y = display.contentCenterY + 210
+local hp_player = display.newImageRect(uiGroup, "/UI/Hp/Health3.png", 80,15 )
+hp_player.x = display.contentCenterX - 105
+hp_player.y = display.contentCenterY - 260
 hp_player.alpha = 0.6
 
-local menu_pause = display.newImageRect(uiGroup, "/UI/transparentDark12.png", 48,48)
-menu_pause.x = display.contentCenterX + 120
-menu_pause.y = display.contentCenterY - 250
+local hp_glass1 = display.newImageRect(uiGroup, "/UI/Hp/Glass2.png", 90,18 )
+hp_glass1.x = display.contentCenterX 
+hp_glass1.y = display.contentCenterY - 260
+hp_glass1.alpha = 0.9
+
+local hp_boss = display.newImageRect(uiGroup, "/UI/Hp/Health2.png", 80,15 )
+hp_boss.x = display.contentCenterX
+hp_boss.y = display.contentCenterY - 260
+hp_boss.alpha = 0.6
+
+
+local menu_pause = display.newImageRect(uiGroup, "/UI/transparentDark12.png", 40,40)
+menu_pause.x = display.contentCenterX + 130
+menu_pause.y = display.contentCenterY - 255
 menu_pause:scale(0.8,0.8)
+
+
 
 -- Função de movimentação da Nave --
 local function dragShip( event )
@@ -246,8 +258,14 @@ local function restoreShip()
     } )
 end
 
-local function endGame()
-    composer.gotoScene( "menu", { time=800, effect="crossFade" } )
+local function restoreBoss()
+ 
+    -- Fade in the ship
+    transition.to( bossMage, { alpha=1, time=500,
+        onComplete = function()
+            died = false
+        end
+    } )
 end
 
 local function onCollision( event )
@@ -265,7 +283,8 @@ local function onCollision( event )
             if ( died == false ) then
                 died = true
                 lives = lives - 1
-                hp_player.height = hp_player.height - 22
+                hp_player.width = hp_player.width - 16
+                print(hp_player.width)
                 if ( lives == 0 ) then
                     display.remove( ship )
                 else
@@ -281,6 +300,7 @@ local function onCollision( event )
             if ( died == false ) then
                 died = true
                 bossLife = bossLife - 1
+                hp_boss.width = hp_boss.width - 4 
                 if ( bossLife == 0 ) then
                     bossMage:setSequence("deadMage")
                     bossMage:play()
@@ -290,10 +310,40 @@ local function onCollision( event )
                     timer.cancel(bossAttack)
                     timer.cancel(bossFire)
                     timer.cancel(gerenation)
+                else
+                    bossMage.alpha = 0.5
+                    timer.performWithDelay( 1000, restoreBoss )    
                 end
             end        
         end
-    end    
+        if ( ( obj1.myName == "ship" and obj2.myName == "attack2" ) or
+        ( obj1.myName == "attack2" and obj2.myName == "ship" ))
+        then
+            if ( died == false ) then
+                died = true
+                bossLife = bossLife - 3
+                if (hp_boss.width - 12 < 0) then
+                    hp_boss.width = 0
+                else    
+                    hp_boss.width = hp_boss.width - 12
+                end     
+                if ( bossLife <= 0 ) then
+                    bossMage:setSequence("deadMage")
+                    bossMage:play()
+                    transition.to(bossMage, {time=1000, 
+                    onComplete = function() display.remove(bossMage) end
+                    })
+                    timer.cancel(bossAttack)
+                    timer.cancel(bossFire)
+                    timer.cancel(gerenation)
+                else
+                    bossMage.alpha = 0.5
+                    timer.performWithDelay( 1000, restoreBoss )    
+                end
+            end        
+        end
+    end 
+    print(bossLife)   
 end
 
 local function pauseGame()
@@ -350,6 +400,11 @@ local function generationItem()
         })
     end
 end
+
+local function endGame()
+    composer.gotoScene( "menu", { time=800, effect="crossFade" } )
+end
+
 
 
 --[[local function gotoSelect()
