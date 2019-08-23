@@ -155,23 +155,25 @@ ship:setSequence("normalShip")
 ship:play()
 
 -- UI --
-local hp_glass = display.newImageRect(uiGroup, "/UI/Hp/Glass3.png", 90,18 )
-hp_glass.x = display.contentCenterX - 105
+local hp_glass = display.newImageRect(uiGroup, "/UI/Hp/2/Glass3.png", 120,18 )
+hp_glass.x = display.contentCenterX - 90
 hp_glass.y = display.contentCenterY - 260
 hp_glass.alpha = 0.9
 
-local hp_player = display.newImageRect(uiGroup, "/UI/Hp/Health3.png", 80,15 )
-hp_player.x = display.contentCenterX - 105
+local hp_player = display.newImageRect(uiGroup, "/UI/Hp/2/Health3.png", 110,15 )
+local hp_lost = hp_player.width/lives
+hp_player.x = display.contentCenterX - 90
 hp_player.y = display.contentCenterY - 260
 hp_player.alpha = 0.6
 
-local hp_glass1 = display.newImageRect(uiGroup, "/UI/Hp/Glass2.png", 90,18 )
-hp_glass1.x = display.contentCenterX 
+local hp_glass1 = display.newImageRect(uiGroup, "/UI/Hp/2/Glass2.png", 120,18 )
+hp_glass1.x = display.contentCenterX + 40
 hp_glass1.y = display.contentCenterY - 260
 hp_glass1.alpha = 0.9
 
-local hp_boss = display.newImageRect(uiGroup, "/UI/Hp/Health2.png", 80,15 )
-hp_boss.x = display.contentCenterX
+local hp_boss = display.newImageRect(uiGroup, "/UI/Hp/2/Health2.png", 110,15 )
+local hp_bossLost = hp_boss.width/bossLife
+hp_boss.x = display.contentCenterX + 40
 hp_boss.y = display.contentCenterY - 260
 hp_boss.alpha = 0.6
 
@@ -250,7 +252,7 @@ local function restoreShip()
     ship.isBodyActive = false
  
     -- Fade in the ship
-    transition.to( ship, { alpha=1, time=4000,
+    transition.to( ship, { alpha=1, time=2000,
         onComplete = function()
             ship.isBodyActive = true
             died = false
@@ -283,8 +285,7 @@ local function onCollision( event )
             if ( died == false ) then
                 died = true
                 lives = lives - 1
-                hp_player.width = hp_player.width - 16
-                print(hp_player.width)
+                hp_player.width = hp_player.width - hp_lost
                 if ( lives == 0 ) then
                     display.remove( ship )
                 else
@@ -300,7 +301,8 @@ local function onCollision( event )
             if ( died == false ) then
                 died = true
                 bossLife = bossLife - 1
-                hp_boss.width = hp_boss.width - 4 
+                display.remove(player_attack1)
+                hp_boss.width = hp_boss.width - hp_bossLost
                 if ( bossLife == 0 ) then
                     bossMage:setSequence("deadMage")
                     bossMage:play()
@@ -322,10 +324,11 @@ local function onCollision( event )
             if ( died == false ) then
                 died = true
                 bossLife = bossLife - 3
-                if (hp_boss.width - 12 < 0) then
+                display.remove(player_attack2)
+                if (hp_boss.width - hp_lost < 0) then
                     hp_boss.width = 0
                 else    
-                    hp_boss.width = hp_boss.width - 12
+                    hp_boss.width = hp_boss.width - (hp_bossLost * 3)
                 end     
                 if ( bossLife <= 0 ) then
                     bossMage:setSequence("deadMage")
@@ -385,6 +388,7 @@ local function generationItem()
         physics.addBody( player_attack1, "dynamic", { box=offsetRectParams } )
         player_attack1.x = math.random(25, 295)
         player_attack1.y = math.random(116, 494)
+        player_attack1:toBack()
         player_attack1.myName = "attack1"
         transition.to(player_attack1, {time=2000, 
         onComplete = function() display.remove(player_attack1) end
@@ -394,6 +398,7 @@ local function generationItem()
         physics.addBody( player_attack2, "dynamic", { box=offsetRectParams } )
         player_attack2.x = math.random(25, 295)
         player_attack2.y = math.random(116, 494)
+        player_attack2:toBack()
         player_attack2.myName = "attack2"
         transition.to(player_attack2, {time=2000, 
         onComplete = function() display.remove(player_attack2) end
