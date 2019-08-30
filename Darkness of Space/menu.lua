@@ -3,7 +3,7 @@ local composer = require( "composer" )
 local scene = composer.newScene()
 
 local function gotoSelect()
-	composer.gotoScene( "fase1", { time=800, effect="crossFade" } )
+	composer.gotoScene( "fase1", { time=200, effect="crossFade" } )
 end
 
 function scene:create( event )
