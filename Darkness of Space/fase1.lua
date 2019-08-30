@@ -5,6 +5,7 @@ local scene = composer.newScene()
 local physics = require( "physics" )
 physics.start()
 physics.setGravity( 0, 0 )
+--physics.setDrawMode( "hybrid" )
 
 math.randomseed( os.time() )
 
@@ -22,6 +23,8 @@ local player_attack1
 local player_attack2
 local contadorAttack = 0
 local contadorText
+local attackCurrent = 0
+local attackText
 local hp_lost
 local hp_boss_lost
 local hp_player_lost
@@ -32,7 +35,7 @@ local uiGroup = display.newGroup()
 
 
 local offsetRectParams = { halfWidth=10, halfHeight=10}
-
+local hitboxBoss = { halfWidth=38, halfHeight=51}
 
 
 --[[local function gotoSelect()
@@ -168,6 +171,7 @@ local sequences_ship = {
     local bossMage = display.newSprite(mainGroup, sheet_bossMage, sequences_bossMage)
     bossMage.x = display.contentCenterX
     bossMage.y = display.contentCenterY - 200
+    physics.addBody( bossMage, "dynamic", { box=hitboxBoss } )
     bossMage.myName = "boss"
     bossMage:scale(2,2)
     bossMage:setSequence("normalMage")
@@ -211,8 +215,9 @@ local sequences_ship = {
     menu_pause.y = display.contentCenterY - 255
     menu_pause:scale(0.8,0.8)
 
-    contadorText = display.newText(uiGroup,"Dano Acumulado: " .. contadorAttack, ship.x,ship.y + 50, native.systemFont, 15)
-
+    contadorText = display.newText(uiGroup,"Dano Acumulado: " .. contadorAttack, ship.x - 90,ship.y + 50, native.systemFont, 15)
+    attackText = display.newText(uiGroup,"Dano Atual: " .. attackCurrent, ship.x + 110,ship.y + 50, native.systemFont, 15)
+    
     -- Função de movimentação da Nave --
 local function dragShip( event )
  
@@ -291,19 +296,71 @@ local function restoreShip()
 end
 
 local function restoreBoss()
- 
+    
+    bossMage.isBodyActive = false
     -- Fade in the ship
     transition.to( bossMage, { alpha=1, time=500,
         onComplete = function()
-            died = false
+            bossMage.isBodyActive = true
         end
     } )
 end
 
+
+local function updateAttackCurrent()
+    for k,v in pairs(playerAttack) do
+        if (k == 1 and v == "attack1") then
+            attackCurrent = 1
+        elseif (k == 1 and v == "attack2") then
+            attackCurrent = 3
+        end    
+        attackText.text = "Dano Atual: " .. attackCurrent   
+    end
+end  
+
+local function attack()
+    if (playerAttack[1] ~= nil) then
+        if (playerAttack[1] == "attack1") then
+            local attack1 = display.newImageRect(mainGroup, "/Sprites/Item/damage1.png", 36,37 )
+            physics.addBody( attack1, "dynamic", { box=offsetRectParams } )
+            attack1.isBullet = true
+            attack1.x = ship.x
+            attack1.y = ship.y
+            attack1.myName = "attack3"
+            contadorAttack = contadorAttack - 1
+            contadorText.text = "Dano Acumulado: " .. contadorAttack 
+            transition.to(attack1, {time=1000, y = bossMage.y, 
+            onComplete = function() display.remove(attack1) end
+            })
+        elseif (playerAttack[1] == "attack2") then
+            local attack2 = display.newImageRect(mainGroup, "/Sprites/Item/damage2.png", 46,47 )
+            physics.addBody( attack2, "dynamic", { box=offsetRectParams } )
+            attack2.isBullet = true
+            attack2.x = ship.x
+            attack2.y = ship.y
+            attack2.myName = "attack4"
+            contadorAttack = contadorAttack - 3
+            contadorText.text = "Dano Acumulado: " .. contadorAttack 
+            transition.to(attack2, {time=1000, y = bossMage.y, 
+            onComplete = function() display.remove(attack2) end
+            })
+        end  
+        if (contadorAttack == 0) then
+            attackCurrent = 0
+            attackText.text = "Dano Atual: " .. attackCurrent
+        end
+        table.remove(playerAttack,1)    
+        updateAttackCurrent()
+    end          
+end
+ 
 local function endGame()
-    print("teste")
     composer.gotoScene( "menu", { time=800, effect="crossFade" } )
 end
+
+local function victoryEnd()
+    composer.gotoScene( "fimFase", { time=800, effect="crossFade" } )
+end    
 
 local function onCollision( event )
  
@@ -335,13 +392,14 @@ local function onCollision( event )
             end
         end
 
-        if ( ( obj1.myName == "ship" and obj2.myName == "attack1" ) or
-        ( obj1.myName == "attack1" and obj2.myName == "ship" ))
+        if (( obj1.myName == "ship" and obj2.myName == "attack1" ) or
+        (obj1.myName == "attack1" and obj2.myName == "ship"))
         then
             --bossLife = bossLife - 1
-            table.insert(playerAttack, player_attack1)
             contadorAttack = contadorAttack + 1
             contadorText.text = "Dano Acumulado: " .. contadorAttack
+            table.insert(playerAttack, "attack1")
+            updateAttackCurrent()
             display.remove(player_attack1)
             --hp_boss.width = hp_boss.width - hp_bossLost      
         end
@@ -351,10 +409,55 @@ local function onCollision( event )
             --bossLife = bossLife - 3
             contadorAttack = contadorAttack + 3
             contadorText.text = "Dano Acumulado: " .. contadorAttack
+            table.insert(playerAttack, "attack2")
+            updateAttackCurrent()
             display.remove(player_attack2)           
         end
-    end 
-    print(bossLife)   
+        if ( ( obj1.myName == "boss" and obj2.myName == "attack3" ) or
+        ( obj1.myName == "attack3" and obj2.myName == "boss" )) 
+        then
+            bossLife = bossLife - 1
+            if (bossMage.isBodyActive == true) then
+                hp_boss_lost = hp_boss.width - hp_bossLost
+            end     
+            bossMage.alpha = 0.5
+            timer.performWithDelay( 1000, restoreBoss ) 
+            transition.to(hp_boss, { width = hp_boss_lost, time=500,}) 
+            if (obj1.myName == "attack3") then
+                display.remove(obj1)
+            else
+                display.remove(obj2)
+            end 
+            print(bossLife)        
+        end
+        if ( ( obj1.myName == "boss" and obj2.myName == "attack4" ) or
+        ( obj1.myName == "attack4" and obj2.myName == "boss" )) 
+        then
+            bossLife = bossLife - 3
+            if (bossMage.isBodyActive == true) then
+                hp_boss_lost = hp_boss.width - (hp_bossLost * 3)
+            end    
+            bossMage.alpha = 0.5
+            timer.performWithDelay( 1000, restoreBoss ) 
+            transition.to(hp_boss, { width = hp_boss_lost, time=500,})
+            if (obj1.myName == "attack4") then
+                display.remove(obj1)
+            else
+                display.remove(obj2)
+            end 
+            print(bossLife) 
+        end
+        if ( bossLife <= 0) then
+            bossMage:setSequence("deadMage")
+            bossMage:play()
+            timer.cancel(hitbox)
+            timer.cancel(bossFire)
+            timer.cancel(gerenation)
+            transition.to(bossMage, {time=1000, 
+            onComplete = function() display.remove(bossMage) victoryEnd() end
+            })
+        end      
+    end    
 end
 
 local function pauseGame()
@@ -430,40 +533,14 @@ local function hitboxAttack()
     hitboxExplosion:scale(0.6,0.6)
 end  
 
-local function attack(event)
-    if(event.isShake == true and tipo ~=2) then
-        bossLife = bossLife - contadorAttack
-        bossMage.alpha = 0.5
-        timer.performWithDelay( 1000, restoreBoss )   
-        if (bossLife <= 0) then
-            transition.to(hp_boss, { width = 0, time=500,})
-        else    
-            hp_boss_lost = hp_boss.width - (hp_bossLost * contadorAttack)
-            transition.to(hp_boss, { width = hp_boss_lost, time=500,})
-        end   
-        contadorAttack = 0
-        contadorText.text = "Dano Acumulado: " .. contadorAttack 
-        if (bossLife <= 0) then
-            bossMage:setSequence("deadMage")
-            bossMage:play()
-            transition.to(bossMage, {time=1000, 
-            onComplete = function() display.remove(bossMage) end
-            })
-            timer.cancel(hitbox)
-            timer.cancel(bossFire)
-            timer.cancel(gerenation)
-        end
-    end           
-end    
-
-    bossFire = timer.performWithDelay( 2000, fireLaser, 0 )
+    bossFire = timer.performWithDelay( 2000, fireLaser, 0)
     hitbox = timer.performWithDelay( 2000, hitboxAttack, 0)
     bossMove = timer.performWithDelay( 300, bossMove, 0 )
-    gerenation = timer.performWithDelay( 4000, generationItem, 0 )
+    gerenation = timer.performWithDelay( 4000, generationItem, 0)
     ship:addEventListener( "touch", dragShip )
+    ship:addEventListener( "tap", attack )
     Runtime:addEventListener( "collision", onCollision )
     menu_pause:addEventListener( "tap", pauseGame)
-    Runtime:addEventListener( "accelerometer", attack );
 end
 
 
