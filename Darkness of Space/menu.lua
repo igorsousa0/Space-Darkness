@@ -2,6 +2,8 @@ local composer = require( "composer" )
 
 local scene = composer.newScene()
 
+local backgroundSong = audio.loadSound("audio/menu/spacewalk.mp3")
+
 local function gotoSelect()
 	composer.gotoScene( "fase1", { time=200, effect="crossFade" } )
 end
@@ -41,7 +43,7 @@ function scene:show( event )
 
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
-		--audio.play(musicaFundo, {channel = 1, loops = -1 } )
+		audio.play(backgroundSong, {channel = 1, loops = -1 } )
 		--som.somTema();
 	end
 end
@@ -58,7 +60,7 @@ function scene:hide( event )
 		--som.onClose();
 	elseif ( phase == "did" ) then
 		-- Code here runs immediately after the scene goes entirely off screen
-
+		audio.stop( 1 )
 	end
 end
 

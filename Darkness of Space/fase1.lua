@@ -9,6 +9,11 @@ physics.setGravity( 0, 0 )
 
 math.randomseed( os.time() )
 
+local backgroundSong = audio.loadSound("audio/fase01/magicspace.mp3")
+local shotEffect = audio.loadSound("audio/effect/ship/laser.wav")
+local fireEffect = audio.loadSound("audio/effect/mage01/fire.wav")
+local explosionEffect = audio.loadSound("audio/effect/mage01/explosion.wav")
+
 local lives = 5
 local score = 0
 local died = false
@@ -32,7 +37,6 @@ local hp_player_lost
 local backGroup = display.newGroup()
 local mainGroup = display.newGroup()
 local uiGroup = display.newGroup()
-
 
 local offsetRectParams = { halfWidth=10, halfHeight=10}
 local hitboxBoss = { halfWidth=38, halfHeight=51}
@@ -262,6 +266,8 @@ local function fireLaser()
     flameball.myName = "flameball"
     flameball.x = bossMage.x
     flameball.y = bossMage.y
+    audio.play(fireEffect, {channel = 3} )
+    audio.setVolume( 0.3, { channel=3 } )
     transition.to(flameball, {y=800, time=4000, 
         onComplete = function() display.remove(flameball) end
     }) 
@@ -276,10 +282,12 @@ local function bossAttack()
     explosionAttack.myName = "explosion"
     explosionAttack.x = hitboxExplosion.x
     explosionAttack.y = hitboxExplosion.y
+    audio.play(explosionEffect, {channel = 2} )
+    audio.setVolume( 0.4, { channel=2 } )
+    explosionAttack:scale(0.4,0.4)
     transition.to(explosionAttack, {time=500, 
     onComplete = function() display.remove(explosionAttack) end
-    })
-    explosionAttack:scale(0.4,0.4)
+    })  
     explosionAttack:play()
 end
 local function restoreShip()
@@ -328,7 +336,9 @@ local function attack()
             attack1.y = ship.y
             attack1.myName = "attack3"
             contadorAttack = contadorAttack - 1
-            contadorText.text = "Dano Acumulado: " .. contadorAttack 
+            contadorText.text = "Dano Acumulado: " .. contadorAttack
+            audio.play(shotEffect, {channel = 2} )
+            audio.setVolume( 0.5, { channel=2 } ) 
             transition.to(attack1, {time=1000, y = bossMage.y, 
             onComplete = function() display.remove(attack1) end
             })
@@ -340,7 +350,8 @@ local function attack()
             attack2.y = ship.y
             attack2.myName = "attack4"
             contadorAttack = contadorAttack - 3
-            contadorText.text = "Dano Acumulado: " .. contadorAttack 
+            contadorText.text = "Dano Acumulado: " .. contadorAttack
+            audio.play(shotEffect, {channel = 2} )  
             transition.to(attack2, {time=1000, y = bossMage.y, 
             onComplete = function() display.remove(attack2) end
             })
@@ -355,11 +366,11 @@ local function attack()
 end
  
 local function endGame()
-    composer.gotoScene( "menu", { time=800, effect="crossFade" } )
+    composer.gotoScene( "fimGame", { time=800, effect="crossFade" } )
 end
 
 local function victoryEnd()
-    composer.gotoScene( "fimFase", { time=800, effect="crossFade" } )
+    composer.gotoScene( "victory", { time=800, effect="crossFade" } )
 end    
 
 local function onCollision( event )
@@ -378,9 +389,11 @@ local function onCollision( event )
                 died = true
                 lives = lives - 1
                 hp_player_lost = hp_player.width - hp_lost
-                transition.to(hp_player, { width = hp_player_lost, time=500,})
+                transition.to(hp_player, { width = hp_player_lost, time=500,})   
                 if ( lives == 0 ) then
-                    display.remove( ship )
+                    transition.to(ship, {time=500, alpha = 0, 
+                    onComplete = function() display.remove(ship) end
+                    })
                     timer.cancel(hitbox)
                     timer.cancel(bossFire)
                     timer.cancel(gerenation)
@@ -427,8 +440,7 @@ local function onCollision( event )
                 display.remove(obj1)
             else
                 display.remove(obj2)
-            end 
-            print(bossLife)        
+            end         
         end
         if ( ( obj1.myName == "boss" and obj2.myName == "attack4" ) or
         ( obj1.myName == "attack4" and obj2.myName == "boss" )) 
@@ -444,8 +456,7 @@ local function onCollision( event )
                 display.remove(obj1)
             else
                 display.remove(obj2)
-            end 
-            print(bossLife) 
+            end
         end
         if ( bossLife <= 0) then
             bossMage:setSequence("deadMage")
@@ -472,6 +483,7 @@ local function pauseGame()
     transition.pause()
     bossMage:pause()
     ship:removeEventListener("touch", dragShip)
+    audio.pause( 1 )
     if(explosionAttack ~= nil) then
         if(explosionAttack.isPlaying == true) then
             explosionAttack:pause()
@@ -487,6 +499,7 @@ local function pauseGame()
         transition.resume()
         bossMage:play()
         ship:addEventListener( "touch", dragShip )
+        audio.resume( 1 )
         if(explosionAttack ~= nil) then
             if(explosionAttack.isPlaying == false) then
                 explosionAttack:play()
@@ -556,7 +569,8 @@ function scene:show( event )
 	elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
         physics.start()
-		--audio.play(musicaFundo, {channel = 1, loops = -1 } )
+        audio.play(backgroundSong, {channel = 1, loops = -1 } )
+        audio.setVolume( 0.5, { channel=1 } )
 		--som.somTema();
 	end
 end
@@ -576,6 +590,7 @@ function scene:hide( event )
         Runtime:removeEventListener( "collision", onCollision )
         physics.pause()
         composer.removeScene( "fase1" )
+        audio.stop( 1 )
 	end
 end
 
