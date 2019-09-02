@@ -13,15 +13,15 @@ local backgroundSong = audio.loadSound("audio/fase01/magicspace.mp3")
 local shotEffect = audio.loadSound("audio/effect/ship/laser.wav")
 local fireEffect = audio.loadSound("audio/effect/mage01/fire.wav")
 local explosionEffect = audio.loadSound("audio/effect/mage01/explosion.wav")
+audio.setVolume( 0.5, { channel=2 } )
 
-local lives = 5
-local score = 0
+local hp = 5
 local died = false
 
 local playerAttack = {}
 local gameLoopTimer
 local bossLife = 20
-local livesText
+local hpText
 local scoreText
 local pauseTest = 0
 local player_attack1
@@ -41,33 +41,11 @@ local uiGroup = display.newGroup()
 local offsetRectParams = { halfWidth=10, halfHeight=10}
 local hitboxBoss = { halfWidth=38, halfHeight=51}
 
+local customParams = {
+    hp = 0
+}
 
---[[local function gotoSelect()
-	composer.gotoScene( "fase1", { time=800, effect="crossFade" } )
-end--]]
-
-function scene:create( event )
-
-	local sceneGroup = self.view
-    -- Code here runs when the scene is first created but has not yet appeared on screen
-
-    physics.pause()
-
-    backGroup = display.newGroup()  -- Display group for the background image
-    sceneGroup:insert( backGroup )  -- Insert into the scene's view group
- 
-    mainGroup = display.newGroup()  -- Display group for the ship, asteroids, lasers, etc.
-    sceneGroup:insert( mainGroup )  -- Insert into the scene's view group
- 
-    uiGroup = display.newGroup()    -- Display group for UI objects like the score
-    sceneGroup:insert( uiGroup ) 
-
-    local background = display.newImageRect(backGroup ,"/Background/1/back.png", 360, 570)
-    background.x = display.contentCenterX
-    background.y = display.contentCenterY
-    
-
-    local sheet_options_ship =
+local sheet_options_ship =
 {
     width = 16,
     height = 24,
@@ -169,7 +147,7 @@ local sequences_ship = {
     local sheet_ship = graphics.newImageSheet( "/Sprites/Ship/ship.png", sheet_options_ship )
     local sheet_bossMage = graphics.newImageSheet( "/Sprites/Boss/disciple.png", sheet_options_bossMage)
     local sheet_flameball = graphics.newImageSheet( "/Sprites/Boss/flameball.png", sheet_options_flameball )
-    local sheet_explosionAttack = graphics.newImageSheet( "/Sprites/Effects/explosion 3.png", sheet_options_explosionAttack )
+    local sheet_explosionAttack = graphics.newImageSheet( "/Sprites/Effects/Boss01/explosion 3.png", sheet_options_explosionAttack )
 
     -- Primeiro Boss --
     local bossMage = display.newSprite(mainGroup, sheet_bossMage, sequences_bossMage)
@@ -198,7 +176,7 @@ local sequences_ship = {
     hp_glass.alpha = 0.9
 
     local hp_player = display.newImageRect(uiGroup, "/UI/Hp/2/Health3.png", 110,15 )
-    local hp_lost = hp_player.width/lives
+    local hp_lost = hp_player.width/hp
     hp_player.x = display.contentCenterX - 90
     hp_player.y = display.contentCenterY - 260
     hp_player.alpha = 0.6
@@ -223,7 +201,7 @@ local sequences_ship = {
     attackText = display.newText(uiGroup,"Dano Atual: " .. attackCurrent, ship.x + 110,ship.y + 50, native.systemFont, 15)
     
     -- Função de movimentação da Nave --
-local function dragShip( event )
+    local function dragShip( event )
  
     local ship = event.target
     local phase = event.phase
@@ -337,8 +315,7 @@ local function attack()
             attack1.myName = "attack3"
             contadorAttack = contadorAttack - 1
             contadorText.text = "Dano Acumulado: " .. contadorAttack
-            audio.play(shotEffect, {channel = 2} )
-            audio.setVolume( 0.5, { channel=2 } ) 
+            audio.play(shotEffect, {channel = 2} ) 
             transition.to(attack1, {time=1000, y = bossMage.y, 
             onComplete = function() display.remove(attack1) end
             })
@@ -370,7 +347,7 @@ local function endGame()
 end
 
 local function victoryEnd()
-    composer.gotoScene( "victory", { time=800, effect="crossFade" } )
+    composer.gotoScene( "victory", { time=1100, effect="crossFade", params=customParams } )
 end    
 
 local function onCollision( event )
@@ -387,10 +364,10 @@ local function onCollision( event )
         then
             if ( died == false ) then
                 died = true
-                lives = lives - 1
+                hp = hp - 1
                 hp_player_lost = hp_player.width - hp_lost
                 transition.to(hp_player, { width = hp_player_lost, time=500,})   
-                if ( lives == 0 ) then
+                if ( hp == 0 ) then
                     transition.to(ship, {time=500, alpha = 0, 
                     onComplete = function() display.remove(ship) end
                     })
@@ -461,9 +438,11 @@ local function onCollision( event )
         if ( bossLife <= 0) then
             bossMage:setSequence("deadMage")
             bossMage:play()
+            print(bossLife)
             timer.cancel(hitbox)
             timer.cancel(bossFire)
             timer.cancel(gerenation)
+            customParams.hp = hp
             transition.to(bossMage, {time=1000, 
             onComplete = function() display.remove(bossMage) victoryEnd() end
             })
@@ -535,7 +514,7 @@ local function generationItem()
 end
 
 local function hitboxAttack()
-    hitboxExplosion = display.newImageRect(mainGroup, "/Sprites/Effects/hitbox.png", 46,47 )
+    hitboxExplosion = display.newImageRect(mainGroup, "/Sprites/Effects/Boss01/hitbox.png", 46,47 )
     physics.addBody( hitboxExplosion, "dynamic", { box=offsetRectParams } )
     hitboxExplosion.myName = "hitexplosion"
     hitboxExplosion.x = math.random(25, 295)
@@ -554,6 +533,28 @@ end
     ship:addEventListener( "tap", attack )
     Runtime:addEventListener( "collision", onCollision )
     menu_pause:addEventListener( "tap", pauseGame)
+--[[local function gotoSelect()
+	composer.gotoScene( "fase1", { time=800, effect="crossFade" } )
+end--]]
+
+function scene:create( event )
+
+	local sceneGroup = self.view
+    -- Code here runs when the scene is first created but has not yet appeared on screen
+
+    physics.pause()
+
+    sceneGroup:insert( backGroup )  -- Insert into the scene's view group
+ 
+    sceneGroup:insert( mainGroup )  -- Insert into the scene's view group
+
+    sceneGroup:insert( uiGroup ) 
+
+    local background = display.newImageRect(backGroup ,"/Background/1/back.png", 360, 570)
+    background.x = display.contentCenterX
+    background.y = display.contentCenterY
+  
+
 end
 
 
@@ -564,8 +565,7 @@ function scene:show( event )
 	local phase = event.phase
 
 	if ( phase == "will" ) then
-		-- Code here runs when the scene is still off screen (but is about to come on screen)
-
+        -- Code here runs when the scene is still off screen (but is about to come on screen)
 	elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
         physics.start()

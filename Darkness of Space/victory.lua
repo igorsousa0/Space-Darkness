@@ -2,8 +2,17 @@ local composer = require( "composer" )
 
 local scene = composer.newScene()
 
+local score = 200
+local level = 0
+
 local function gotoSelect()
-	composer.gotoScene( "menu", { time=200, effect="crossFade" } )
+	level = level + 1
+	if (level == 1) then
+		composer.gotoScene( "fase2", { time=200, effect="crossFade" } )
+	elseif (level == 2) then
+		composer.gotoScene( "menu", { time=200, effect="crossFade" } )
+		level = 0
+	end	
 end
 
 function scene:create( event )
@@ -17,7 +26,11 @@ function scene:create( event )
     sceneGroup:insert( mainGroup )  -- Insert into the scene's view group
  
     uiGroup = display.newGroup()    -- Display group for UI objects like the score
-    sceneGroup:insert( uiGroup ) 
+	sceneGroup:insert( uiGroup ) 
+
+	local scoreCalc = score * event.params.hp
+	local scoreTotal = 0
+	scoreTotal = scoreTotal + scoreCalc
     
     local background = display.newImageRect(backGroup ,"/Background/1/back.png", 360, 570)
     background.x = display.contentCenterX
@@ -26,11 +39,12 @@ function scene:create( event )
     local victoryText = display.newText( sceneGroup, "Você Venceu!", display.contentCenterX, display.contentCenterY - 200, native.systemFont, 34 )
     victoryText:setFillColor( 0.82, 0.86, 1 )
  
-    local highScoresButton = display.newText( sceneGroup, "High Scores:", display.contentCenterX, display.contentCenterY - 100, native.systemFont, 20 )
-    highScoresButton:setFillColor( 0.75, 0.78, 1 )
+    local highScoresButton = display.newText( sceneGroup, "High Scores: " .. scoreTotal , display.contentCenterX, display.contentCenterY - 100, native.systemFont, 20 )
+	highScoresButton:setFillColor( 0.75, 0.78, 1 )
+	
 
     local continueButton = display.newText( sceneGroup, "Avançar", display.contentCenterX, display.contentCenterY + 100, native.systemFont, 20 )
-    continueButton:setFillColor( 0.75, 0.78, 1 )
+	continueButton:setFillColor( 0.75, 0.78, 1 )
 
     continueButton:addEventListener( "tap", gotoSelect )
 	

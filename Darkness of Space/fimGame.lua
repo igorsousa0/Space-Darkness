@@ -26,9 +26,6 @@ function scene:create( event )
     local lostText = display.newText( sceneGroup, "Você foi derrotado!", display.contentCenterX, display.contentCenterY - 200, native.systemFont, 34 )
     lostText:setFillColor( 0.82, 0.86, 1 )
 
-    local highScoresButton = display.newText( sceneGroup, "High Scores:", display.contentCenterX, display.contentCenterY - 100, native.systemFont, 20 )
-    highScoresButton:setFillColor( 0.75, 0.78, 1 )
- 
     local continueButton = display.newText( sceneGroup, "Avançar", display.contentCenterX, display.contentCenterY + 100, native.systemFont, 20 )
     continueButton:setFillColor( 0.75, 0.78, 1 )
  
