@@ -515,8 +515,6 @@ end
 
 local function hitboxAttack()
     hitboxExplosion = display.newImageRect(mainGroup, "/Sprites/Effects/Boss01/hitbox.png", 46,47 )
-    physics.addBody( hitboxExplosion, "dynamic", { box=offsetRectParams } )
-    hitboxExplosion.myName = "hitexplosion"
     hitboxExplosion.x = math.random(25, 295)
     hitboxExplosion.y = math.random(116, 494)
     transition.to(hitboxExplosion, {alpha = 0, time=500, 
