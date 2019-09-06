@@ -40,6 +40,7 @@ local hp_player_lost
 local timerAttack = false
 local timerTest = 0
 local attackPause = false
+local filterCollision = {groupIndex = -1}
 
 local hitboxAttack = 35
 local hitboxBoss = { halfWidth=48, halfHeight=55}
@@ -142,7 +143,7 @@ local sequences_magic =
     local bossMage = display.newSprite(mainGroup, sheet_boss, sequences_boss)
     bossMage.x = display.contentCenterX
     bossMage.y = display.contentCenterY - 190
-    physics.addBody( bossMage, "dynamic", { box=hitboxBoss } )
+    physics.addBody( bossMage, "dynamic", { box=hitboxBoss, filter = filterCollision } )
     bossMage.myName = "boss"
     bossMage:scale(1.4,1.4)
     bossMage:setSequence("normalMage")
@@ -219,6 +220,7 @@ local sequences_magic =
                 ship:setSequence("rightShip")
                 ship:play()
             end
+            print(ship.y)
             if(( event.x > 40 and event.x < display.contentWidth-40) and (event.y > 30 and event.y < display.contentHeight-30)) then
                 ship.x = event.x - ship.touchOffsetX
                 ship.y = event.y - ship.touchOffsetY
@@ -470,7 +472,7 @@ local sequences_magic =
         local selectItem = math.random(1,2)
         if (selectItem == 1) then
             player_attack1 = display.newImageRect(mainGroup, "/Sprites/Item/damage1.png", 36,37 )
-            physics.addBody( player_attack1, "dynamic", { box=offsetRectParams } )
+            physics.addBody( player_attack1, "dynamic", { box=offsetRectParams, filter = filterCollision } )
             player_attack1.x = math.random(25, 295)
             player_attack1.y = math.random(180, 445)
             player_attack1:toBack()
@@ -480,7 +482,7 @@ local sequences_magic =
             })
         elseif (selectItem == 2) then
             player_attack2 = display.newImageRect(mainGroup, "/Sprites/Item/damage2.png", 46,47 )
-            physics.addBody( player_attack2, "dynamic", { box=offsetRectParams } )
+            physics.addBody( player_attack2, "dynamic", { box=offsetRectParams, filter = filterCollision } )
             player_attack2.x = math.random(25, 295)
             player_attack2.y = math.random(180, 445)
             player_attack2:toBack()
@@ -500,7 +502,7 @@ local sequences_magic =
             local selectDirection = math.random(1,2)
             if (selectDirection == 1) then
                 vortex = display.newSprite(mainGroup, sheet_vortex, sequences_magic)
-                physics.addBody( vortex, "dynamic", { radius=hitboxAttack } )
+                physics.addBody( vortex, "dynamic", { radius=hitboxAttack, filter = filterCollision } )
                 vortex:setSequence("normalAnimation")
                 vortex:play() 
                 vortex.x = 20
@@ -512,7 +514,7 @@ local sequences_magic =
                 })
             elseif (selectDirection == 2) then
                 vortex2 = display.newSprite(mainGroup, sheet_vortex, sequences_magic)
-                physics.addBody( vortex2, "dynamic", { radius=hitboxAttack } )
+                physics.addBody( vortex2, "dynamic", { radius=hitboxAttack, filter = filterCollision } )
                 vortex2:setSequence("normalAnimation")
                 vortex2:play() 
                 vortex2.x = 290
@@ -526,11 +528,11 @@ local sequences_magic =
         elseif (attackSelect == 2) then
             local explosion = display.newSprite(mainGroup, sheet_explosion, sequences_magic)
             local hitboxExplosion = display.newImageRect(mainGroup, "/Sprites/Effects/Boss01/hitbox.png", 46,47 )
-            physics.addBody(explosion, "dynamic", {radius=hitboxAttack})
+            physics.addBody(explosion, "dynamic", {radius=hitboxAttack, filter = filterCollision})
             explosion:setSequence("normalAnimation")
             explosion:play()
             hitboxExplosion.x = math.random(25, 295) 
-            hitboxExplosion.y = math.random(116, 494)
+            hitboxExplosion.y = math.random(156, 454)
             explosion.x = hitboxExplosion.x
             explosion.y = hitboxExplosion.y
             explosion.isVisible = false
@@ -561,7 +563,7 @@ local sequences_magic =
             attackPause = true
             fire.isVisible = true
             fire.isBodyActive = true
-            physics.addBody(fire, "dynamic", {radius=hitboxAttack})
+            physics.addBody(fire, "dynamic", {radius=hitboxAttack, filter = filterCollision})
             timerTest = timerTest + 1 
             Runtime:removeEventListener( "enterFrame", specialAttack )
             transition.to(fire, {time = 1000, x = ship.x, y = ship.y,

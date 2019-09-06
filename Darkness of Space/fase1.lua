@@ -145,13 +145,13 @@ local sequences_ship = {
     local sheet_ship = graphics.newImageSheet( "/Sprites/Ship/ship.png", sheet_options_ship )
     local sheet_bossMage = graphics.newImageSheet( "/Sprites/Boss/disciple.png", sheet_options_bossMage)
     local sheet_flameball = graphics.newImageSheet( "/Sprites/Boss/flameball.png", sheet_options_flameball )
-    local sheet_explosionAttack = graphics.newImageSheet( "/Sprites/Effects/Boss01/explosion 3.png", sheet_options_explosionAttack )
+    local sheet_explosionAttack = graphics.newImageSheet( "/Sprites/Effects/Boss01/explosion.png", sheet_options_explosionAttack )
 
     -- Primeiro Boss --
     local bossMage = display.newSprite(mainGroup, sheet_bossMage, sequences_bossMage)
     bossMage.x = display.contentCenterX
     bossMage.y = display.contentCenterY - 200
-    physics.addBody( bossMage, "dynamic", { box=hitboxBoss } )
+    physics.addBody( bossMage, "dynamic", { box=hitboxBoss} )
     bossMage.myName = "boss"
     bossMage:scale(2,2)
     bossMage:setSequence("normalMage")
@@ -252,9 +252,9 @@ local function fireLaser()
 end
 
 local function bossAttack()
-    local explosionAttack = display.newSprite(mainGroup ,sheet_explosionAttack, sequences_explosionAttack)
+    local explosionAttack = display.newSprite(mainGroup, sheet_explosionAttack, sequences_explosionAttack)
     local hitboxExplosion = display.newImageRect(mainGroup, "/Sprites/Effects/Boss01/hitbox.png", 46,47 )
-    physics.addBody( explosionAttack, "dynamic", { box=offsetRectParams } )
+    physics.addBody( explosionAttack, "dynamic", { radius=20} )
     explosionAttack.myName = "explosion"
     hitboxExplosion.x = math.random(25, 295) 
     hitboxExplosion.y = math.random(116, 494)
@@ -318,7 +318,7 @@ local function attack()
     if (playerAttack[1] ~= nil) then
         if (playerAttack[1] == "attack1") then
             local attack1 = display.newImageRect(mainGroup, "/Sprites/Item/damage1.png", 36,37 )
-            physics.addBody( attack1, "dynamic", { box=offsetRectParams } )
+            physics.addBody( attack1, "dynamic", { box=offsetRectParams} )
             attack1.isBullet = true
             attack1.x = ship.x
             attack1.y = ship.y
@@ -331,7 +331,7 @@ local function attack()
             })
         elseif (playerAttack[1] == "attack2") then
             local attack2 = display.newImageRect(mainGroup, "/Sprites/Item/damage2.png", 46,47 )
-            physics.addBody( attack2, "dynamic", { box=offsetRectParams } )
+            physics.addBody( attack2, "dynamic", { box=offsetRectParams} )
             attack2.isBullet = true
             attack2.x = ship.x
             attack2.y = ship.y
