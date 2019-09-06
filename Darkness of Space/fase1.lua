@@ -24,8 +24,6 @@ local bossLife = 20
 local hpText
 local scoreText
 local pauseTest = 0
-local player_attack1
-local player_attack2
 local contadorAttack = 0
 local contadorText
 local attackCurrent = 0
@@ -246,7 +244,7 @@ local function fireLaser()
     flameball.y = bossMage.y
     audio.play(fireEffect, {channel = 3} )
     audio.setVolume( 0.3, { channel=3 } )
-    transition.to(flameball, {y=800, time=4000, 
+    transition.to(flameball, {y=800, time=3500, 
         onComplete = function() display.remove(flameball) end
     }) 
     flameball:scale(1.5,1.5)
@@ -254,19 +252,31 @@ local function fireLaser()
 end
 
 local function bossAttack()
-    explosionAttack = display.newSprite(mainGroup ,sheet_explosionAttack, sequences_explosionAttack)
+    local explosionAttack = display.newSprite(mainGroup ,sheet_explosionAttack, sequences_explosionAttack)
+    local hitboxExplosion = display.newImageRect(mainGroup, "/Sprites/Effects/Boss01/hitbox.png", 46,47 )
     physics.addBody( explosionAttack, "dynamic", { box=offsetRectParams } )
-    explosionAttack.isBullet = true
     explosionAttack.myName = "explosion"
+    hitboxExplosion.x = math.random(25, 295) 
+    hitboxExplosion.y = math.random(116, 494)
     explosionAttack.x = hitboxExplosion.x
     explosionAttack.y = hitboxExplosion.y
-    audio.play(explosionEffect, {channel = 2} )
-    audio.setVolume( 0.4, { channel=2 } )
+    explosionAttack.isVisible = false
+    explosionAttack.isBodyActive = false
     explosionAttack:scale(0.4,0.4)
-    transition.to(explosionAttack, {time=500, 
-    onComplete = function() display.remove(explosionAttack) end
+    transition.to(hitboxExplosion, {time=500, alpha = 0,
+    onComplete = function() display.remove(hitboxExplosion)                 
+        if (hitboxExplosion.alpha == 0) then
+        explosionAttack.isVisible = true
+        explosionAttack.isBodyActive = true
+        explosionAttack:setSequence("standAnimation")
+        explosionAttack:play()
+        audio.play(explosionEffect, {channel = 2} )
+        audio.setVolume( 0.4, { channel=2 } )
+        transition.to(explosionAttack, {time=650,
+        onComplete = function() display.remove(explosionAttack) end
+        }) 
+    end  end
     })  
-    explosionAttack:play()
 end
 local function restoreShip()
  
@@ -347,7 +357,8 @@ local function endGame()
 end
 
 local function victoryEnd()
-    composer.gotoScene( "victory", { time=1100, effect="crossFade", params=customParams } )
+    print("Fase 1: " .. hp)
+    composer.gotoScene( "victory", { time=1100, effect="crossFade", params= {hp1 = hp, fase = 1} } )
 end    
 
 local function onCollision( event )
@@ -491,20 +502,20 @@ local function generationItem()
     
     local selectItem = math.random(1,2)
     if (selectItem == 1) then
-        player_attack1 = display.newImageRect(mainGroup, "/Sprites/Item/damage1.png", 36,37 )
+        local player_attack1 = display.newImageRect(mainGroup, "/Sprites/Item/damage1.png", 36,37 )
         physics.addBody( player_attack1, "dynamic", { box=offsetRectParams } )
         player_attack1.x = math.random(25, 295)
-        player_attack1.y = math.random(220, 494)
+        player_attack1.y = math.random(180, 445)
         player_attack1:toBack()
         player_attack1.myName = "attack1"
         transition.to(player_attack1, {time=2000, 
         onComplete = function() display.remove(player_attack1) end
         })
     elseif (selectItem == 2) then
-        player_attack2 = display.newImageRect(mainGroup, "/Sprites/Item/damage2.png", 46,47 )
+        local player_attack2 = display.newImageRect(mainGroup, "/Sprites/Item/damage2.png", 46,47 )
         physics.addBody( player_attack2, "dynamic", { box=offsetRectParams } )
         player_attack2.x = math.random(25, 295)
-        player_attack2.y = math.random(220, 494)
+        player_attack2.y = math.random(180, 445)
         player_attack2:toBack()
         player_attack2.myName = "attack2"
         transition.to(player_attack2, {time=2000, 
@@ -513,18 +524,8 @@ local function generationItem()
     end
 end
 
-local function hitboxAttack()
-    hitboxExplosion = display.newImageRect(mainGroup, "/Sprites/Effects/Boss01/hitbox.png", 46,47 )
-    hitboxExplosion.x = math.random(25, 295)
-    hitboxExplosion.y = math.random(116, 494)
-    transition.to(hitboxExplosion, {alpha = 0, time=500, 
-    onComplete = function() display.remove(hitboxExplosion) bossAttack() end
-    })
-    hitboxExplosion:scale(0.6,0.6)
-end  
-
     bossFire = timer.performWithDelay( 2000, fireLaser, 0)
-    hitbox = timer.performWithDelay( 2000, hitboxAttack, 0)
+    hitbox = timer.performWithDelay( 2000, bossAttack, 0)
     bossMove = timer.performWithDelay( 300, bossMove, 0 )
     gerenation = timer.performWithDelay( 4000, generationItem, 0)
     ship:addEventListener( "touch", dragShip )

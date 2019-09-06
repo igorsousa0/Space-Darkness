@@ -23,7 +23,7 @@ local died = false
 
 local playerAttack = {}
 local gameLoopTimer
-local bossLife = 10
+local bossLife = 20
 local bossLifeDefault = 10
 local hpText
 local scoreText
@@ -41,7 +41,7 @@ local timerAttack = false
 local timerTest = 0
 local attackPause = false
 
-local hitboxVortex = { halfWidth=32, halfHeight=32}
+local hitboxAttack = 35
 local hitboxBoss = { halfWidth=48, halfHeight=55}
 local offsetRectParams = { halfWidth=10, halfHeight=10}
 
@@ -190,6 +190,7 @@ local sequences_magic =
     local fire = display.newSprite(mainGroup, sheet_fire, sequences_magic)
     fire:setSequence("normalAnimation")
     fire:play()
+    fire.myName = "fire"
     fire.x = display.contentCenterX
     fire.y = display.contentCenterY
     fire:scale(1.5,1.5)
@@ -230,10 +231,6 @@ local sequences_magic =
         end
         
         return true
-    end
-
-    local function bossMove()
-        transition.to(bossMage, {time = 4000, x = ship.x})
     end
     
     local function restoreShip()
@@ -333,7 +330,7 @@ local sequences_magic =
     end
     
     local function victoryEnd()
-        composer.gotoScene( "victory", { time=1800, effect="crossFade", params=customParams } )
+        composer.gotoScene( "victory", { time=1800, effect="crossFade", params={hp2 = hp, fase = 2} } )
     end
     
     local function onCollision( event )
@@ -343,10 +340,14 @@ local sequences_magic =
             local obj1 = event.object1
             local obj2 = event.object2
     
-            if ( ( obj1.myName == "ship" and obj2.myName == "flameball" ) or
-            ( obj1.myName == "flameball" and obj2.myName == "ship" ) or
+            if ( ( obj1.myName == "ship" and obj2.myName == "vortex1" ) or
+            ( obj1.myName == "vortex1" and obj2.myName == "ship" ) or
+            ( obj1.myName == "ship" and obj2.myName == "vortex2") or
+            ( obj1.myName == "vortex2" and obj2.myName == "ship") or
             ( obj1.myName == "ship" and obj2.myName == "explosion" ) or
-            ( obj1.myName == "explosion" and obj2.myName == "ship" ))
+            ( obj1.myName == "explosion" and obj2.myName == "ship" ) or
+            ( obj1.myName == "ship" and obj2.myName == "fire") or
+            ( obj1.myName == "fire" and obj2.myName == "ship"))
             then
                 if ( died == false ) then
                     died = true
@@ -357,9 +358,6 @@ local sequences_magic =
                         transition.to(ship, {time=500, alpha = 0, 
                         onComplete = function() display.remove(ship) end
                         })
-                        timer.cancel(hitbox)
-                        timer.cancel(bossFire)
-                        timer.cancel(gerenation)
                         timer.performWithDelay( 2000, endGame )
                     else
                         ship.alpha = 0.5
@@ -425,9 +423,6 @@ local sequences_magic =
                 bossMage:setSequence("deadMage")
                 bossMage:play()
                 print(bossLife)
-                timer.cancel(gerenation)
-                timer.cancel(vortexAttack)
-                timer.cancel(bossMove)
                 if (fire.isVisible == true) then
                     transition.cancel( fire )
                     display.remove( fire )
@@ -445,27 +440,29 @@ local sequences_magic =
         pauseTest = pauseTest + 1
         if (pauseTest == 1) then
         physics.pause()
-        timer.pause(bossMove)
         timer.pause(gerenation)
+        timer.pause(vortexAttack)
         transition.pause()
         bossMage:pause()
         ship:removeEventListener("touch", dragShip)
+        Runtime:removeEventListener( "enterFrame", specialAttack )
         audio.pause( 1 )
         if(explosionAttack ~= nil) then
             if(explosionAttack.isPlaying == true) then
                 explosionAttack:pause()
             end
-        end        
+        end           
         else 
             pauseTest = 0
             physics.start()
-            timer.resume(bossMove)
             timer.resume(gerenation)
+            timer.resume(vortexAttack)
             transition.resume()
+            ship:addEventListener( "touch", dragShip )
             bossMage:play()
             ship:addEventListener( "touch", dragShip )
             audio.resume( 1 )    
-        end    
+        end     
     end
 
     local function generationItem()
@@ -475,7 +472,7 @@ local sequences_magic =
             player_attack1 = display.newImageRect(mainGroup, "/Sprites/Item/damage1.png", 36,37 )
             physics.addBody( player_attack1, "dynamic", { box=offsetRectParams } )
             player_attack1.x = math.random(25, 295)
-            player_attack1.y = math.random(220, 494)
+            player_attack1.y = math.random(180, 445)
             player_attack1:toBack()
             player_attack1.myName = "attack1"
             transition.to(player_attack1, {time=2000, 
@@ -485,7 +482,7 @@ local sequences_magic =
             player_attack2 = display.newImageRect(mainGroup, "/Sprites/Item/damage2.png", 46,47 )
             physics.addBody( player_attack2, "dynamic", { box=offsetRectParams } )
             player_attack2.x = math.random(25, 295)
-            player_attack2.y = math.random(220, 494)
+            player_attack2.y = math.random(180, 445)
             player_attack2:toBack()
             player_attack2.myName = "attack2"
             transition.to(player_attack2, {time=2000, 
@@ -495,48 +492,66 @@ local sequences_magic =
     end
 
     local function generationAttack() 
-        if (attackPause == false) then
-            local attackSelect = math.random(1,2)
-            if (attackSelect == 1) then
-                local selectDirection = math.random(1,2)
-                if (selectDirection == 1) then
-                    local vortex = display.newSprite(mainGroup, sheet_vortex, sequences_magic)
-                    physics.addBody( vortex, "dynamic", { box=hitboxVortex } )
-                    vortex:setSequence("normalAnimation")
-                    vortex:play() 
-                    vortex.x = 20
-                    vortex.y = 150
-                    vortex:toBack()
-                    vortex.myName = "vortex1"
-                    transition.to(vortex, {time=2000, x = ship.x, y = ship.y,
-                    onComplete = function() display.remove(vortex) end
-                    })
-                elseif (selectDirection == 2) then
-                    local vortex2 = display.newSprite(mainGroup, sheet_vortex, sequences_magic)
-                    physics.addBody( vortex2, "dynamic", { box=hitboxVortex } )
-                    vortex2:setSequence("normalAnimation")
-                    vortex2:play() 
-                    vortex2.x = 290
-                    vortex2.y = 150
-                    vortex2:toBack()
-                    vortex2.myName = "vortex2"
-                    transition.to(vortex2, {time=2000, x = ship.x, y = ship.y,
-                    onComplete = function() display.remove(vortex2) end
-                    })
-                end 
-            elseif (attackSelect == 2) then
-                local explosion = display.newSprite(mainGroup, sheet_explosion, sequences_magic)
-                physics.addBody(explosion, "dynamic", {box=hitboxVortex})
-                explosion:setSequence("normalAnimation")
-                explosion:play()
-                explosion.x = math.random(25, 295) 
-                explosion.y = math.random(116, 494)
-                explosion:toBack()
-                explosion.myName = "explosion"
+        local attackSelect = math.random(1,2)
+        if (attackPause == true) then
+            attackSelect = 2
+        end    
+        if (attackSelect == 1) then
+            local selectDirection = math.random(1,2)
+            if (selectDirection == 1) then
+                vortex = display.newSprite(mainGroup, sheet_vortex, sequences_magic)
+                physics.addBody( vortex, "dynamic", { radius=hitboxAttack } )
+                vortex:setSequence("normalAnimation")
+                vortex:play() 
+                vortex.x = 20
+                vortex.y = 150
+                vortex:toBack()
+                vortex.myName = "vortex1"
+                transition.to(vortex, {time=1000, x = ship.x, y = ship.y,
+                onComplete = function() display.remove(vortex) end
+                })
+            elseif (selectDirection == 2) then
+                vortex2 = display.newSprite(mainGroup, sheet_vortex, sequences_magic)
+                physics.addBody( vortex2, "dynamic", { radius=hitboxAttack } )
+                vortex2:setSequence("normalAnimation")
+                vortex2:play() 
+                vortex2.x = 290
+                vortex2.y = 150
+                vortex2:toBack()
+                vortex2.myName = "vortex2"
+                transition.to(vortex2, {time=1000, x = ship.x, y = ship.y,
+                onComplete = function() display.remove(vortex2) end
+                })
+            end 
+        elseif (attackSelect == 2) then
+            local explosion = display.newSprite(mainGroup, sheet_explosion, sequences_magic)
+            local hitboxExplosion = display.newImageRect(mainGroup, "/Sprites/Effects/Boss01/hitbox.png", 46,47 )
+            physics.addBody(explosion, "dynamic", {radius=hitboxAttack})
+            explosion:setSequence("normalAnimation")
+            explosion:play()
+            hitboxExplosion.x = math.random(25, 295) 
+            hitboxExplosion.y = math.random(116, 494)
+            explosion.x = hitboxExplosion.x
+            explosion.y = hitboxExplosion.y
+            explosion.isVisible = false
+            explosion.isBodyActive = false
+            --[[explosion.x = math.random(25, 295) 
+            explosion.y = math.random(116, 494)--]]
+            explosion:toBack()
+            explosion.myName = "explosion"
+            transition.to(hitboxExplosion, {time=1000, alpha = 0,
+            onComplete = function() display.remove(hitboxExplosion)             
+                if (hitboxExplosion.alpha == 0) then
+                explosion.isVisible = true
+                explosion.isBodyActive = true
                 transition.to(explosion, {time=2000,
                 onComplete = function() display.remove(explosion) end
                 })
-            end
+            end   end
+            })  
+            --[[transition.to(explosion, {time=2000,
+            onComplete = function() display.remove(explosion) end
+            })--]]
         end    
     end
   
@@ -546,7 +561,7 @@ local sequences_magic =
             attackPause = true
             fire.isVisible = true
             fire.isBodyActive = true
-            physics.addBody(fire, "dynamic", {box=hitboxVortex})
+            physics.addBody(fire, "dynamic", {radius=hitboxAttack})
             timerTest = timerTest + 1 
             Runtime:removeEventListener( "enterFrame", specialAttack )
             transition.to(fire, {time = 1000, x = ship.x, y = ship.y,
@@ -563,14 +578,12 @@ local sequences_magic =
     end
 
     Runtime:addEventListener( "enterFrame", specialAttack )
-    bossMove = timer.performWithDelay( 300, bossMove, 0 )
-    gerenation = timer.performWithDelay( 6000, generationItem, 0)
-    vortexAttack = timer.performWithDelay( 4000, generationAttack, 0)
+    gerenation = timer.performWithDelay( 3000, generationItem, 0)
+    vortexAttack = timer.performWithDelay( 2000, generationAttack, 0)
     ship:addEventListener( "touch", dragShip )
     ship:addEventListener( "tap", attack )
     Runtime:addEventListener( "collision", onCollision )
     menu_pause:addEventListener( "tap", pauseGame)
-    ship:addEventListener( "touch", dragShip )
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
@@ -626,6 +639,15 @@ function scene:hide( event )
     elseif ( phase == "did" ) then
         -- Code here runs immediately after the scene goes entirely off screen
         Runtime:removeEventListener( "collision", onCollision )
+        Runtime:removeEventListener( "touch", dragShip )
+        Runtime:removeEventListener( "tap", attack )
+        Runtime:removeEventListener( "tap", pauseGame)
+        timer.cancel(vortexAttack)
+        timer.cancel(gerenation)  
+        if (fire.isVisible == true) then
+            transition.cancel( fire )
+            display.remove( fire )
+        end
         physics.pause()
         composer.removeScene( "fase2" )
         audio.stop( 1 )
