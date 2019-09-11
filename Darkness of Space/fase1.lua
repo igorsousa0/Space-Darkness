@@ -31,6 +31,7 @@ local attackText
 local hp_lost
 local hp_boss_lost
 local hp_player_lost
+local filterCollision = {groupIndex = -1}
 
 local backGroup = display.newGroup()
 local mainGroup = display.newGroup()
@@ -254,7 +255,7 @@ end
 local function bossAttack()
     local explosionAttack = display.newSprite(mainGroup, sheet_explosionAttack, sequences_explosionAttack)
     local hitboxExplosion = display.newImageRect(mainGroup, "/Sprites/Effects/Boss01/hitbox.png", 46,47 )
-    physics.addBody( explosionAttack, "dynamic", { radius=20} )
+    physics.addBody( explosionAttack, "dynamic", { radius=20, filter = filterCollision} )
     explosionAttack.myName = "explosion"
     hitboxExplosion.x = math.random(25, 295) 
     hitboxExplosion.y = math.random(116, 494)
@@ -318,7 +319,7 @@ local function attack()
     if (playerAttack[1] ~= nil) then
         if (playerAttack[1] == "attack1") then
             local attack1 = display.newImageRect(mainGroup, "/Sprites/Item/damage1.png", 36,37 )
-            physics.addBody( attack1, "dynamic", { box=offsetRectParams} )
+            physics.addBody( attack1, "dynamic", { box=offsetRectParams, filter = filterCollision} )
             attack1.isBullet = true
             attack1.x = ship.x
             attack1.y = ship.y
@@ -331,7 +332,7 @@ local function attack()
             })
         elseif (playerAttack[1] == "attack2") then
             local attack2 = display.newImageRect(mainGroup, "/Sprites/Item/damage2.png", 46,47 )
-            physics.addBody( attack2, "dynamic", { box=offsetRectParams} )
+            physics.addBody( attack2, "dynamic", { box=offsetRectParams, filter = filterCollision} )
             attack2.isBullet = true
             attack2.x = ship.x
             attack2.y = ship.y
@@ -401,7 +402,7 @@ local function onCollision( event )
             contadorText.text = "Dano Acumulado: " .. contadorAttack
             table.insert(playerAttack, "attack1")
             updateAttackCurrent()
-            display.remove(player_attack1)
+            display.remove(obj1)
             --hp_boss.width = hp_boss.width - hp_bossLost      
         end
         if ( ( obj1.myName == "ship" and obj2.myName == "attack2" ) or
@@ -412,7 +413,7 @@ local function onCollision( event )
             contadorText.text = "Dano Acumulado: " .. contadorAttack
             table.insert(playerAttack, "attack2")
             updateAttackCurrent()
-            display.remove(player_attack2)           
+            display.remove(obj1)           
         end
         if ( ( obj1.myName == "boss" and obj2.myName == "attack3" ) or
         ( obj1.myName == "attack3" and obj2.myName == "boss" )) 
@@ -503,7 +504,7 @@ local function generationItem()
     local selectItem = math.random(1,2)
     if (selectItem == 1) then
         local player_attack1 = display.newImageRect(mainGroup, "/Sprites/Item/damage1.png", 36,37 )
-        physics.addBody( player_attack1, "dynamic", { box=offsetRectParams } )
+        physics.addBody( player_attack1, "dynamic", { box=offsetRectParams, filter = filterCollision } )
         player_attack1.x = math.random(25, 295)
         player_attack1.y = math.random(180, 445)
         player_attack1:toBack()
@@ -513,7 +514,7 @@ local function generationItem()
         })
     elseif (selectItem == 2) then
         local player_attack2 = display.newImageRect(mainGroup, "/Sprites/Item/damage2.png", 46,47 )
-        physics.addBody( player_attack2, "dynamic", { box=offsetRectParams } )
+        physics.addBody( player_attack2, "dynamic", { box=offsetRectParams, filter = filterCollision } )
         player_attack2.x = math.random(25, 295)
         player_attack2.y = math.random(180, 445)
         player_attack2:toBack()

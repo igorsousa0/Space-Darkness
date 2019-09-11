@@ -220,7 +220,6 @@ local sequences_magic =
                 ship:setSequence("rightShip")
                 ship:play()
             end
-            print(ship.y)
             if(( event.x > 40 and event.x < display.contentWidth-40) and (event.y > 30 and event.y < display.contentHeight-30)) then
                 ship.x = event.x - ship.touchOffsetX
                 ship.y = event.y - ship.touchOffsetY

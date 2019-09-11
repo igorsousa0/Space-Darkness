@@ -62,7 +62,6 @@ function scene:show( event )
 			scoreCalc = score * event.params.hp2 + scoreCalc
 		end	
 		highScoresButton.text = "High Scores: " .. scoreCalc
-		print("Victory Will" .. scoreCalc)
 		level = event.params.fase
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
