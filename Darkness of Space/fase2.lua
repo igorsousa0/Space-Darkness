@@ -24,7 +24,6 @@ local died = false
 local playerAttack = {}
 local gameLoopTimer
 local bossLife = 20
-local bossLifeDefault = 10
 local hpText
 local scoreText
 local pauseTest = 0
@@ -37,9 +36,6 @@ local attackText
 local hp_lost
 local hp_boss_lost
 local hp_player_lost
-local timerAttack = false
-local timerTest = 0
-local attackPause = false
 local filterCollision = {groupIndex = -1}
 
 local hitboxAttack = 35
@@ -131,14 +127,13 @@ local sequences_magic =
         loopCount = 0,
         loopDirection = "forward"
     }
-  
+
 
     local sheet_ship = graphics.newImageSheet( "/Sprites/Ship/ship.png", sheet_options_ship )
     local sheet_boss = graphics.newImageSheet( "/Sprites/Boss/boss2.png", sheet_options_boss )
     local sheet_vortex = graphics.newImageSheet( "/Sprites/Effects/Boss02/bossAttack.png", sheet_options_magic )
     local sheet_explosion = graphics.newImageSheet( "/Sprites/Effects/Boss02/bossAttack2.png", sheet_options_magic )
-    local sheet_fire = graphics.newImageSheet( "/Sprites/Effects/Boss02/bossAttack3.png", sheet_options_magic )
-
+    
     -- Segundo Boss --
     local bossMage = display.newSprite(mainGroup, sheet_boss, sequences_boss)
     bossMage.x = display.contentCenterX
@@ -186,17 +181,6 @@ local sequences_magic =
     menu_pause.x = display.contentCenterX + 130
     menu_pause.y = display.contentCenterY - 255
     menu_pause:scale(0.8,0.8)
-
-    -- Ataque Teste --
-    local fire = display.newSprite(mainGroup, sheet_fire, sequences_magic)
-    fire:setSequence("normalAnimation")
-    fire:play()
-    fire.myName = "fire"
-    fire.x = display.contentCenterX
-    fire.y = display.contentCenterY
-    fire:scale(1.5,1.5)
-    fire.isVisible = false
-    fire.isBodyActive = false
 
     contadorText = display.newText(uiGroup,"Dano Acumulado: " .. contadorAttack, ship.x - 90,ship.y + 50, native.systemFont, 15)
     attackText = display.newText(uiGroup,"Dano Atual: " .. attackCurrent, ship.x + 110,ship.y + 50, native.systemFont, 15)    
@@ -346,9 +330,7 @@ local sequences_magic =
             ( obj1.myName == "ship" and obj2.myName == "vortex2") or
             ( obj1.myName == "vortex2" and obj2.myName == "ship") or
             ( obj1.myName == "ship" and obj2.myName == "explosion" ) or
-            ( obj1.myName == "explosion" and obj2.myName == "ship" ) or
-            ( obj1.myName == "ship" and obj2.myName == "fire") or
-            ( obj1.myName == "fire" and obj2.myName == "ship"))
+            ( obj1.myName == "explosion" and obj2.myName == "ship" ))
             then
                 if ( died == false ) then
                     died = true
@@ -424,10 +406,6 @@ local sequences_magic =
                 bossMage:setSequence("deadMage")
                 bossMage:play()
                 print(bossLife)
-                if (fire.isVisible == true) then
-                    transition.cancel( fire )
-                    display.remove( fire )
-                end
                 customParams.hp = hp
                 transition.to(bossMage, {time=1400, 
                 onComplete = function() display.remove(bossMage) victoryEnd() end
@@ -556,29 +534,6 @@ local sequences_magic =
         end    
     end
   
-    local function specialAttack( event )
-        if(bossLife <= bossLifeDefault/2) then
-            timerAttack = true
-            attackPause = true
-            fire.isVisible = true
-            fire.isBodyActive = true
-            physics.addBody(fire, "dynamic", {radius=hitboxAttack, filter = filterCollision})
-            timerTest = timerTest + 1 
-            Runtime:removeEventListener( "enterFrame", specialAttack )
-            transition.to(fire, {time = 1000, x = ship.x, y = ship.y,
-            onComplete = function() Runtime:addEventListener( "enterFrame", specialAttack ) end
-            })   
-            if (timerTest == 30) then
-                Runtime:removeEventListener( "enterFrame", specialAttack )
-                transition.cancel( fire )
-                display.remove( fire )
-                attackPause = false
-            end  
-            print(timerTest)
-        end        
-    end
-
-    Runtime:addEventListener( "enterFrame", specialAttack )
     gerenation = timer.performWithDelay( 3000, generationItem, 0)
     vortexAttack = timer.performWithDelay( 2000, generationAttack, 0)
     ship:addEventListener( "touch", dragShip )
@@ -623,7 +578,7 @@ function scene:show( event )
         -- Code here runs when the scene is entirely on screen
         physics.start()
         audio.play(backgroundSong, {channel = 1, loops = -1 })
- 
+        audio.setVolume( 1, { channel=1 } )
     end
 end
  
@@ -645,10 +600,6 @@ function scene:hide( event )
         Runtime:removeEventListener( "tap", pauseGame)
         timer.cancel(vortexAttack)
         timer.cancel(gerenation)  
-        if (fire.isVisible == true) then
-            transition.cancel( fire )
-            display.remove( fire )
-        end
         physics.pause()
         composer.removeScene( "fase2" )
         audio.stop( 1 )

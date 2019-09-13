@@ -11,8 +11,10 @@ local function nextLevel()
 	if (level == 1) then
 		composer.gotoScene( "fase2", { time=200, effect="crossFade" } )
 	elseif (level == 2) then
+		composer.gotoScene( "fase3", { time=200, effect="crossFade" } )
+	elseif (level == 3) then
 		composer.gotoScene( "menu", { time=200, effect="crossFade" } )
-	end	
+	end		
 end
 
 function scene:create( event )
@@ -60,6 +62,8 @@ function scene:show( event )
 			scoreCalc = score * event.params.hp1
 		elseif (event.params.fase == 2) then
 			scoreCalc = score * event.params.hp2 + scoreCalc
+		elseif (event.params.fase == 3) then
+			scoreCalc = score * event.params.hp3 + scoreCalc
 		end	
 		highScoresButton.text = "High Scores: " .. scoreCalc
 		level = event.params.fase

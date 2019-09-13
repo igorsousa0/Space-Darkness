@@ -12,7 +12,6 @@ math.randomseed( os.time() )
 local backgroundSong = audio.loadSound("audio/fase01/magicspace.mp3")
 local shotEffect = audio.loadSound("audio/effect/ship/laser.wav")
 local fireEffect = audio.loadSound("audio/effect/mage01/fire.wav")
-local explosionEffect = audio.loadSound("audio/effect/mage01/explosion.wav")
 audio.setVolume( 0.5, { channel=2 } )
 
 local hp = 5
@@ -245,40 +244,13 @@ local function fireLaser()
     flameball.y = bossMage.y
     audio.play(fireEffect, {channel = 3} )
     audio.setVolume( 0.3, { channel=3 } )
-    transition.to(flameball, {y=800, time=3500, 
+    transition.to(flameball, {x = ship.x, y=800, time=2500, 
         onComplete = function() display.remove(flameball) end
     }) 
     flameball:scale(1.5,1.5)
     flameball:play()
 end
 
-local function bossAttack()
-    local explosionAttack = display.newSprite(mainGroup, sheet_explosionAttack, sequences_explosionAttack)
-    local hitboxExplosion = display.newImageRect(mainGroup, "/Sprites/Effects/Boss01/hitbox.png", 46,47 )
-    physics.addBody( explosionAttack, "dynamic", { radius=20, filter = filterCollision} )
-    explosionAttack.myName = "explosion"
-    hitboxExplosion.x = math.random(25, 295) 
-    hitboxExplosion.y = math.random(116, 494)
-    explosionAttack.x = hitboxExplosion.x
-    explosionAttack.y = hitboxExplosion.y
-    explosionAttack.isVisible = false
-    explosionAttack.isBodyActive = false
-    explosionAttack:scale(0.4,0.4)
-    transition.to(hitboxExplosion, {time=500, alpha = 0,
-    onComplete = function() display.remove(hitboxExplosion)                 
-        if (hitboxExplosion.alpha == 0) then
-        explosionAttack.isVisible = true
-        explosionAttack.isBodyActive = true
-        explosionAttack:setSequence("standAnimation")
-        explosionAttack:play()
-        audio.play(explosionEffect, {channel = 2} )
-        audio.setVolume( 0.4, { channel=2 } )
-        transition.to(explosionAttack, {time=650,
-        onComplete = function() display.remove(explosionAttack) end
-        }) 
-    end  end
-    })  
-end
 local function restoreShip()
  
     ship.isBodyActive = false
@@ -370,9 +342,7 @@ local function onCollision( event )
         local obj2 = event.object2
 
         if ( ( obj1.myName == "ship" and obj2.myName == "flameball" ) or
-        ( obj1.myName == "flameball" and obj2.myName == "ship" ) or
-        ( obj1.myName == "ship" and obj2.myName == "explosion" ) or
-        ( obj1.myName == "explosion" and obj2.myName == "ship" ))
+        ( obj1.myName == "flameball" and obj2.myName == "ship" ) )
         then
             if ( died == false ) then
                 died = true
@@ -451,7 +421,6 @@ local function onCollision( event )
             bossMage:setSequence("deadMage")
             bossMage:play()
             print(bossLife)
-            timer.cancel(hitbox)
             timer.cancel(bossFire)
             timer.cancel(gerenation)
             customParams.hp = hp
@@ -468,7 +437,6 @@ local function pauseGame()
     if (pauseTest == 1) then
     physics.pause()
     timer.pause(bossFire)
-    timer.pause(hitbox)
     timer.pause(bossMove)
     timer.pause(gerenation)
     transition.pause()
@@ -484,7 +452,6 @@ local function pauseGame()
         pauseTest = 0
         physics.start()
         timer.resume(bossFire)
-        timer.resume(hitbox)
         timer.resume(bossMove)
         timer.resume(gerenation)
         transition.resume()
@@ -526,7 +493,6 @@ local function generationItem()
 end
 
     bossFire = timer.performWithDelay( 2000, fireLaser, 0)
-    hitbox = timer.performWithDelay( 2000, bossAttack, 0)
     bossMove = timer.performWithDelay( 300, bossMove, 0 )
     gerenation = timer.performWithDelay( 4000, generationItem, 0)
     ship:addEventListener( "touch", dragShip )

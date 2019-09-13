@@ -22,6 +22,7 @@ local playerAttack = {}
 local attackTest = {}
 local gameLoopTimer
 local bossLife = 20
+local bossLifeDefault = 20
 local hpText
 local scoreText
 local pauseTest = 0
@@ -32,12 +33,16 @@ local attackText
 local hp_lost
 local hp_boss_lost
 local hp_player_lost
+local timerAttack = false
+local timerTest = 0
+local attackPause = false
 local filterCollision = {groupIndex = -1}
 
 local backGroup = display.newGroup()
 local mainGroup = display.newGroup()
 local uiGroup = display.newGroup()
 
+local hitboxAttack = 35
 local offsetRectParams = { halfWidth=10, halfHeight=10}
 local hitboxBoss = { halfWidth=38, halfHeight=51}
 
@@ -133,10 +138,28 @@ local sequences_ship = {
     }
 }
 
+local sheet_options_magic = 
+{
+    width = 100,
+    height = 100,
+    numFrames = 64,
+}
+
+local sequences_magic = 
+    {
+        name = "normalAnimation",
+        start = 1,
+        count = 61,
+        time = 1000,
+        loopCount = 0,
+        loopDirection = "forward"
+    }
+
     local sheet_ship = graphics.newImageSheet( "/Sprites/Ship/ship.png", sheet_options_ship )
     local sheet_bossMage = graphics.newImageSheet( "/Sprites/Boss/mage1.png", sheet_options_bossMage)
     local sheet_flameball = graphics.newImageSheet( "/Sprites/Boss/flameball.png", sheet_options_flameball )
-    local sheet_explosionAttack = graphics.newImageSheet( "/Sprites/Boss/acid.png", sheet_options_explosionAttack )
+    local sheet_explosion = graphics.newImageSheet( "/Sprites/Effects/Boss02/bossAttack2.png", sheet_options_magic )
+    local sheet_fire = graphics.newImageSheet( "/Sprites/Effects/Boss02/bossAttack3.png", sheet_options_magic )
 
     -- Terceiro Boss --
     local bossMage = display.newSprite(mainGroup, sheet_bossMage, sequences_bossMage)
@@ -186,6 +209,17 @@ local sequences_ship = {
     menu_pause.y = display.contentCenterY - 255
     menu_pause:scale(0.8,0.8)
 
+    -- Ataque Teste --
+    local fire = display.newSprite(mainGroup, sheet_fire, sequences_magic)
+    fire:setSequence("normalAnimation")
+    fire:play()
+    fire.myName = "fire"
+    fire.x = display.contentCenterX
+    fire.y = display.contentCenterY
+    fire:scale(1.5,1.5)
+    fire.isVisible = false
+    fire.isBodyActive = false    
+
     contadorText = display.newText(uiGroup,"Dano Acumulado: " .. contadorAttack, ship.x - 90,ship.y + 50, native.systemFont, 15)
     attackText = display.newText(uiGroup,"Dano Atual: " .. attackCurrent, ship.x + 110,ship.y + 50, native.systemFont, 15)
     
@@ -227,6 +261,10 @@ local function bossMove()
 end
 
 local function fireLaser()
+    local attackSelect = math.random(1.0,10.0)
+    if (attackPause == true) then
+        attackSelect = 0
+    end 
     local flameball = display.newSprite(mainGroup ,sheet_flameball, sequences_flameball)
     physics.addBody( flameball, "dynamic", { isSensor=true } )
     flameball.isBullet = true
@@ -235,36 +273,58 @@ local function fireLaser()
     flameball.y = bossMage.y
     audio.play(fireEffect, {channel = 3} )
     audio.setVolume( 0.3, { channel=3 } )
-    transition.to(flameball, {y=800, time=3500, 
+    transition.to(flameball, {x = ship.x, y=800, time=2500, 
         onComplete = function() display.remove(flameball) end
     }) 
     flameball:scale(1.5,1.5)
     flameball:play()
+    if (attackSelect >= 5.0) then
+        local explosion = display.newSprite(mainGroup, sheet_explosion, sequences_magic)
+        local hitboxExplosion = display.newImageRect(mainGroup, "/Sprites/Effects/Boss01/hitbox.png", 46,47 )
+        physics.addBody(explosion, "dynamic", {radius=hitboxAttack, filter = filterCollision})
+        explosion:setSequence("normalAnimation")
+        explosion:play()
+        hitboxExplosion.x = math.random(25, 295) 
+        hitboxExplosion.y = math.random(156, 454)
+        explosion.x = hitboxExplosion.x
+        explosion.y = hitboxExplosion.y
+        explosion.isVisible = false
+        explosion.isBodyActive = false
+        --[[explosion.x = math.random(25, 295) 
+        explosion.y = math.random(116, 494)--]]
+        explosion:toBack()
+        explosion.myName = "explosion"
+        transition.to(hitboxExplosion, {time=1000, alpha = 0,
+        onComplete = function() display.remove(hitboxExplosion)             
+            if (hitboxExplosion.alpha == 0) then
+            explosion.isVisible = true
+            explosion.isBodyActive = true
+            transition.to(explosion, {time=2000,
+            onComplete = function() display.remove(explosion) end
+            })
+        end   end
+        })  
+        --[[transition.to(explosion, {time=2000,
+        onComplete = function() display.remove(explosion) end
+        })--]]
+    end    
 end
 
-local function bossAttack()
-    local numberAttack = 2
+--[[local function bossAttack()
     local direcionX = 0
     local x = math.random(25, 295)
     local y = math.random(116, 494)
-    for i = 1, numberAttack, 1 do    
-        local explosionAttack = display.newSprite(mainGroup, sheet_explosionAttack, sequences_explosionAttack)
-        physics.addBody( explosionAttack, "dynamic", { radius=20, filter = filterCollision} )
-        explosionAttack:setSequence("standAnimation")
-        explosionAttack:play()
-        explosionAttack.myName = "explosion"
-        explosionAttack.x = x - direcionX
-        explosionAttack.y = y 
-        --[[ transition.to(attackTest[i], {time=800, alpha = 0,
-        onComplete = function()         
-            attackTest[i].x = x - direcionX
-            attackTest[i].y = y end
-        }) 
-        attackTest[i]:play() --]]
-        direcionX = direcionX + 20
-    end      
+    local explosionAttack = display.newSprite(mainGroup, sheet_explosionAttack, sequences_explosionAttack)
+    physics.addBody( explosionAttack, "dynamic", { radius=20, filter = filterCollision} )
+    explosionAttack.myName = "explosion"
+    explosionAttack:setSequence("standAnimation")
+    explosionAttack:play()
+    explosionAttack.x = x - direcionX
+    explosionAttack.y = y  
+    direcionX = direcionX + 20    
     direcionX = 0
-end
+end--]]
+
 local function restoreShip()
  
     ship.isBodyActive = false
@@ -344,8 +404,8 @@ local function endGame()
 end
 
 local function victoryEnd()
-    print("Fase 1: " .. hp)
-    composer.gotoScene( "victory", { time=1100, effect="crossFade", params= {hp1 = hp, fase = 1} } )
+    print("Fase 3: " .. hp)
+    composer.gotoScene( "victory", { time=500, effect="crossFade", params= {hp3 = hp, fase = 3} } )
 end    
 
 local function onCollision( event )
@@ -358,18 +418,20 @@ local function onCollision( event )
         if ( ( obj1.myName == "ship" and obj2.myName == "flameball" ) or
         ( obj1.myName == "flameball" and obj2.myName == "ship" ) or
         ( obj1.myName == "ship" and obj2.myName == "explosion" ) or
-        ( obj1.myName == "explosion" and obj2.myName == "ship" ))
+        ( obj1.myName == "explosion" and obj2.myName == "ship" ) or
+        ( obj1.myName == "ship" and obj2.myName == "fire") or
+        ( obj1.myName == "fire" and obj2.myName == "ship"))
         then
             if ( died == false ) then
                 died = true
                 hp = hp - 1
                 hp_player_lost = hp_player.width - hp_lost
-                transition.to(hp_player, { width = hp_player_lost, time=500,})   
+                transition.to(hp_player, { width = hp_player_lost, time=500})   
                 if ( hp == 0 ) then
                     transition.to(ship, {time=500, alpha = 0, 
                     onComplete = function() display.remove(ship) end
                     })
-                    timer.cancel(hitbox)
+                    --timer.cancel(hitbox)
                     timer.cancel(bossFire)
                     timer.cancel(gerenation)
                     timer.performWithDelay( 2000, endGame )
@@ -435,7 +497,7 @@ local function onCollision( event )
         end
         if ( bossLife <= 0) then
             print(bossLife)
-            timer.cancel(hitbox)
+            --timer.cancel(hitbox)
             timer.cancel(bossFire)
             timer.cancel(gerenation)
             customParams.hp = hp
@@ -451,9 +513,9 @@ local function pauseGame()
     pauseTest = pauseTest + 1
     if (pauseTest == 1) then
     physics.pause()
-    --timer.pause(bossFire)
-    timer.pause(hitbox)
-    timer.pause(bossMove)
+    timer.pause(bossFire)
+    --timer.pause(hitbox)
+    --timer.pause(bossMove)
     timer.pause(gerenation)
     transition.pause()
     bossMage:pause()
@@ -467,9 +529,9 @@ local function pauseGame()
     else 
         pauseTest = 0
         physics.start()
-        --timer.resume(bossFire)
-        timer.resume(hitbox)
-        timer.resume(bossMove)
+        timer.resume(bossFire)
+        --timer.resume(hitbox)
+        --timer.resume(bossMove)
         timer.resume(gerenation)
         transition.resume()
         bossMage:play()
@@ -509,25 +571,38 @@ local function generationItem()
     end
 end
 
-local function registerTable()
-    for i = 1, 5, 1 do
-        local explosionAttack = display.newSprite(mainGroup, sheet_explosionAttack, sequences_explosionAttack)
-        physics.addBody( explosionAttack, "dynamic", { radius=20, filter = filterCollision} )
-        explosionAttack.myName = "explosion"
-        explosionAttack:setSequence("standAnimation")
-        table.insert(attackTest, explosionAttack)
-    end
-end    
+local function specialAttack( event )
+    if(bossLife <= bossLifeDefault/2) then
+        timerAttack = true
+        attackPause = true
+        fire.isVisible = true
+        fire.isBodyActive = true
+        physics.addBody(fire, "dynamic", {radius=hitboxAttack, filter = filterCollision})
+        timerTest = timerTest + 1 
+        Runtime:removeEventListener( "enterFrame", specialAttack )
+        transition.to(fire, {time = 1000, x = ship.x, y = ship.y,
+        onComplete = function() Runtime:addEventListener( "enterFrame", specialAttack ) end
+        })   
+        if (timerTest == 30) then
+            Runtime:removeEventListener( "enterFrame", specialAttack )
+            transition.cancel( fire )
+            display.remove( fire )
+            attackPause = false
+        end  
+        print(timerTest)
+    end        
+end
+ 
 
-    --bossFire = timer.performWithDelay( 2000, fireLaser, 0)
-    hitbox = timer.performWithDelay( 2000, bossAttack, 0)
-    bossMove = timer.performWithDelay( 300, bossMove, 0 )
-    gerenation = timer.performWithDelay( 4000, generationItem, 0)
-    timer.performWithDelay( 0, registerTable, 1)
-    ship:addEventListener( "touch", dragShip )
-    ship:addEventListener( "tap", attack )
-    Runtime:addEventListener( "collision", onCollision )
-    menu_pause:addEventListener( "tap", pauseGame)
+Runtime:addEventListener( "enterFrame", specialAttack )
+bossFire = timer.performWithDelay( 1300, fireLaser, 0)
+--hitbox = timer.performWithDelay( 2000, bossAttack, 0)
+--bossMove = timer.performWithDelay( 300, bossMove, 0 )
+gerenation = timer.performWithDelay( 4000, generationItem, 0)
+ship:addEventListener( "touch", dragShip )
+ship:addEventListener( "tap", attack )
+Runtime:addEventListener( "collision", onCollision )
+menu_pause:addEventListener( "tap", pauseGame)
 --[[local function gotoSelect()
 	composer.gotoScene( "fase1", { time=800, effect="crossFade" } )
 end--]]
@@ -565,7 +640,7 @@ function scene:show( event )
         -- Code here runs when the scene is entirely on screen
         physics.start()
         audio.play(backgroundSong, {channel = 1, loops = -1 } )
-        audio.setVolume( 0.5, { channel=1 } )
+        audio.setVolume( 0.3, { channel=1 } )
 		--som.somTema();
 	end
 end
@@ -584,7 +659,11 @@ function scene:hide( event )
 		-- Code here runs immediately after the scene goes entirely off screen
         Runtime:removeEventListener( "collision", onCollision )
         physics.pause()
-        composer.removeScene( "fase1" )
+        if (fire.isVisible == true) then
+            transition.cancel( fire )
+            display.remove( fire )
+        end
+        composer.removeScene( "fase3" )
         audio.stop( 1 )
 	end
 end
