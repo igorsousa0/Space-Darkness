@@ -195,8 +195,31 @@ local sequences_ship = {
     menu_pause.y = display.contentCenterY - 255
     menu_pause:scale(0.8,0.8)
 
+    -- Interface Menu --
+    local menu_pause_panel = display.newImageRect(uiGroup, "/UI/Menu/TextBox.png", 1441 ,611)
+    menu_pause_panel.isVisible = false
+    menu_pause_panel.x = display.contentCenterX 
+    menu_pause_panel.y = display.contentCenterY 
+    menu_pause_panel:scale(0.1,0.3)
+    menu_pause_panel.alpha = 0.5
+
+    menu_text_top = display.newText(uiGroup,"Jogo Pausado" ,display.contentCenterX ,display.contentCenterY - 100, native.systemFont, 15)
+    menu_text_top.isVisible = false
+
+    local button_back = display.newImageRect(uiGroup, "/UI/Menu/button.png", 30 ,18)
+    button_back.isVisible = false
+    button_back.x = display.contentCenterX 
+    button_back.y = display.contentCenterY + 61
+    button_back:scale(3,1.4)
+    button_back.alpha = 0.7
+    
+    menu_text_button = display.newText(uiGroup,"Sair" ,button_back.x ,button_back.y, native.systemFont, 14)
+    menu_text_button.isVisible = false
+
     contadorText = display.newText(uiGroup,"Dano Acumulado: " .. contadorAttack, ship.x - 90,ship.y + 50, native.systemFont, 15)
     attackText = display.newText(uiGroup,"Dano Atual: " .. attackCurrent, ship.x + 110,ship.y + 50, native.systemFont, 15)
+    
+    
     
     -- Função de movimentação da Nave --
     local function dragShip( event )
@@ -329,6 +352,10 @@ local function endGame()
     composer.gotoScene( "fimGame", { time=800, effect="crossFade" } )
 end
 
+local function menuGame()
+    composer.gotoScene( "menu", { time=800, effect="crossFade" } )
+end    
+
 local function victoryEnd()
     print("Fase 1: " .. hp)
     composer.gotoScene( "victory", { time=1100, effect="crossFade", params= {hp1 = hp, fase = 1} } )
@@ -431,18 +458,33 @@ local function onCollision( event )
     end    
 end
 
+local function menuShow() 
+    if (menu_pause_panel.isVisible == false) then
+        menu_pause_panel.isVisible = true
+        menu_text_top.isVisible = true
+        button_back.isVisible = true
+        menu_text_button.isVisible = true
+    else
+        menu_pause_panel.isVisible = false
+        menu_text_top.isVisible = false
+        button_back.isVisible = false
+        menu_text_button.isVisible = false
+    end    
+end  
+
 local function pauseGame()
     
     pauseTest = pauseTest + 1
     if (pauseTest == 1) then
-    physics.pause()
-    timer.pause(bossFire)
-    timer.pause(bossMove)
-    timer.pause(gerenation)
-    transition.pause()
-    bossMage:pause()
-    ship:removeEventListener("touch", dragShip)
-    audio.pause( 1 )
+        physics.pause()
+        timer.pause(bossFire)
+        timer.pause(bossMove)
+        timer.pause(gerenation)
+        transition.pause()
+        bossMage:pause()
+        ship:removeEventListener("touch", dragShip)
+        audio.pause( 1 )
+        menuShow() 
     if(explosionAttack ~= nil) then
         if(explosionAttack.isPlaying == true) then
             explosionAttack:pause()
@@ -458,6 +500,7 @@ local function pauseGame()
         bossMage:play()
         ship:addEventListener( "touch", dragShip )
         audio.resume( 1 )
+        menuShow()
         if(explosionAttack ~= nil) then
             if(explosionAttack.isPlaying == false) then
                 explosionAttack:play()
@@ -465,6 +508,7 @@ local function pauseGame()
         end    
     end    
 end
+  
 
 local function generationItem()
     
@@ -499,6 +543,7 @@ end
     ship:addEventListener( "tap", attack )
     Runtime:addEventListener( "collision", onCollision )
     menu_pause:addEventListener( "tap", pauseGame)
+    button_back:addEventListener( "tap", menuGame)
 --[[local function gotoSelect()
 	composer.gotoScene( "fase1", { time=800, effect="crossFade" } )
 end--]]

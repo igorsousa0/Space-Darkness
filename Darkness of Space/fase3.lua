@@ -10,10 +10,10 @@ physics.setGravity( 0, 0 )
 math.randomseed( os.time() )
 
 local backgroundSong = audio.loadSound("audio/fase03/Dimensions(Main Theme).mp3")
+local backgroundSong2 = audio.loadSound("audio/fase03/Orbital Colossus.mp3")
 local shotEffect = audio.loadSound("audio/effect/ship/laser.wav")
-local fireEffect = audio.loadSound("audio/effect/mage01/fire.wav")
-local explosionEffect = audio.loadSound("audio/effect/mage02/DeathFlash.wav")
 audio.setVolume( 0.5, { channel=2 } )
+
 
 local hp = 5
 local died = false
@@ -21,8 +21,8 @@ local died = false
 local playerAttack = {}
 local attackTest = {}
 local gameLoopTimer
-local bossLife = 20
-local bossLifeDefault = 20
+local bossLife = 40
+local bossLifeDefault = 40
 local hpText
 local scoreText
 local pauseTest = 0
@@ -34,6 +34,8 @@ local hp_lost
 local hp_boss_lost
 local hp_player_lost
 local timerAttack = false
+local backgroundMusicChannel
+local audioState = false
 local timerTest = 0
 local attackPause = false
 local filterCollision = {groupIndex = -1}
@@ -61,6 +63,13 @@ local sheet_options_bossMage =
 {
     width = 85,
     height = 94,
+    numFrames = 8
+}
+
+local sheet_options_bossMage2 = 
+{
+    width = 87,
+    height = 110,
     numFrames = 8
 }
 
@@ -157,6 +166,7 @@ local sequences_magic =
 
     local sheet_ship = graphics.newImageSheet( "/Sprites/Ship/ship.png", sheet_options_ship )
     local sheet_bossMage = graphics.newImageSheet( "/Sprites/Boss/mage1.png", sheet_options_bossMage)
+    local sheet_bossMage2 = graphics.newImageSheet( "/Sprites/Boss/mage-3-87x110.png", sheet_options_bossMage2)
     local sheet_flameball = graphics.newImageSheet( "/Sprites/Boss/flameball.png", sheet_options_flameball )
     local sheet_explosion = graphics.newImageSheet( "/Sprites/Effects/Boss02/bossAttack2.png", sheet_options_magic )
     local sheet_fire = graphics.newImageSheet( "/Sprites/Effects/Boss02/bossAttack3.png", sheet_options_magic )
@@ -271,8 +281,6 @@ local function fireLaser()
     flameball.myName = "flameball"
     flameball.x = bossMage.x
     flameball.y = bossMage.y
-    audio.play(fireEffect, {channel = 3} )
-    audio.setVolume( 0.3, { channel=3 } )
     transition.to(flameball, {x = ship.x, y=800, time=2500, 
         onComplete = function() display.remove(flameball) end
     }) 
@@ -514,8 +522,6 @@ local function pauseGame()
     if (pauseTest == 1) then
     physics.pause()
     timer.pause(bossFire)
-    --timer.pause(hitbox)
-    --timer.pause(bossMove)
     timer.pause(gerenation)
     transition.pause()
     bossMage:pause()
@@ -530,8 +536,6 @@ local function pauseGame()
         pauseTest = 0
         physics.start()
         timer.resume(bossFire)
-        --timer.resume(hitbox)
-        --timer.resume(bossMove)
         timer.resume(gerenation)
         transition.resume()
         bossMage:play()
@@ -573,6 +577,26 @@ end
 
 local function specialAttack( event )
     if(bossLife <= bossLifeDefault/2) then
+        if (audioState == false) then
+            transition.to(bossMage, {time = 500, alpha = 0,
+            onComplete = function()            
+                display.remove ( bossMage )
+                bossMage = nil
+                bossMage = display.newSprite(mainGroup, sheet_bossMage2, sequences_bossMage)
+                bossMage.x = display.contentCenterX
+                bossMage.y = display.contentCenterY - 185
+                physics.addBody( bossMage, "dynamic", { box=hitboxBoss} )
+                bossMage:scale(1.2,1.2)
+                bossMage.myName = "boss"
+                bossMage:setSequence("normalMage")
+                bossMage:play()
+            end
+            }) 
+            audio.stop( backgroundMusicChannel )
+            audio.play(backgroundSong2, {channel = 1, loops = -1 } )
+            audioState = true
+            print("teste")
+        end    
         timerAttack = true
         attackPause = true
         fire.isVisible = true
@@ -596,16 +620,11 @@ end
 
 Runtime:addEventListener( "enterFrame", specialAttack )
 bossFire = timer.performWithDelay( 1300, fireLaser, 0)
---hitbox = timer.performWithDelay( 2000, bossAttack, 0)
---bossMove = timer.performWithDelay( 300, bossMove, 0 )
 gerenation = timer.performWithDelay( 4000, generationItem, 0)
 ship:addEventListener( "touch", dragShip )
 ship:addEventListener( "tap", attack )
 Runtime:addEventListener( "collision", onCollision )
 menu_pause:addEventListener( "tap", pauseGame)
---[[local function gotoSelect()
-	composer.gotoScene( "fase1", { time=800, effect="crossFade" } )
-end--]]
 
 function scene:create( event )
 
@@ -639,9 +658,8 @@ function scene:show( event )
 	elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
         physics.start()
-        audio.play(backgroundSong, {channel = 1, loops = -1 } )
+        backgroundMusicChannel = audio.play(backgroundSong, {channel = 1, loops = -1 } )
         audio.setVolume( 0.3, { channel=1 } )
-		--som.somTema();
 	end
 end
 
