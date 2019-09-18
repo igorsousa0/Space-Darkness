@@ -35,6 +35,8 @@ local filterCollision = {groupIndex = -1}
 local backGroup = display.newGroup()
 local mainGroup = display.newGroup()
 local uiGroup = display.newGroup()
+local uiPause = display.newGroup()
+local uiOption = display.newGroup()
 
 local offsetRectParams = { halfWidth=10, halfHeight=10}
 local hitboxBoss = { halfWidth=38, halfHeight=51}
@@ -193,32 +195,59 @@ local sequences_ship = {
     local menu_pause = display.newImageRect(uiGroup, "/UI/transparentDark12.png", 40,40)
     menu_pause.x = display.contentCenterX + 130
     menu_pause.y = display.contentCenterY - 255
+    menu_pause.myName = "uiPause"
     menu_pause:scale(0.8,0.8)
 
     -- Interface Menu --
-    local menu_pause_panel = display.newImageRect(uiGroup, "/UI/Menu/TextBox.png", 1441 ,611)
-    menu_pause_panel.isVisible = false
+    local menu_pause_panel = display.newImageRect(uiPause, "/UI/Menu/panel.png", 221 ,197)
     menu_pause_panel.x = display.contentCenterX 
     menu_pause_panel.y = display.contentCenterY 
-    menu_pause_panel:scale(0.1,0.3)
-    menu_pause_panel.alpha = 0.5
+    menu_pause_panel:scale(1.5,2)
+    menu_pause_panel.alpha = 0.6
 
-    menu_text_top = display.newText(uiGroup,"Jogo Pausado" ,display.contentCenterX ,display.contentCenterY - 100, native.systemFont, 15)
-    menu_text_top.isVisible = false
+    menu_text_top = display.newText(uiPause,"Jogo Pausado" ,display.contentCenterX ,display.contentCenterY - 75, native.systemFont, 15)
 
-    local button_back = display.newImageRect(uiGroup, "/UI/Menu/button.png", 30 ,18)
-    button_back.isVisible = false
+    local button_resume = display.newImageRect(uiPause, "/UI/Menu/ButtonWhite.png", 30 ,18)
+    button_resume.x = display.contentCenterX 
+    button_resume.y = display.contentCenterY - 30
+    button_resume.myName = "uiResume"
+    button_resume:scale(3,1.4)
+    button_resume.alpha = 0.6
+
+    local button_option = display.newImageRect(uiPause, "/UI/Menu/ButtonWhite.png", 30 ,18)
+    button_option.x = display.contentCenterX 
+    button_option.y = display.contentCenterY + 15
+    button_option:scale(3,1.4)
+    button_option.alpha = 0.6
+
+    local button_back = display.newImageRect(uiPause, "/UI/Menu/ButtonWhite.png", 30 ,18)
     button_back.x = display.contentCenterX 
     button_back.y = display.contentCenterY + 61
     button_back:scale(3,1.4)
-    button_back.alpha = 0.7
+    button_back.alpha = 0.6
     
-    menu_text_button = display.newText(uiGroup,"Sair" ,button_back.x ,button_back.y, native.systemFont, 14)
-    menu_text_button.isVisible = false
+    exit_text_button = display.newText(uiPause,"Sair" ,button_back.x ,button_back.y, native.systemFont, 14)
+    resume_text_button = display.newText(uiPause,"Retormar" ,button_resume.x ,button_resume.y, native.systemFont, 14)
+    option_text_button = display.newText(uiPause,"Opções" ,button_option.x ,button_option.y, native.systemFont, 14)
 
     contadorText = display.newText(uiGroup,"Dano Acumulado: " .. contadorAttack, ship.x - 90,ship.y + 50, native.systemFont, 15)
     attackText = display.newText(uiGroup,"Dano Atual: " .. attackCurrent, ship.x + 110,ship.y + 50, native.systemFont, 15)
     
+    -- Interface Opções --
+    menu_option_top = display.newText(uiOption,"Opções" ,display.contentCenterX ,display.contentCenterY - 75, native.systemFont, 15)
+    local menu_option_panel = display.newImageRect(uiOption, "/UI/Menu/panel.png", 221 ,197)
+    menu_option_panel.x = display.contentCenterX 
+    menu_option_panel.y = display.contentCenterY 
+    menu_option_panel:scale(2,2)
+    menu_option_panel.alpha = 0.6
+
+    local button_back_option = display.newImageRect(uiOption, "/UI/Menu/ButtonWhite.png", 30 ,18)
+    button_back_option.x = display.contentCenterX 
+    button_back_option.y = display.contentCenterY + 61
+    button_back_option:scale(4,1.4)
+    button_back_option.alpha = 0.6
+
+    return_text_button = display.newText(uiOption,"Salvar e Voltar" ,button_back.x ,button_back.y, native.systemFont, 14)
     
     
     -- Função de movimentação da Nave --
@@ -458,22 +487,25 @@ local function onCollision( event )
     end    
 end
 
-local function menuShow() 
-    if (menu_pause_panel.isVisible == false) then
-        menu_pause_panel.isVisible = true
-        menu_text_top.isVisible = true
-        button_back.isVisible = true
-        menu_text_button.isVisible = true
-    else
-        menu_pause_panel.isVisible = false
-        menu_text_top.isVisible = false
-        button_back.isVisible = false
-        menu_text_button.isVisible = false
-    end    
+local function menuShow( event ) 
+    if (event.target.myName == "uiPause" and uiOption.isVisible == true) then
+        uiOption.isVisible = false
+    elseif (uiOption.isVisible == true and uiPause.isVisible == false) then
+        uiOption.isVisible = false
+        uiPause.isVisible = true   
+    elseif (uiPause.isVisible == false) then
+        uiPause.isVisible = true   
+    elseif(uiPause.isVisible == true) then
+        uiPause.isVisible = false
+    end
 end  
 
-local function pauseGame()
-    
+local function optionShow()
+    uiPause.isVisible = false
+    uiOption.isVisible = true
+end    
+
+local function pauseGame( event )
     pauseTest = pauseTest + 1
     if (pauseTest == 1) then
         physics.pause()
@@ -484,14 +516,14 @@ local function pauseGame()
         bossMage:pause()
         ship:removeEventListener("touch", dragShip)
         audio.pause( 1 )
-        menuShow() 
+        menuShow( event ) 
     if(explosionAttack ~= nil) then
         if(explosionAttack.isPlaying == true) then
             explosionAttack:pause()
         end
     end        
     else 
-        pauseTest = 0
+        pauseTest = 0       
         physics.start()
         timer.resume(bossFire)
         timer.resume(bossMove)
@@ -500,7 +532,7 @@ local function pauseGame()
         bossMage:play()
         ship:addEventListener( "touch", dragShip )
         audio.resume( 1 )
-        menuShow()
+        menuShow( event )
         if(explosionAttack ~= nil) then
             if(explosionAttack.isPlaying == false) then
                 explosionAttack:play()
@@ -544,9 +576,9 @@ end
     Runtime:addEventListener( "collision", onCollision )
     menu_pause:addEventListener( "tap", pauseGame)
     button_back:addEventListener( "tap", menuGame)
---[[local function gotoSelect()
-	composer.gotoScene( "fase1", { time=800, effect="crossFade" } )
-end--]]
+    button_resume:addEventListener( "tap", pauseGame )
+    button_option:addEventListener ( "tap", optionShow)
+    return_text_button:addEventListener ( "tap", menuShow)
 
 function scene:create( event )
 
@@ -561,10 +593,18 @@ function scene:create( event )
 
     sceneGroup:insert( uiGroup ) 
 
+    sceneGroup:insert( uiPause )
+
+    sceneGroup:insert ( uiOption )
+
+    --uiOption.isVisible = false
+    uiPause.isVisible = false
+    uiOption.isVisible = false
+
     local background = display.newImageRect(backGroup ,"/Background/1/back.png", 360, 570)
     background.x = display.contentCenterX
     background.y = display.contentCenterY
-  
+
 
 end
 
