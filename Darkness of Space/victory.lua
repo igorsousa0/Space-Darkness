@@ -32,7 +32,7 @@ function scene:create( event )
 
 	print("Victory Create")
     
-    local background = display.newImageRect(backGroup ,"/Background/1/back.png", 360, 570)
+    local background = display.newImageRect(backGroup ,"Background/1/back.png", 360, 570)
     background.x = display.contentCenterX
     background.y = display.contentCenterY
 

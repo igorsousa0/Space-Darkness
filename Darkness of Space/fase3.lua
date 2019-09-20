@@ -7,6 +7,8 @@ physics.start()
 physics.setGravity( 0, 0 )
 --physics.setDrawMode( "hybrid" )
 
+local image = require("loadImage")
+
 math.randomseed( os.time() )
 
 local backgroundSong = audio.loadSound("audio/fase03/Dimensions(Main Theme).mp3")
@@ -21,8 +23,8 @@ local died = false
 local playerAttack = {}
 local attackTest = {}
 local gameLoopTimer
-local bossLife = 40
-local bossLifeDefault = 40
+local bossLife = 30
+local bossLifeDefault = 30
 local hpText
 local scoreText
 local pauseTest = 0
@@ -43,6 +45,8 @@ local filterCollision = {groupIndex = -1}
 local backGroup = display.newGroup()
 local mainGroup = display.newGroup()
 local uiGroup = display.newGroup()
+local uiPause = display.newGroup()
+local uiOption = display.newGroup()
 
 local hitboxAttack = 35
 local offsetRectParams = { halfWidth=10, halfHeight=10}
@@ -57,13 +61,6 @@ local sheet_options_ship =
     width = 16,
     height = 24,
     numFrames = 10
-}
-
-local sheet_options_bossMage =
-{
-    width = 85,
-    height = 94,
-    numFrames = 8
 }
 
 local sheet_options_bossMage2 = 
@@ -164,60 +161,56 @@ local sequences_magic =
         loopDirection = "forward"
     }
 
-    local sheet_ship = graphics.newImageSheet( "/Sprites/Ship/ship.png", sheet_options_ship )
-    local sheet_bossMage = graphics.newImageSheet( "/Sprites/Boss/mage1.png", sheet_options_bossMage)
-    local sheet_bossMage2 = graphics.newImageSheet( "/Sprites/Boss/mage-3-87x110.png", sheet_options_bossMage2)
-    local sheet_flameball = graphics.newImageSheet( "/Sprites/Boss/flameball.png", sheet_options_flameball )
-    local sheet_explosion = graphics.newImageSheet( "/Sprites/Effects/Boss02/bossAttack2.png", sheet_options_magic )
-    local sheet_fire = graphics.newImageSheet( "/Sprites/Effects/Boss02/bossAttack3.png", sheet_options_magic )
+    local sheet_ship = graphics.newImageSheet( "Sprites/Ship/ship.png", sheet_options_ship )
+    local sheet_bossMage2 = graphics.newImageSheet( "Sprites/Boss/mage-3-87x110.png", sheet_options_bossMage2)
+    local sheet_flameball = graphics.newImageSheet( "Sprites/Boss/flameball.png", sheet_options_flameball )
+    local sheet_explosion = graphics.newImageSheet( "Sprites/Effects/Boss02/bossAttack2.png", sheet_options_magic )
+    local sheet_fire = graphics.newImageSheet( "Sprites/Effects/Boss02/bossAttack3.png", sheet_options_magic )
 
     -- Terceiro Boss --
-    local bossMage = display.newSprite(mainGroup, sheet_bossMage, sequences_bossMage)
-    bossMage.x = display.contentCenterX
-    bossMage.y = display.contentCenterY - 185
-    physics.addBody( bossMage, "dynamic", { box=hitboxBoss} )
-    bossMage:scale(1.2,1.2)
-    bossMage.myName = "boss"
-    bossMage:setSequence("normalMage")
-    bossMage:play()
+    local bossMage = image.loadBoss(3,mainGroup)
 
     -- Nave --
-    local ship = display.newSprite(mainGroup, sheet_ship, sequences_ship)
-    ship.x = display.contentCenterX
-    ship.y = display.contentCenterY + 220
-    physics.addBody( ship, { radius=30, isSensor=true } )
-    ship.myName = "ship"
-    ship:scale(2.5,2.5)
-    ship:setSequence("normalShip")
-    ship:play()
+    local ship = image.loadShip(mainGroup)
 
     -- UI --
-    local hp_glass = display.newImageRect(uiGroup, "/UI/Hp/2/Glass3.png", 120,18 )
-    hp_glass.x = display.contentCenterX - 90
-    hp_glass.y = display.contentCenterY - 260
-    hp_glass.alpha = 0.9
+    local hp_glass = image.loadUi("hp",1, uiGroup)
 
-    local hp_player = display.newImageRect(uiGroup, "/UI/Hp/2/Health3.png", 110,15 )
+    local hp_player = image.loadUi("hp",2,uiGroup)
     local hp_lost = hp_player.width/hp
-    hp_player.x = display.contentCenterX - 90
-    hp_player.y = display.contentCenterY - 260
-    hp_player.alpha = 0.6
 
-    local hp_glass1 = display.newImageRect(uiGroup, "/UI/Hp/2/Glass2.png", 120,18 )
-    hp_glass1.x = display.contentCenterX + 40
-    hp_glass1.y = display.contentCenterY - 260
-    hp_glass1.alpha = 0.9
+    local hp_glass1 = image.loadUi("hp",3,uiGroup)
 
-    local hp_boss = display.newImageRect(uiGroup, "/UI/Hp/2/Health2.png", 110,15 )
+    local hp_boss = image.loadUi("hp",4,uiGroup)
     local hp_bossLost = hp_boss.width/bossLife
-    hp_boss.x = display.contentCenterX + 40
-    hp_boss.y = display.contentCenterY - 260
-    hp_boss.alpha = 0.6
 
-    local menu_pause = display.newImageRect(uiGroup, "/UI/transparentDark12.png", 40,40)
-    menu_pause.x = display.contentCenterX + 130
-    menu_pause.y = display.contentCenterY - 255
-    menu_pause:scale(0.8,0.8)
+    local menu_pause = image.loadUi("pause",0,uiGroup)
+
+    -- Interface Menu --
+    local menu_pause_panel = image.loadUi("menu panel",1,uiPause)
+
+    menu_text_top = display.newText(uiPause,"Jogo Pausado" ,display.contentCenterX ,display.contentCenterY - 75, native.systemFont, 15)
+
+    local button_resume = image.loadUi("menu panel",2,uiPause)
+
+    local button_option = image.loadUi("menu panel",3,uiPause)
+
+    local button_back = image.loadUi("menu panel",4,uiPause)
+
+    exit_text_button = display.newText(uiPause,"Sair" ,button_back.x ,button_back.y, native.systemFont, 14)
+    resume_text_button = display.newText(uiPause,"Retormar" ,button_resume.x ,button_resume.y, native.systemFont, 14)
+    option_text_button = display.newText(uiPause,"Opções" ,button_option.x ,button_option.y, native.systemFont, 14)--]]
+
+    contadorText = display.newText(uiGroup,"Dano Acumulado: " .. contadorAttack, ship.x - 90,ship.y + 40, native.systemFont, 15)
+    attackText = display.newText(uiGroup,"Dano Atual: " .. attackCurrent, ship.x + 110,ship.y + 40, native.systemFont, 15)
+    
+    -- Interface Opções --
+    menu_option_top = display.newText(uiOption,"Opções" ,display.contentCenterX ,display.contentCenterY - 75, native.systemFont, 15)
+    local menu_option_panel = image.loadUi("option",1,uiOption)
+
+    local button_back_option = image.loadUi("option",2,uiOption)
+
+    return_text_button = display.newText(uiOption,"Salvar e Voltar" ,button_back.x ,button_back.y, native.systemFont, 14)
 
     -- Ataque Teste --
     local fire = display.newSprite(mainGroup, sheet_fire, sequences_magic)
@@ -230,9 +223,6 @@ local sequences_magic =
     fire.isVisible = false
     fire.isBodyActive = false    
 
-    contadorText = display.newText(uiGroup,"Dano Acumulado: " .. contadorAttack, ship.x - 90,ship.y + 50, native.systemFont, 15)
-    attackText = display.newText(uiGroup,"Dano Atual: " .. attackCurrent, ship.x + 110,ship.y + 50, native.systemFont, 15)
-    
     -- Função de movimentação da Nave --
     local function dragShip( event )
  
@@ -252,7 +242,7 @@ local sequences_magic =
             ship:setSequence("rightShip")
             ship:play()
         end
-        if(( event.x > 40 and event.x < display.contentWidth-40) and (event.y > 30 and event.y < display.contentHeight-30)) then
+        if(( event.x > 40 and event.x < display.contentWidth-40) and (event.y > 150 and event.y < display.contentHeight-30)) then
             ship.x = event.x - ship.touchOffsetX
             ship.y = event.y - ship.touchOffsetY
         end       
@@ -288,7 +278,7 @@ local function fireLaser()
     flameball:play()
     if (attackSelect >= 5.0) then
         local explosion = display.newSprite(mainGroup, sheet_explosion, sequences_magic)
-        local hitboxExplosion = display.newImageRect(mainGroup, "/Sprites/Effects/Boss01/hitbox.png", 46,47 )
+        local hitboxExplosion = display.newImageRect(mainGroup, "Sprites/Effects/Boss01/hitbox.png", 46,47 )
         physics.addBody(explosion, "dynamic", {radius=hitboxAttack, filter = filterCollision})
         explosion:setSequence("normalAnimation")
         explosion:play()
@@ -372,7 +362,7 @@ end
 local function attack()
     if (playerAttack[1] ~= nil) then
         if (playerAttack[1] == "attack1") then
-            local attack1 = display.newImageRect(mainGroup, "/Sprites/Item/damage1.png", 36,37 )
+            local attack1 = display.newImageRect(mainGroup, "Sprites/Item/damage1.png", 36,37 )
             physics.addBody( attack1, "dynamic", { box=offsetRectParams, filter = filterCollision} )
             attack1.isBullet = true
             attack1.x = ship.x
@@ -385,7 +375,7 @@ local function attack()
             onComplete = function() display.remove(attack1) end
             })
         elseif (playerAttack[1] == "attack2") then
-            local attack2 = display.newImageRect(mainGroup, "/Sprites/Item/damage2.png", 46,47 )
+            local attack2 = display.newImageRect(mainGroup, "Sprites/Item/damage2.png", 46,47 )
             physics.addBody( attack2, "dynamic", { box=offsetRectParams, filter = filterCollision} )
             attack2.isBullet = true
             attack2.x = ship.x
@@ -411,8 +401,11 @@ local function endGame()
     composer.gotoScene( "fimGame", { time=800, effect="crossFade" } )
 end
 
+local function menuGame()
+    composer.gotoScene( "menu", { time=800, effect="crossFade" } )
+end 
+
 local function victoryEnd()
-    print("Fase 3: " .. hp)
     composer.gotoScene( "victory", { time=500, effect="crossFade", params= {hp3 = hp, fase = 3} } )
 end    
 
@@ -516,7 +509,25 @@ local function onCollision( event )
     end    
 end
 
-local function pauseGame()
+local function menuShow( event ) 
+    if (event.target.myName == "uiPause" and uiOption.isVisible == true) then
+        uiOption.isVisible = false
+    elseif (uiOption.isVisible == true and uiPause.isVisible == false) then
+        uiOption.isVisible = false
+        uiPause.isVisible = true   
+    elseif (uiPause.isVisible == false) then
+        uiPause.isVisible = true   
+    elseif(uiPause.isVisible == true) then
+        uiPause.isVisible = false
+    end
+end  
+
+local function optionShow()
+    uiPause.isVisible = false
+    uiOption.isVisible = true
+end 
+
+local function pauseGame(event)
     
     pauseTest = pauseTest + 1
     if (pauseTest == 1) then
@@ -531,7 +542,8 @@ local function pauseGame()
         if(explosionAttack.isPlaying == true) then
             explosionAttack:pause()
         end
-    end        
+    end
+    menuShow( event )         
     else 
         pauseTest = 0
         physics.start()
@@ -545,7 +557,8 @@ local function pauseGame()
             if(explosionAttack.isPlaying == false) then
                 explosionAttack:play()
             end
-        end    
+        end
+        menuShow( event )     
     end    
 end
 
@@ -553,7 +566,7 @@ local function generationItem()
     
     local selectItem = math.random(1,2)
     if (selectItem == 1) then
-        local player_attack1 = display.newImageRect(mainGroup, "/Sprites/Item/damage1.png", 36,37 )
+        local player_attack1 = display.newImageRect(mainGroup, "Sprites/Item/damage1.png", 36,37 )
         physics.addBody( player_attack1, "dynamic", { box=offsetRectParams, filter = filterCollision } )
         player_attack1.x = math.random(25, 295)
         player_attack1.y = math.random(180, 445)
@@ -563,7 +576,7 @@ local function generationItem()
         onComplete = function() display.remove(player_attack1) end
         })
     elseif (selectItem == 2) then
-        local player_attack2 = display.newImageRect(mainGroup, "/Sprites/Item/damage2.png", 46,47 )
+        local player_attack2 = display.newImageRect(mainGroup, "Sprites/Item/damage2.png", 46,47 )
         physics.addBody( player_attack2, "dynamic", { box=offsetRectParams, filter = filterCollision } )
         player_attack2.x = math.random(25, 295)
         player_attack2.y = math.random(180, 445)
@@ -625,6 +638,10 @@ ship:addEventListener( "touch", dragShip )
 ship:addEventListener( "tap", attack )
 Runtime:addEventListener( "collision", onCollision )
 menu_pause:addEventListener( "tap", pauseGame)
+button_back:addEventListener( "tap", menuGame)
+button_resume:addEventListener( "tap", pauseGame )
+button_option:addEventListener ( "tap", optionShow)
+return_text_button:addEventListener ( "tap", menuShow)
 
 function scene:create( event )
 
@@ -639,7 +656,14 @@ function scene:create( event )
 
     sceneGroup:insert( uiGroup ) 
 
-    local background = display.newImageRect(backGroup ,"/Background/2/backTest.jpg", 360, 570)
+    sceneGroup:insert( uiPause )
+
+    sceneGroup:insert ( uiOption )
+
+    uiPause.isVisible = false
+    uiOption.isVisible = false
+
+    local background = display.newImageRect(backGroup ,"Background/2/backTest.jpg", 360, 570)
     background.x = display.contentCenterX
     background.y = display.contentCenterY
   

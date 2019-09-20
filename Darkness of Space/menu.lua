@@ -29,11 +29,11 @@ function scene:create( event )
 	
 	musicButton = display.newImageRect( sceneGroup, "UI/Menu/flatDark16.png", 40, 40 )
 	musicButton.x = display.contentCenterX + 130
-	musicButton.y = display.contentCenterY - 255
+	musicButton.y = display.contentCenterY - 245
 	musicButton.alpha = 0.8
 	musicButton:scale(0.8,0.8)
 
-    local titleGame = display.newText( sceneGroup, "Escuridão Espacial", display.contentCenterX, display.contentCenterY - 200, native.systemFont, 32 )
+    local titleGame = display.newText( sceneGroup, "Escuridão Espacial", display.contentCenterX, display.contentCenterY - 180, native.systemFont, 32 )
     titleGame:setFillColor( 0.75, 0.78, 1 )
 
 	local function changeState()
@@ -42,7 +42,7 @@ function scene:create( event )
 			display.remove(musicButton)
 			musicButton = display.newImageRect( sceneGroup, "UI/Menu/flatDark18.png", 40, 40 )
 			musicButton.x = display.contentCenterX + 130
-			musicButton.y = display.contentCenterY - 255
+			musicButton.y = display.contentCenterY - 245
 			musicButton.alpha = 0.8
 			musicButton:scale(0.8,0.8)
 			audio.pause( 1 )
@@ -52,7 +52,7 @@ function scene:create( event )
 			display.remove(musicButton)
 			musicButton = display.newImageRect( sceneGroup, "UI/Menu/flatDark16.png", 40, 40 )
 			musicButton.x = display.contentCenterX + 130
-			musicButton.y = display.contentCenterY - 255
+			musicButton.y = display.contentCenterY - 245
 			musicButton.alpha = 0.8
 			musicButton:scale(0.8,0.8)
 			audio.resume( 1 )

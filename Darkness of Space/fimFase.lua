@@ -9,7 +9,7 @@ end
 function scene:create( event )
 
 	local sceneGroup = self.view
-    
+    -- Code here runs when the scene is first created but has not yet appeared on screen
     backGroup = display.newGroup()  -- Display group for the background image
     sceneGroup:insert( backGroup )  -- Insert into the scene's view group
  
@@ -17,18 +17,25 @@ function scene:create( event )
     sceneGroup:insert( mainGroup )  -- Insert into the scene's view group
  
     uiGroup = display.newGroup()    -- Display group for UI objects like the score
-    sceneGroup:insert( uiGroup )
-    -- Code here runs when the scene is first created but has not yet appeared on screen
-    local background = display.newImageRect(backGroup ,"Background/1/back.png", 360, 570)
+    sceneGroup:insert( uiGroup ) 
+    
+    local background = display.newImageRect(backGroup ,"/Background/1/back.png", 360, 570)
     background.x = display.contentCenterX
     background.y = display.contentCenterY
 
-    local lostText = display.newText( sceneGroup, "Você foi derrotado!", display.contentCenterX, display.contentCenterY - 200, native.systemFont, 34 )
-    lostText:setFillColor( 0.82, 0.86, 1 )
+    backGroup = display.newGroup()
+	sceneGroup:insert( backGroup )
+	mainGroup = display.newGroup()
+	sceneGroup:insert( mainGroup )
+    local victoryText = display.newText( sceneGroup, "Você Venceu!", display.contentCenterX, display.contentCenterY - 200, native.systemFont, 34 )
+    victoryText:setFillColor( 0.82, 0.86, 1 )
+ 
+    local highScoresButton = display.newText( sceneGroup, "High Scores:", display.contentCenterX, display.contentCenterY - 100, native.systemFont, 20 )
+    highScoresButton:setFillColor( 0.75, 0.78, 1 )
 
     local continueButton = display.newText( sceneGroup, "Avançar", display.contentCenterX, display.contentCenterY + 100, native.systemFont, 20 )
     continueButton:setFillColor( 0.75, 0.78, 1 )
- 
+
     continueButton:addEventListener( "tap", gotoSelect )
 	
 end

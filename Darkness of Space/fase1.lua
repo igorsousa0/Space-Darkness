@@ -7,6 +7,8 @@ physics.start()
 physics.setGravity( 0, 0 )
 --physics.setDrawMode( "hybrid" )
 
+local image = require("loadImage")
+
 math.randomseed( os.time() )
 
 local backgroundSong = audio.loadSound("audio/fase01/magicspace.mp3")
@@ -45,20 +47,6 @@ local customParams = {
     hp = 0
 }
 
-local sheet_options_ship =
-{
-    width = 16,
-    height = 24,
-    numFrames = 10
-}
-
-local sheet_options_bossMage =
-{
-    width = 45,
-    height = 51,
-    numFrames = 12
-}
-
 local sheet_options_flameball =
 {
     width = 32,
@@ -95,157 +83,51 @@ local sequences_flameball = {
     }
 }
 
-local sequences_bossMage = {
-    {
-        name = "normalMage",
-        start = 1,
-        count = 4,
-        time = 650,
-        loopCount = 0,
-        loopDirection = "forward"
-    },
-    {
-        name = "deadMage",
-        start = 1,
-        count = 12,
-        time = 1200,
-        loopCount = 0,
-        loopDirection = "forward"
-
-
-    }
-}
-
-local sequences_ship = {
-    {
-        name = "normalShip",
-        frames = {3,8},
-        time = 400,
-        loopCount = 0,
-        loopDirection = "forward"
-    },
-    {
-        name = "leftShip",
-        frames = {7,6},
-        time = 400,
-        loopCount = 0,
-        loopDirection = "forward"
-
-
-    },
-    {
-        name = "rightShip",
-        frames = {9,10},
-        time = 400,
-        loopCount = 0,
-        loopDirection = "forward"
-
-
-    }
-}
-
-    local sheet_ship = graphics.newImageSheet( "/Sprites/Ship/ship.png", sheet_options_ship )
-    local sheet_bossMage = graphics.newImageSheet( "/Sprites/Boss/disciple.png", sheet_options_bossMage)
-    local sheet_flameball = graphics.newImageSheet( "/Sprites/Boss/flameball.png", sheet_options_flameball )
-    local sheet_explosionAttack = graphics.newImageSheet( "/Sprites/Effects/Boss01/explosion.png", sheet_options_explosionAttack )
+    local sheet_flameball = graphics.newImageSheet( "Sprites/Boss/flameball.png", sheet_options_flameball )
+    local sheet_explosionAttack = graphics.newImageSheet( "Sprites/Effects/Boss01/explosion.png", sheet_options_explosionAttack )
 
     -- Primeiro Boss --
-    local bossMage = display.newSprite(mainGroup, sheet_bossMage, sequences_bossMage)
-    bossMage.x = display.contentCenterX
-    bossMage.y = display.contentCenterY - 200
-    physics.addBody( bossMage, "dynamic", { box=hitboxBoss} )
-    bossMage.myName = "boss"
-    bossMage:scale(2,2)
-    bossMage:setSequence("normalMage")
-    bossMage:play()
+    local bossMage = image.loadBoss(1,mainGroup)
 
     -- Nave --
-    local ship = display.newSprite(mainGroup, sheet_ship, sequences_ship)
-    ship.x = display.contentCenterX
-    ship.y = display.contentCenterY + 220
-    physics.addBody( ship, { radius=30, isSensor=true } )
-    ship.myName = "ship"
-    ship:scale(2.5,2.5)
-    ship:setSequence("normalShip")
-    ship:play()
+    local ship = image.loadShip(mainGroup)
 
     -- UI --
-    local hp_glass = display.newImageRect(uiGroup, "/UI/Hp/2/Glass3.png", 120,18 )
-    hp_glass.x = display.contentCenterX - 90
-    hp_glass.y = display.contentCenterY - 260
-    hp_glass.alpha = 0.9
+    local hp_glass = image.loadUi("hp",1, uiGroup)
 
-    local hp_player = display.newImageRect(uiGroup, "/UI/Hp/2/Health3.png", 110,15 )
+    local hp_player = image.loadUi("hp",2,uiGroup)
     local hp_lost = hp_player.width/hp
-    hp_player.x = display.contentCenterX - 90
-    hp_player.y = display.contentCenterY - 260
-    hp_player.alpha = 0.6
 
-    local hp_glass1 = display.newImageRect(uiGroup, "/UI/Hp/2/Glass2.png", 120,18 )
-    hp_glass1.x = display.contentCenterX + 40
-    hp_glass1.y = display.contentCenterY - 260
-    hp_glass1.alpha = 0.9
+    local hp_glass1 = image.loadUi("hp",3,uiGroup)
 
-    local hp_boss = display.newImageRect(uiGroup, "/UI/Hp/2/Health2.png", 110,15 )
+    local hp_boss = image.loadUi("hp",4,uiGroup)
     local hp_bossLost = hp_boss.width/bossLife
-    hp_boss.x = display.contentCenterX + 40
-    hp_boss.y = display.contentCenterY - 260
-    hp_boss.alpha = 0.6
 
-    local menu_pause = display.newImageRect(uiGroup, "/UI/transparentDark12.png", 40,40)
-    menu_pause.x = display.contentCenterX + 130
-    menu_pause.y = display.contentCenterY - 255
-    menu_pause.myName = "uiPause"
-    menu_pause:scale(0.8,0.8)
+    local menu_pause = image.loadUi("pause",1,uiGroup)
 
     -- Interface Menu --
-    local menu_pause_panel = display.newImageRect(uiPause, "/UI/Menu/panel.png", 221 ,197)
-    menu_pause_panel.x = display.contentCenterX 
-    menu_pause_panel.y = display.contentCenterY 
-    menu_pause_panel:scale(1.5,2)
-    menu_pause_panel.alpha = 0.6
+    local menu_pause_panel = image.loadUi("menu panel",1,uiPause)
 
     menu_text_top = display.newText(uiPause,"Jogo Pausado" ,display.contentCenterX ,display.contentCenterY - 75, native.systemFont, 15)
 
-    local button_resume = display.newImageRect(uiPause, "/UI/Menu/ButtonWhite.png", 30 ,18)
-    button_resume.x = display.contentCenterX 
-    button_resume.y = display.contentCenterY - 30
-    button_resume.myName = "uiResume"
-    button_resume:scale(3,1.4)
-    button_resume.alpha = 0.6
+    local button_resume = image.loadUi("menu panel",2,uiPause)
 
-    local button_option = display.newImageRect(uiPause, "/UI/Menu/ButtonWhite.png", 30 ,18)
-    button_option.x = display.contentCenterX 
-    button_option.y = display.contentCenterY + 15
-    button_option:scale(3,1.4)
-    button_option.alpha = 0.6
+    local button_option = image.loadUi("menu panel",3,uiPause)
 
-    local button_back = display.newImageRect(uiPause, "/UI/Menu/ButtonWhite.png", 30 ,18)
-    button_back.x = display.contentCenterX 
-    button_back.y = display.contentCenterY + 61
-    button_back:scale(3,1.4)
-    button_back.alpha = 0.6
-    
+    local button_back = image.loadUi("menu panel",4,uiPause)
+
     exit_text_button = display.newText(uiPause,"Sair" ,button_back.x ,button_back.y, native.systemFont, 14)
     resume_text_button = display.newText(uiPause,"Retormar" ,button_resume.x ,button_resume.y, native.systemFont, 14)
     option_text_button = display.newText(uiPause,"Opções" ,button_option.x ,button_option.y, native.systemFont, 14)
 
-    contadorText = display.newText(uiGroup,"Dano Acumulado: " .. contadorAttack, ship.x - 90,ship.y + 50, native.systemFont, 15)
-    attackText = display.newText(uiGroup,"Dano Atual: " .. attackCurrent, ship.x + 110,ship.y + 50, native.systemFont, 15)
+    contadorText = display.newText(uiGroup,"Dano Acumulado: " .. contadorAttack, ship.x - 90,ship.y + 40, native.systemFont, 15)
+    attackText = display.newText(uiGroup,"Dano Atual: " .. attackCurrent, ship.x + 110,ship.y + 40, native.systemFont, 15)
     
     -- Interface Opções --
     menu_option_top = display.newText(uiOption,"Opções" ,display.contentCenterX ,display.contentCenterY - 75, native.systemFont, 15)
-    local menu_option_panel = display.newImageRect(uiOption, "/UI/Menu/panel.png", 221 ,197)
-    menu_option_panel.x = display.contentCenterX 
-    menu_option_panel.y = display.contentCenterY 
-    menu_option_panel:scale(2,2)
-    menu_option_panel.alpha = 0.6
+    local menu_option_panel = image.loadUi("option",1,uiOption)
 
-    local button_back_option = display.newImageRect(uiOption, "/UI/Menu/ButtonWhite.png", 30 ,18)
-    button_back_option.x = display.contentCenterX 
-    button_back_option.y = display.contentCenterY + 61
-    button_back_option:scale(4,1.4)
-    button_back_option.alpha = 0.6
+    local button_back_option = image.loadUi("option",2,uiOption)
 
     return_text_button = display.newText(uiOption,"Salvar e Voltar" ,button_back.x ,button_back.y, native.systemFont, 14)
     
@@ -269,7 +151,7 @@ local sequences_ship = {
             ship:setSequence("rightShip")
             ship:play()
         end
-        if(( event.x > 40 and event.x < display.contentWidth-40) and (event.y > 30 and event.y < display.contentHeight-30)) then
+        if(( event.x > 40 and event.x < display.contentWidth-40) and (event.y > 150 and event.y < display.contentHeight-30)) then
             ship.x = event.x - ship.touchOffsetX
             ship.y = event.y - ship.touchOffsetY
         end       
@@ -342,7 +224,7 @@ end
 local function attack()
     if (playerAttack[1] ~= nil) then
         if (playerAttack[1] == "attack1") then
-            local attack1 = display.newImageRect(mainGroup, "/Sprites/Item/damage1.png", 36,37 )
+            local attack1 = display.newImageRect(mainGroup, "Sprites/Item/damage1.png", 36,37 )
             physics.addBody( attack1, "dynamic", { box=offsetRectParams, filter = filterCollision} )
             attack1.isBullet = true
             attack1.x = ship.x
@@ -355,7 +237,7 @@ local function attack()
             onComplete = function() display.remove(attack1) end
             })
         elseif (playerAttack[1] == "attack2") then
-            local attack2 = display.newImageRect(mainGroup, "/Sprites/Item/damage2.png", 46,47 )
+            local attack2 = display.newImageRect(mainGroup, "Sprites/Item/damage2.png", 46,47 )
             physics.addBody( attack2, "dynamic", { box=offsetRectParams, filter = filterCollision} )
             attack2.isBullet = true
             attack2.x = ship.x
@@ -386,7 +268,6 @@ local function menuGame()
 end    
 
 local function victoryEnd()
-    print("Fase 1: " .. hp)
     composer.gotoScene( "victory", { time=1100, effect="crossFade", params= {hp1 = hp, fase = 1} } )
 end    
 
@@ -409,7 +290,6 @@ local function onCollision( event )
                     transition.to(ship, {time=500, alpha = 0, 
                     onComplete = function() display.remove(ship) end
                     })
-                    timer.cancel(hitbox)
                     timer.cancel(bossFire)
                     timer.cancel(gerenation)
                     timer.performWithDelay( 2000, endGame )
@@ -546,7 +426,7 @@ local function generationItem()
     
     local selectItem = math.random(1,2)
     if (selectItem == 1) then
-        local player_attack1 = display.newImageRect(mainGroup, "/Sprites/Item/damage1.png", 36,37 )
+        local player_attack1 = display.newImageRect(mainGroup, "Sprites/Item/damage1.png", 36,37 )
         physics.addBody( player_attack1, "dynamic", { box=offsetRectParams, filter = filterCollision } )
         player_attack1.x = math.random(25, 295)
         player_attack1.y = math.random(180, 445)
@@ -556,7 +436,7 @@ local function generationItem()
         onComplete = function() display.remove(player_attack1) end
         })
     elseif (selectItem == 2) then
-        local player_attack2 = display.newImageRect(mainGroup, "/Sprites/Item/damage2.png", 46,47 )
+        local player_attack2 = display.newImageRect(mainGroup, "Sprites/Item/damage2.png", 46,47 )
         physics.addBody( player_attack2, "dynamic", { box=offsetRectParams, filter = filterCollision } )
         player_attack2.x = math.random(25, 295)
         player_attack2.y = math.random(180, 445)
@@ -597,11 +477,10 @@ function scene:create( event )
 
     sceneGroup:insert ( uiOption )
 
-    --uiOption.isVisible = false
     uiPause.isVisible = false
     uiOption.isVisible = false
 
-    local background = display.newImageRect(backGroup ,"/Background/1/back.png", 360, 570)
+    local background = display.newImageRect(backGroup ,"Background/1/back.png", 360, 570)
     background.x = display.contentCenterX
     background.y = display.contentCenterY
 
