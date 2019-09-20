@@ -526,11 +526,8 @@ function scene:create( event )
     uiPause.isVisible = false
     uiOption.isVisible = false
     
-    local background = display.newImageRect( backGroup, "Background/2/backTest.jpg", 530, 570 )
-    background.x = display.contentCenterX
-    background.y = display.contentCenterY
-    background.alpha = 0.6
-    
+    local background = image.loadBackground(2,backGroup)
+
 end
  
  

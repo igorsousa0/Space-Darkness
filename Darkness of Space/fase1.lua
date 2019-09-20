@@ -480,10 +480,7 @@ function scene:create( event )
     uiPause.isVisible = false
     uiOption.isVisible = false
 
-    local background = display.newImageRect(backGroup ,"Background/1/back.png", 360, 570)
-    background.x = display.contentCenterX
-    background.y = display.contentCenterY
-
+    local background = image.loadBackground(1,backGroup)
 
 end
 

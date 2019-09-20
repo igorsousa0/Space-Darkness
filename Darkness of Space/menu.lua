@@ -5,7 +5,7 @@ local scene = composer.newScene()
 local backgroundSong = audio.loadSound("audio/menu/spacewalk.mp3")
 
 local function gotoSelect()
-	composer.gotoScene( "fase1", { time=200, effect="crossFade" } )
+	composer.gotoScene( "fase3", { time=200, effect="crossFade" } )
 end
 
 

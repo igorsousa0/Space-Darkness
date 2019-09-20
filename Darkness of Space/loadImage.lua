@@ -1,9 +1,25 @@
 local player = require("spriteShip")
 local boss = require("spriteBoss")
 local uiGame = require("ui")
+local back = require("backgrounds")
 
 local img = {}
-local table = {}
+
+function img.loadBackground(level,group)
+    if(level == 1) then
+        local background = back.loadBackground(level,group)
+        background.x = display.contentCenterX
+        background.y = display.contentCenterY
+        return background
+    end
+    if(level == 2) then
+        local background = back.loadBackground(level,group)
+        background.x = display.contentCenterX
+        background.y = display.contentCenterY
+        background.alpha = 0.6
+        return background
+    end
+end
 
 function img.loadShip(group)
     local ship = player.loadPlayer(group)
