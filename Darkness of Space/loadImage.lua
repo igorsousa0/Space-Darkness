@@ -146,14 +146,43 @@ function img.loadUi(target, type, group)
             local menu_option_panel = uiGame.loadUi(target,type,group)
             menu_option_panel.x = display.contentCenterX 
             menu_option_panel.y = display.contentCenterY 
-            menu_option_panel:scale(1.2,1.2)
+            menu_option_panel:scale(1.4,1.4)
             menu_option_panel.alpha = 0.6
             return menu_option_panel
-        end    
+        end   
         if(type == 2) then
+            local volumePanel = uiGame.loadUi(target,type,group)
+            volumePanel.x = display.contentCenterX - 3
+            volumePanel.y = display.contentCenterY - 25
+            volumePanel:scale(1.5,1.5)
+            return volumePanel
+        end    
+        if(type == 3) then
+            local volumeBar = uiGame.loadUi(target,type,group)
+            volumeBar.x = display.contentCenterX + 12.6
+            volumeBar.y = display.contentCenterY - 25.5
+            volumeBar:scale(1.31,1.31)
+            volumeBar.width = 64
+            return volumeBar
+        end  
+        if(type == 4) then
+            local volumeDown = uiGame.loadUi(target,type,group)
+            volumeDown.x = display.contentCenterX - 74
+            volumeDown.y = display.contentCenterY - 24.5
+            volumeDown:scale(2,1.5)
+            return volumeDown
+        end    
+        if(type == 5) then
+            local volumeUp = uiGame.loadUi(target,type,group)
+            volumeUp.x = display.contentCenterX + 67.5    
+            volumeUp.y = display.contentCenterY - 24.5
+            volumeUp:scale(2,2)
+            return volumeUp
+        end
+        if(type == 6) then
             local button_back_option = uiGame.loadUi(target,type,group)
             button_back_option.x = display.contentCenterX 
-            button_back_option.y = display.contentCenterY + 71
+            button_back_option.y = display.contentCenterY + 85
             button_back_option:scale(4,1.4)
             button_back_option.alpha = 0.6
             return button_back_option

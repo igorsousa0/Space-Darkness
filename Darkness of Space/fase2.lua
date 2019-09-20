@@ -115,7 +115,7 @@ local sequences_magic =
     local menu_option_panel = image.loadUi("option",1,uiOption)
     menu_option_top = display.newText(uiOption,"Opções" ,display.contentCenterX ,display.contentCenterY - 93, native.systemFont, 15)
 
-    local button_back_option = image.loadUi("option",2,uiOption)
+    local button_back_option = image.loadUi("option",6,uiOption)
 
     return_text_button = display.newText(uiOption,"Salvar e Voltar" ,button_back.x ,button_back.y, native.systemFont, 14)
  

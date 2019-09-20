@@ -126,9 +126,25 @@ local sequences_flameball = {
     -- Interface Opções --
     local menu_option_panel = image.loadUi("option",1,uiOption)
 
-    menu_option_top = display.newText(uiOption,"Opções" ,display.contentCenterX ,display.contentCenterY - 93, native.systemFont, 14)
+    menu_option_top = display.newText(uiOption,"Opções" ,display.contentCenterX ,display.contentCenterY - 110, native.systemFont, 14)
+    local volumePanel = image.loadUi("option",2,uiOption)
+    local volumePanel1 = image.loadUi("option",2,uiOption)
+    volumePanel1.y = volumePanel.y + 60
 
-    local button_back_option = image.loadUi("option",2,uiOption)
+    menu_option_music = display.newText(uiOption,"Musica" ,volumePanel.x ,volumePanel.y - 30, native.systemFont, 14)
+    menu_option_volumeIndicator = display.newText(uiOption,10,volumePanel.x - 45,volumePanel.y, native.systemFont, 14)
+    menu_option_volumeIndicator1 = display.newText(uiOption,10,menu_option_volumeIndicator.x,volumePanel.y + 60, native.systemFont, 14)
+    local volumeBar = image.loadUi("option",3,uiOption)
+    local volumeBar1 = image.loadUi("option",3,uiOption)
+    volumeBar1.y = volumePanel.y + 59.4
+    local volumeDown = image.loadUi("option",4,uiOption)
+    local volumeDown1 = image.loadUi("option",4,uiOption)
+    volumeDown1.y = volumePanel.y + 60
+    local volumeUp = image.loadUi("option",5,uiOption)
+    local volumeUp1 = image.loadUi("option",5,uiOption)
+    volumeUp1.y = volumePanel.y + 60
+    menu_option_effect = display.newText(uiOption,"Efeitos" ,volumePanel1.x ,volumePanel1.y - 30, native.systemFont, 14)
+    local button_back_option = image.loadUi("option",6,uiOption)
 
     return_text_button = display.newText(uiOption,"Salvar e Voltar" ,button_back_option.x ,button_back_option.y, native.systemFont, 14)
     
