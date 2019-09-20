@@ -96,7 +96,7 @@ local sequences_magic =
     -- Interface Menu --
     local menu_pause_panel = image.loadUi("menu panel",1,uiPause)
 
-    menu_text_top = display.newText(uiPause,"Jogo Pausado" ,display.contentCenterX ,display.contentCenterY - 75, native.systemFont, 15)
+    menu_text_top = display.newText(uiPause,"Jogo Pausado" ,display.contentCenterX ,display.contentCenterY - 93, native.systemFont, 15)
 
     local button_resume = image.loadUi("menu panel",2,uiPause)
 
@@ -112,8 +112,8 @@ local sequences_magic =
     attackText = display.newText(uiGroup,"Dano Atual: " .. attackCurrent, ship.x + 110,ship.y + 40, native.systemFont, 15)
     
     -- Interface Opções --
-    menu_option_top = display.newText(uiOption,"Opções" ,display.contentCenterX ,display.contentCenterY - 75, native.systemFont, 15)
     local menu_option_panel = image.loadUi("option",1,uiOption)
+    menu_option_top = display.newText(uiOption,"Opções" ,display.contentCenterX ,display.contentCenterY - 93, native.systemFont, 15)
 
     local button_back_option = image.loadUi("option",2,uiOption)
 

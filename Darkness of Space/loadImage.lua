@@ -111,14 +111,14 @@ function img.loadUi(target, type, group)
             local menu_pause_panel = uiGame.loadUi(target,type,group)
             menu_pause_panel.x = display.contentCenterX 
             menu_pause_panel.y = display.contentCenterY 
-            menu_pause_panel:scale(1.5,2)
+            menu_pause_panel:scale(1.2,1.2)
             menu_pause_panel.alpha = 0.6
             return menu_pause_panel
         end   
         if(type == 2) then
             local button_resume = uiGame.loadUi(target,type,group)
             button_resume.x = display.contentCenterX 
-            button_resume.y = display.contentCenterY - 30
+            button_resume.y = display.contentCenterY - 20
             button_resume.myName = "uiResume"
             button_resume:scale(3,1.4)
             button_resume.alpha = 0.6
@@ -127,7 +127,7 @@ function img.loadUi(target, type, group)
         if(type == 3) then
             local button_option = uiGame.loadUi(target,type,group)
             button_option.x = display.contentCenterX 
-            button_option.y = display.contentCenterY + 15
+            button_option.y = display.contentCenterY + 25
             button_option:scale(3,1.4)
             button_option.alpha = 0.6
             return button_option
@@ -135,7 +135,7 @@ function img.loadUi(target, type, group)
         if(type == 4) then
             local button_back = uiGame.loadUi(target,type,group)
             button_back.x = display.contentCenterX 
-            button_back.y = display.contentCenterY + 61
+            button_back.y = display.contentCenterY + 71
             button_back:scale(3,1.4)
             button_back.alpha = 0.6
             return button_back
@@ -146,14 +146,14 @@ function img.loadUi(target, type, group)
             local menu_option_panel = uiGame.loadUi(target,type,group)
             menu_option_panel.x = display.contentCenterX 
             menu_option_panel.y = display.contentCenterY 
-            menu_option_panel:scale(2,2)
+            menu_option_panel:scale(1.2,1.2)
             menu_option_panel.alpha = 0.6
             return menu_option_panel
         end    
         if(type == 2) then
             local button_back_option = uiGame.loadUi(target,type,group)
             button_back_option.x = display.contentCenterX 
-            button_back_option.y = display.contentCenterY + 61
+            button_back_option.y = display.contentCenterY + 71
             button_back_option:scale(4,1.4)
             button_back_option.alpha = 0.6
             return button_back_option

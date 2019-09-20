@@ -20,7 +20,7 @@ function ui.loadUi(target, type, group)
     end
     if(target == "menu panel") then
         if(type == 1) then
-            return display.newImageRect(group, "UI/Menu/panel.png", 221 ,197)
+            return display.newImageRect(group, "UI/Menu/panelUi.png", 182 ,174)
         end   
         if(type == 2) then
             return display.newImageRect(group, "UI/Menu/ButtonWhite.png", 30 ,18)
@@ -34,7 +34,7 @@ function ui.loadUi(target, type, group)
     end
     if(target == "option") then
         if(type == 1) then
-            return display.newImageRect(group, "UI/Menu/panel.png", 221 ,197)
+            return display.newImageRect(group, "UI/Menu/panelUi.png", 182 ,174)
         end    
         if(type == 2) then
             return display.newImageRect(group, "UI/Menu/ButtonWhite.png", 30 ,18)

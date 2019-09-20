@@ -23,8 +23,8 @@ local died = false
 local playerAttack = {}
 local attackTest = {}
 local gameLoopTimer
-local bossLife = 30
-local bossLifeDefault = 30
+local bossLife = 40
+local bossLifeDefault = 40
 local hpText
 local scoreText
 local pauseTest = 0
@@ -105,45 +105,6 @@ local sequences_flameball = {
     }
 }
 
-local sequences_bossMage = {
-    {
-        name = "normalMage",
-        start = 1,
-        count = 8,
-        time = 650,
-        loopCount = 0,
-        loopDirection = "forward"
-    }
-}
-
-local sequences_ship = {
-    {
-        name = "normalShip",
-        frames = {3,8},
-        time = 400,
-        loopCount = 0,
-        loopDirection = "forward"
-    },
-    {
-        name = "leftShip",
-        frames = {7,6},
-        time = 400,
-        loopCount = 0,
-        loopDirection = "forward"
-
-
-    },
-    {
-        name = "rightShip",
-        frames = {9,10},
-        time = 400,
-        loopCount = 0,
-        loopDirection = "forward"
-
-
-    }
-}
-
 local sheet_options_magic = 
 {
     width = 100,
@@ -189,7 +150,7 @@ local sequences_magic =
     -- Interface Menu --
     local menu_pause_panel = image.loadUi("menu panel",1,uiPause)
 
-    menu_text_top = display.newText(uiPause,"Jogo Pausado" ,display.contentCenterX ,display.contentCenterY - 75, native.systemFont, 15)
+    menu_text_top = display.newText(uiPause,"Jogo Pausado" ,display.contentCenterX ,display.contentCenterY - 93, native.systemFont, 15)
 
     local button_resume = image.loadUi("menu panel",2,uiPause)
 
@@ -199,14 +160,14 @@ local sequences_magic =
 
     exit_text_button = display.newText(uiPause,"Sair" ,button_back.x ,button_back.y, native.systemFont, 14)
     resume_text_button = display.newText(uiPause,"Retormar" ,button_resume.x ,button_resume.y, native.systemFont, 14)
-    option_text_button = display.newText(uiPause,"Opções" ,button_option.x ,button_option.y, native.systemFont, 14)--]]
+    option_text_button = display.newText(uiPause,"Opções" ,button_option.x ,button_option.y, native.systemFont, 14)
 
     contadorText = display.newText(uiGroup,"Dano Acumulado: " .. contadorAttack, ship.x - 90,ship.y + 40, native.systemFont, 15)
     attackText = display.newText(uiGroup,"Dano Atual: " .. attackCurrent, ship.x + 110,ship.y + 40, native.systemFont, 15)
     
     -- Interface Opções --
-    menu_option_top = display.newText(uiOption,"Opções" ,display.contentCenterX ,display.contentCenterY - 75, native.systemFont, 15)
     local menu_option_panel = image.loadUi("option",1,uiOption)
+    menu_option_top = display.newText(uiOption,"Opções" ,display.contentCenterX ,display.contentCenterY - 93, native.systemFont, 15)
 
     local button_back_option = image.loadUi("option",2,uiOption)
 
