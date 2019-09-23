@@ -15,6 +15,7 @@ local backgroundSong = audio.loadSound("audio/fase01/magicspace.mp3")
 local shotEffect = audio.loadSound("audio/effect/ship/laser.wav")
 local fireEffect = audio.loadSound("audio/effect/mage01/fire.wav")
 audio.setVolume( 0.5, { channel=2 } )
+audio.setVolume( 1, { channel= 3} )
 
 local hp = 5
 local died = false
@@ -26,6 +27,10 @@ local hpText
 local scoreText
 local pauseTest = 0
 local contadorAttack = 0
+local volumeCurrent = 10
+local volumeCurrent1 = 10
+local volumeMusic = 1
+local volemeEffect = 1
 local contadorText
 local attackCurrent = 0
 local attackText
@@ -132,17 +137,21 @@ local sequences_flameball = {
     volumePanel1.y = volumePanel.y + 60
 
     menu_option_music = display.newText(uiOption,"Musica" ,volumePanel.x ,volumePanel.y - 30, native.systemFont, 14)
-    menu_option_volumeIndicator = display.newText(uiOption,10,volumePanel.x - 45,volumePanel.y, native.systemFont, 14)
-    menu_option_volumeIndicator1 = display.newText(uiOption,10,menu_option_volumeIndicator.x,volumePanel.y + 60, native.systemFont, 14)
+    menu_option_volumeIndicator = display.newText(uiOption,volumeCurrent,volumePanel.x - 45,volumePanel.y, native.systemFont, 14)
+    menu_option_volumeIndicator1 = display.newText(uiOption,volumeCurrent1,menu_option_volumeIndicator.x,volumePanel.y + 60, native.systemFont, 14)
     local volumeBar = image.loadUi("option",3,uiOption)
+    local volemeBarCurrent = volumeBar.width/volumeCurrent
     local volumeBar1 = image.loadUi("option",3,uiOption)
     volumeBar1.y = volumePanel.y + 59.4
     local volumeDown = image.loadUi("option",4,uiOption)
     local volumeDown1 = image.loadUi("option",4,uiOption)
     volumeDown1.y = volumePanel.y + 60
+    volumeDown1.myName = "down1"
     local volumeUp = image.loadUi("option",5,uiOption)
     local volumeUp1 = image.loadUi("option",5,uiOption)
     volumeUp1.y = volumePanel.y + 60
+    volumeUp1.myName = "up1"
+    local volume = volumeBar.width/volumeCurrent
     menu_option_effect = display.newText(uiOption,"Efeitos" ,volumePanel1.x ,volumePanel1.y - 30, native.systemFont, 14)
     local button_back_option = image.loadUi("option",6,uiOption)
 
@@ -194,7 +203,6 @@ local function fireLaser()
     flameball.x = bossMage.x
     flameball.y = bossMage.y
     audio.play(fireEffect, {channel = 3} )
-    audio.setVolume( 0.3, { channel=3 } )
     transition.to(flameball, {x = ship.x, y=800, time=2500, 
         onComplete = function() display.remove(flameball) end
     }) 
@@ -402,6 +410,53 @@ local function optionShow()
     uiOption.isVisible = true
 end    
 
+local function volumeChange(event)
+    print(event.target.myName)
+    if(event.target.myName == "down") then
+        if(volumeCurrent ~= 0) then
+            volumeCurrent = volumeCurrent - 1
+            transition.to(volumeBar, { width = volumeBar.width - volume, time=1}) 
+            volumeMusic = volumeMusic - 0.1
+            audio.setVolume( volumeMusic, { channel=1 } )
+            menu_option_volumeIndicator.text = volumeCurrent
+        end  
+    end
+    if(event.target.myName == "up") then
+        if(volumeCurrent ~= 10) then
+            volumeCurrent = volumeCurrent + 1
+            transition.to(volumeBar, { width = volumeBar.width + volume, time=1})  
+            volumeMusic = volumeMusic + 0.1
+            audio.setVolume( volumeMusic, { channel=1 } )
+            menu_option_volumeIndicator.text = volumeCurrent
+        end    
+    end
+    if(event.target.myName == "down1") then
+        if(volumeCurrent1 ~= 0) then
+            volumeCurrent1 = volumeCurrent1 - 1
+            transition.to(volumeBar1, { width = volumeBar1.width - volume, time=1})  
+            volemeEffect = volemeEffect - 0.1
+            audio.setVolume( volemeEffect, { channel=2})
+            audio.setVolume( volemeEffect, { channel=3})
+            menu_option_volumeIndicator1.text = volumeCurrent1
+        end
+    end
+    if(event.target.myName == "up1") then
+        if(volumeCurrent1 ~= 10) then
+            volumeCurrent1 = volumeCurrent1 + 1
+            transition.to(volumeBar1, { width = volumeBar1.width + volume, time=1})  
+            volemeEffect = volemeEffect + 0.1
+            audio.setVolume( volemeEffect, { channel=2})
+            audio.setVolume( volemeEffect, { channel=3})
+            menu_option_volumeIndicator1.text = volumeCurrent1
+        end    
+    end
+    if(volumeCurrent == 0) then
+        volumeBar.width = 0
+    elseif(volumeCurrent1 == 0) then
+        volumeBar1.width = 0
+    end   
+end    
+
 local function pauseGame( event )
     pauseTest = pauseTest + 1
     if (pauseTest == 1) then
@@ -475,6 +530,10 @@ end
     button_back:addEventListener( "tap", menuGame)
     button_resume:addEventListener( "tap", pauseGame )
     button_option:addEventListener ( "tap", optionShow)
+    volumeDown:addEventListener( "tap", volumeChange)
+    volumeDown1:addEventListener( "tap", volumeChange)
+    volumeUp:addEventListener( "tap", volumeChange)
+    volumeUp1:addEventListener( "tap", volumeChange)
     return_text_button:addEventListener ( "tap", menuShow)
 
 function scene:create( event )
@@ -514,7 +573,7 @@ function scene:show( event )
         -- Code here runs when the scene is entirely on screen
         physics.start()
         audio.play(backgroundSong, {channel = 1, loops = -1 } )
-        audio.setVolume( 0.5, { channel=1 } )
+        audio.setVolume( volumeMusic, { channel=1 } )
 		--som.somTema();
 	end
 end

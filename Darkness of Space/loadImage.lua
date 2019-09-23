@@ -168,14 +168,16 @@ function img.loadUi(target, type, group)
         if(type == 4) then
             local volumeDown = uiGame.loadUi(target,type,group)
             volumeDown.x = display.contentCenterX - 74
-            volumeDown.y = display.contentCenterY - 24.5
-            volumeDown:scale(2,1.5)
+            volumeDown.y = display.contentCenterY - 25
+            volumeDown.myName = "down"
+            volumeDown:scale(2,1.8)
             return volumeDown
         end    
         if(type == 5) then
             local volumeUp = uiGame.loadUi(target,type,group)
             volumeUp.x = display.contentCenterX + 67.5    
             volumeUp.y = display.contentCenterY - 24.5
+            volumeUp.myName = "up"
             volumeUp:scale(2,2)
             return volumeUp
         end

@@ -70,6 +70,17 @@ local sheet_options_bossMage2 =
     numFrames = 8
 }
 
+local sequences_bossMage = {
+    {
+        name = "normalMage",
+        start = 1,
+        count = 8,
+        time = 650,
+        loopCount = 0,
+        loopDirection = "forward"
+    }
+}
+
 local sheet_options_flameball =
 {
     width = 32,
