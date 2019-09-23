@@ -185,11 +185,11 @@ function img.loadUi(target, type, group)
             local button_back_option = uiGame.loadUi(target,type,group)
             button_back_option.x = display.contentCenterX 
             button_back_option.y = display.contentCenterY + 85
-            button_back_option:scale(4,1.4)
+            button_back_option:scale(3,1.4)
             button_back_option.alpha = 0.6
             return button_back_option
         end
     end    
-end    
+end  
 
 return img

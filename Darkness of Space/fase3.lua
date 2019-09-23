@@ -8,13 +8,14 @@ physics.setGravity( 0, 0 )
 --physics.setDrawMode( "hybrid" )
 
 local image = require("loadImage")
+local text = require("text")
 
 math.randomseed( os.time() )
 
 local backgroundSong = audio.loadSound("audio/fase03/Dimensions(Main Theme).mp3")
 local backgroundSong2 = audio.loadSound("audio/fase03/Orbital Colossus.mp3")
 local shotEffect = audio.loadSound("audio/effect/ship/laser.wav")
-audio.setVolume( 0.5, { channel=2 } )
+audio.setVolume( 1, { channel=2 } )
 
 
 local hp = 5
@@ -29,6 +30,10 @@ local hpText
 local scoreText
 local pauseTest = 0
 local contadorAttack = 0
+local volumeCurrent = 10
+local volumeCurrent1 = 10
+local volumeMusic = 1
+local volemeEffect = 1
 local contadorText
 local attackCurrent = 0
 local attackText
@@ -169,20 +174,60 @@ local sequences_magic =
 
     local button_back = image.loadUi("menu panel",4,uiPause)
 
-    exit_text_button = display.newText(uiPause,"Sair" ,button_back.x ,button_back.y, native.systemFont, 14)
-    resume_text_button = display.newText(uiPause,"Retormar" ,button_resume.x ,button_resume.y, native.systemFont, 14)
-    option_text_button = display.newText(uiPause,"Opções" ,button_option.x ,button_option.y, native.systemFont, 14)
+    resume_text_button = text.generateText("Retornar",uiPause)
+    option_text_button = text.generateText("Opções",uiPause)
+    exit_text_button = text.generateText("Sair",uiPause)
+    
+    resume_text_button.x = button_resume.x
+    resume_text_button.y = button_resume.y
+    option_text_button.x = button_option.x
+    option_text_button.y = button_option.y
+    exit_text_button.x = button_back.x
+    exit_text_button.y = button_back.y
 
     contadorText = display.newText(uiGroup,"Dano Acumulado: " .. contadorAttack, ship.x - 90,ship.y + 40, native.systemFont, 15)
     attackText = display.newText(uiGroup,"Dano Atual: " .. attackCurrent, ship.x + 110,ship.y + 40, native.systemFont, 15)
     
     -- Interface Opções --
     local menu_option_panel = image.loadUi("option",1,uiOption)
-    menu_option_top = display.newText(uiOption,"Opções" ,display.contentCenterX ,display.contentCenterY - 93, native.systemFont, 15)
 
+    menu_option_top = text.loadText(2,"top",uiOption)
+    local volumePanel = image.loadUi("option",2,uiOption)
+    local volumePanel1 = image.loadUi("option",2,uiOption)
+    volumePanel1.y = volumePanel.y + 60
+
+    menu_option_music = text.generateText("Musica",uiOption)
+    menu_option_volumeIndicator = text.generateText(10,uiOption)
+    menu_option_volumeIndicator1 = text.generateText(10,uiOption)
+    
+    menu_option_music.x = volumePanel.x 
+    menu_option_music.y = volumePanel.y - 30
+    menu_option_volumeIndicator.x = volumePanel.x - 45
+    menu_option_volumeIndicator.y = volumePanel.y
+    menu_option_volumeIndicator1.x = menu_option_volumeIndicator.x
+    menu_option_volumeIndicator1.y = volumePanel.y + 60
+
+    local volumeBar = image.loadUi("option",3,uiOption)
+    local volemeBarCurrent = volumeBar.width/volumeCurrent
+    local volumeBar1 = image.loadUi("option",3,uiOption)
+    volumeBar1.y = volumePanel.y + 59.4
+    local volumeDown = image.loadUi("option",4,uiOption)
+    local volumeDown1 = image.loadUi("option",4,uiOption)
+    volumeDown1.y = volumePanel.y + 60
+    volumeDown1.myName = "down1"
+    local volumeUp = image.loadUi("option",5,uiOption)
+    local volumeUp1 = image.loadUi("option",5,uiOption)
+    volumeUp1.y = volumePanel.y + 60
+    volumeUp1.myName = "up1"
+    local volume = volumeBar.width/volumeCurrent
+    menu_option_effect = text.loadText(3,"option",uiOption)
+    menu_option_effect.x = volumePanel1.x
+    menu_option_effect.y = volumePanel1.y - 30
     local button_back_option = image.loadUi("option",6,uiOption)
 
-    return_text_button = display.newText(uiOption,"Salvar e Voltar" ,button_back.x ,button_back.y, native.systemFont, 14)
+    return_text_button = text.generateText("Voltar",uiOption)
+    return_text_button.x = button_back_option.x
+    return_text_button.y = button_back_option.y
 
     -- Ataque Teste --
     local fire = display.newSprite(mainGroup, sheet_fire, sequences_magic)
@@ -499,6 +544,53 @@ local function optionShow()
     uiOption.isVisible = true
 end 
 
+local function volumeChange(event)
+    if(event.target.myName == "down") then
+        if(volumeCurrent ~= 0) then
+            volumeCurrent = volumeCurrent - 1
+            transition.to(volumeBar, { width = volumeBar.width - volume, time=1}) 
+            volumeMusic = volumeMusic - 0.1
+            audio.setVolume( volumeMusic, { channel=1 } )
+            menu_option_volumeIndicator.text = volumeCurrent
+        end  
+    end
+    if(event.target.myName == "up") then
+        if(volumeCurrent ~= 10) then
+            volumeCurrent = volumeCurrent + 1
+            transition.to(volumeBar, { width = volumeBar.width + volume, time=1})  
+            volumeMusic = volumeMusic + 0.1
+            audio.setVolume( volumeMusic, { channel=1 } )
+            menu_option_volumeIndicator.text = volumeCurrent
+        end    
+    end
+    if(event.target.myName == "down1") then
+        if(volumeCurrent1 ~= 0) then
+            volumeCurrent1 = volumeCurrent1 - 1
+            transition.to(volumeBar1, { width = volumeBar1.width - volume, time=1})  
+            volemeEffect = volemeEffect - 0.1
+            audio.setVolume( volemeEffect, { channel=2})
+            audio.setVolume( volemeEffect, { channel=3})
+            menu_option_volumeIndicator1.text = volumeCurrent1
+        end
+    end
+    if(event.target.myName == "up1") then
+        if(volumeCurrent1 ~= 10) then
+            volumeCurrent1 = volumeCurrent1 + 1
+            transition.to(volumeBar1, { width = volumeBar1.width + volume, time=1})  
+            volemeEffect = volemeEffect + 0.1
+            audio.setVolume( volemeEffect, { channel=2})
+            audio.setVolume( volemeEffect, { channel=3})
+            menu_option_volumeIndicator1.text = volumeCurrent1
+        end    
+    end
+    if(volumeCurrent == 0) then
+        volumeBar.width = 0
+    end    
+    if(volumeCurrent1 == 0) then
+        volumeBar1.width = 0
+    end   
+end    
+
 local function pauseGame(event)
     
     pauseTest = pauseTest + 1
@@ -613,6 +705,10 @@ menu_pause:addEventListener( "tap", pauseGame)
 button_back:addEventListener( "tap", menuGame)
 button_resume:addEventListener( "tap", pauseGame )
 button_option:addEventListener ( "tap", optionShow)
+volumeDown:addEventListener( "tap", volumeChange)
+volumeDown1:addEventListener( "tap", volumeChange)
+volumeUp:addEventListener( "tap", volumeChange)
+volumeUp1:addEventListener( "tap", volumeChange)
 return_text_button:addEventListener ( "tap", menuShow)
 
 function scene:create( event )

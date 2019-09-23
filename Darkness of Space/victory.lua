@@ -30,8 +30,6 @@ function scene:create( event )
     uiGroup = display.newGroup()    -- Display group for UI objects like the score
 	sceneGroup:insert( uiGroup ) 
 
-	print("Victory Create")
-    
     local background = display.newImageRect(backGroup ,"Background/1/back.png", 360, 570)
     background.x = display.contentCenterX
     background.y = display.contentCenterY

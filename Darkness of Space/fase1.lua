@@ -8,6 +8,7 @@ physics.setGravity( 0, 0 )
 --physics.setDrawMode( "hybrid" )
 
 local image = require("loadImage")
+local text = require("text")
 
 math.randomseed( os.time() )
 
@@ -113,7 +114,7 @@ local sequences_flameball = {
     -- Interface Menu --
     local menu_pause_panel = image.loadUi("menu panel",1,uiPause)
 
-    menu_text_top = display.newText(uiPause,"Jogo Pausado" ,display.contentCenterX ,display.contentCenterY - 93, native.systemFont, 14)
+    menu_text_top = text.loadText(1,"top",uiPause)
 
     local button_resume = image.loadUi("menu panel",2,uiPause)
 
@@ -121,9 +122,16 @@ local sequences_flameball = {
 
     local button_back = image.loadUi("menu panel",4,uiPause)
 
-    exit_text_button = display.newText(uiPause,"Sair" ,button_back.x ,button_back.y, native.systemFont, 14)
-    resume_text_button = display.newText(uiPause,"Retormar" ,button_resume.x ,button_resume.y, native.systemFont, 14)
-    option_text_button = display.newText(uiPause,"Opções" ,button_option.x ,button_option.y, native.systemFont, 14)
+    resume_text_button = text.generateText("Retornar",uiPause)
+    option_text_button = text.generateText("Opções",uiPause)
+    exit_text_button = text.generateText("Sair",uiPause)
+    
+    resume_text_button.x = button_resume.x
+    resume_text_button.y = button_resume.y
+    option_text_button.x = button_option.x
+    option_text_button.y = button_option.y
+    exit_text_button.x = button_back.x
+    exit_text_button.y = button_back.y
 
     contadorText = display.newText(uiGroup,"Dano Acumulado: " .. contadorAttack, ship.x - 90,ship.y + 40, native.systemFont, 15)
     attackText = display.newText(uiGroup,"Dano Atual: " .. attackCurrent, ship.x + 110,ship.y + 40, native.systemFont, 15)
@@ -131,14 +139,22 @@ local sequences_flameball = {
     -- Interface Opções --
     local menu_option_panel = image.loadUi("option",1,uiOption)
 
-    menu_option_top = display.newText(uiOption,"Opções" ,display.contentCenterX ,display.contentCenterY - 110, native.systemFont, 14)
+    menu_option_top = text.loadText(2,"top",uiOption)
     local volumePanel = image.loadUi("option",2,uiOption)
     local volumePanel1 = image.loadUi("option",2,uiOption)
     volumePanel1.y = volumePanel.y + 60
 
-    menu_option_music = display.newText(uiOption,"Musica" ,volumePanel.x ,volumePanel.y - 30, native.systemFont, 14)
-    menu_option_volumeIndicator = display.newText(uiOption,volumeCurrent,volumePanel.x - 45,volumePanel.y, native.systemFont, 14)
-    menu_option_volumeIndicator1 = display.newText(uiOption,volumeCurrent1,menu_option_volumeIndicator.x,volumePanel.y + 60, native.systemFont, 14)
+    menu_option_music = text.generateText("Musica",uiOption)
+    menu_option_volumeIndicator = text.generateText(10,uiOption)
+    menu_option_volumeIndicator1 = text.generateText(10,uiOption)
+    
+    menu_option_music.x = volumePanel.x 
+    menu_option_music.y = volumePanel.y - 30
+    menu_option_volumeIndicator.x = volumePanel.x - 45
+    menu_option_volumeIndicator.y = volumePanel.y
+    menu_option_volumeIndicator1.x = menu_option_volumeIndicator.x
+    menu_option_volumeIndicator1.y = volumePanel.y + 60
+
     local volumeBar = image.loadUi("option",3,uiOption)
     local volemeBarCurrent = volumeBar.width/volumeCurrent
     local volumeBar1 = image.loadUi("option",3,uiOption)
@@ -152,11 +168,14 @@ local sequences_flameball = {
     volumeUp1.y = volumePanel.y + 60
     volumeUp1.myName = "up1"
     local volume = volumeBar.width/volumeCurrent
-    menu_option_effect = display.newText(uiOption,"Efeitos" ,volumePanel1.x ,volumePanel1.y - 30, native.systemFont, 14)
+    menu_option_effect = text.loadText(3,"option",uiOption)
+    menu_option_effect.x = volumePanel1.x
+    menu_option_effect.y = volumePanel1.y - 30
     local button_back_option = image.loadUi("option",6,uiOption)
 
-    return_text_button = display.newText(uiOption,"Salvar e Voltar" ,button_back_option.x ,button_back_option.y, native.systemFont, 14)
-    
+    return_text_button = text.generateText("Voltar",uiOption)
+    return_text_button.x = button_back_option.x
+    return_text_button.y = button_back_option.y
     
     -- Função de movimentação da Nave --
     local function dragShip( event )
@@ -411,7 +430,6 @@ local function optionShow()
 end    
 
 local function volumeChange(event)
-    print(event.target.myName)
     if(event.target.myName == "down") then
         if(volumeCurrent ~= 0) then
             volumeCurrent = volumeCurrent - 1
@@ -452,7 +470,8 @@ local function volumeChange(event)
     end
     if(volumeCurrent == 0) then
         volumeBar.width = 0
-    elseif(volumeCurrent1 == 0) then
+    end    
+    if(volumeCurrent1 == 0) then
         volumeBar1.width = 0
     end   
 end    
@@ -482,7 +501,7 @@ local function pauseGame( event )
         timer.resume(gerenation)
         transition.resume()
         bossMage:play()
-        ship:addEventListener( "touch", dragShip )
+        ship:addEventListener("touch", dragShip )
         audio.resume( 1 )
         menuShow( event )
         if(explosionAttack ~= nil) then
