@@ -51,7 +51,22 @@ function ui.loadUi(target, type, group)
         if(type == 6) then
             return display.newImageRect(group, "UI/Menu/ButtonWhite.png", 30 ,18)
         end
+        if(type == 7) then
+            return display.newImageRect(group, "UI/Menu/muteOff.png", 18 ,18)
+        end
+        if(type == 8) then
+            return display.newImageRect(group, "UI/Menu/muteOn.png", 19 ,18)
+        end
     end      
 end   
+
+function ui.loadItem(type,group)
+    if(type == 1) then
+        return display.newImageRect(group, "Sprites/Item/damage1.png", 36,37 )
+    end
+    if(type == 2) then
+        return display.newImageRect(group, "Sprites/Item/damage2.png", 46,47 )
+    end    
+end
 
 return ui

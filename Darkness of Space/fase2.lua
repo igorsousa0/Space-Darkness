@@ -46,7 +46,6 @@ local hp_player_lost
 local filterCollision = {groupIndex = -1}
 
 local hitboxAttack = 35
-local hitboxBoss = { halfWidth=48, halfHeight=55}
 local offsetRectParams = { halfWidth=10, halfHeight=10}
 
 local backGroup = display.newGroup()
@@ -137,7 +136,7 @@ local sequences_magic =
     
     menu_option_music.x = volumePanel.x 
     menu_option_music.y = volumePanel.y - 30
-    menu_option_volumeIndicator.x = volumePanel.x - 45
+    menu_option_volumeIndicator.x = volumePanel.x - 54
     menu_option_volumeIndicator.y = volumePanel.y
     menu_option_volumeIndicator1.x = menu_option_volumeIndicator.x
     menu_option_volumeIndicator1.y = volumePanel.y + 60

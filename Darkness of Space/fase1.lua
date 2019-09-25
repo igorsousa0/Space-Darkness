@@ -9,6 +9,7 @@ physics.setGravity( 0, 0 )
 
 local image = require("loadImage")
 local text = require("text")
+local func = require("shipFunction")
 
 math.randomseed( os.time() )
 
@@ -46,8 +47,8 @@ local uiGroup = display.newGroup()
 local uiPause = display.newGroup()
 local uiOption = display.newGroup()
 
+
 local offsetRectParams = { halfWidth=10, halfHeight=10}
-local hitboxBoss = { halfWidth=38, halfHeight=51}
 
 local customParams = {
     hp = 0
@@ -150,7 +151,7 @@ local sequences_flameball = {
     
     menu_option_music.x = volumePanel.x 
     menu_option_music.y = volumePanel.y - 30
-    menu_option_volumeIndicator.x = volumePanel.x - 45
+    menu_option_volumeIndicator.x = volumePanel.x - 54
     menu_option_volumeIndicator.y = volumePanel.y
     menu_option_volumeIndicator1.x = menu_option_volumeIndicator.x
     menu_option_volumeIndicator1.y = volumePanel.y + 60
@@ -161,7 +162,7 @@ local sequences_flameball = {
     volumeBar1.y = volumePanel.y + 59.4
     local volumeDown = image.loadUi("option",4,uiOption)
     local volumeDown1 = image.loadUi("option",4,uiOption)
-    volumeDown1.y = volumePanel.y + 60
+    volumeDown1.y = volumeDown.y + 60
     volumeDown1.myName = "down1"
     local volumeUp = image.loadUi("option",5,uiOption)
     local volumeUp1 = image.loadUi("option",5,uiOption)
@@ -171,48 +172,36 @@ local sequences_flameball = {
     menu_option_effect = text.loadText(3,"option",uiOption)
     menu_option_effect.x = volumePanel1.x
     menu_option_effect.y = volumePanel1.y - 30
+    local muteOff = image.loadUi("option",7,uiOption)
+    muteOff.myName = "muteOff"
+    muteOff.x = menu_option_music.x + 60
+    muteOff.y = menu_option_music.y 
+    local muteOn = image.loadUi("option",8,uiOption)
+    muteOn.myName = "muteOn"
+    muteOn.x = muteOff.x
+    muteOn.y = muteOff.y
+    local muteOff1 = image.loadUi("option",7,uiOption)
+    muteOff1.myName = "muteOff1"
+    muteOff1.x = menu_option_effect.x + 60
+    muteOff1.y = menu_option_effect.y 
+    local muteOn1 = image.loadUi("option",8,uiOption)
+    muteOn1.myName = "muteOn1"
+    muteOn1.x = muteOff1.x
+    muteOn1.y = muteOff1.y
     local button_back_option = image.loadUi("option",6,uiOption)
 
     return_text_button = text.generateText("Voltar",uiOption)
     return_text_button.x = button_back_option.x
     return_text_button.y = button_back_option.y
     
-    -- Função de movimentação da Nave --
-    local function dragShip( event )
- 
-    local ship = event.target
-    local phase = event.phase
-
-    if ( "began" == phase ) then
-        display.currentStage:setFocus(ship)
-        ship.touchOffsetX = event.x - ship.x
-        ship.touchOffsetY = event.y - ship.y
-    elseif ( "moved" == phase ) then
-        -- Move the ship to the new touch position
-        if (ship.x < display.contentCenterX) then 
-            ship:setSequence("leftShip")
-            ship:play()
-        elseif (ship.x > display.contentCenterX) then
-            ship:setSequence("rightShip")
-            ship:play()
-        end
-        if(( event.x > 40 and event.x < display.contentWidth-40) and (event.y > 150 and event.y < display.contentHeight-30)) then
-            ship.x = event.x - ship.touchOffsetX
-            ship.y = event.y - ship.touchOffsetY
-        end       
-    elseif ( "ended" == phase or "cancelled" == phase ) then
-        -- Release touch focus on the ship
-        display.currentStage:setFocus( nil )
-        ship:setSequence("normalShip")
-        ship:play()    
-    end
-    
-    return true
-end
-
 local function bossMove()
     transition.to(bossMage, {time = 4000, x = ship.x})
 end
+
+--[[local function attack()
+    func.attack(ship,bossMage,mainGroup,contadorAttack,contadorText,attackText,attackCurrent)     
+end--]]
+
 
 local function fireLaser()
     local flameball = display.newSprite(mainGroup ,sheet_flameball, sequences_flameball)
@@ -268,12 +257,12 @@ end
 local function attack()
     if (playerAttack[1] ~= nil) then
         if (playerAttack[1] == "attack1") then
-            local attack1 = display.newImageRect(mainGroup, "Sprites/Item/damage1.png", 36,37 )
+            local attack1 = image.loadItem(1,mainGroup)
             physics.addBody( attack1, "dynamic", { box=offsetRectParams, filter = filterCollision} )
             attack1.isBullet = true
+            attack1.myName = "attack3"
             attack1.x = ship.x
             attack1.y = ship.y
-            attack1.myName = "attack3"
             contadorAttack = contadorAttack - 1
             contadorText.text = "Dano Acumulado: " .. contadorAttack
             audio.play(shotEffect, {channel = 2} ) 
@@ -281,12 +270,12 @@ local function attack()
             onComplete = function() display.remove(attack1) end
             })
         elseif (playerAttack[1] == "attack2") then
-            local attack2 = display.newImageRect(mainGroup, "Sprites/Item/damage2.png", 46,47 )
+            local attack2 = image.loadItem(2,mainGroup)
             physics.addBody( attack2, "dynamic", { box=offsetRectParams, filter = filterCollision} )
             attack2.isBullet = true
+            attack2.myName = "attack4"
             attack2.x = ship.x
             attack2.y = ship.y
-            attack2.myName = "attack4"
             contadorAttack = contadorAttack - 3
             contadorText.text = "Dano Acumulado: " .. contadorAttack
             audio.play(shotEffect, {channel = 2} )  
@@ -298,10 +287,11 @@ local function attack()
             attackCurrent = 0
             attackText.text = "Dano Atual: " .. attackCurrent
         end
-        table.remove(playerAttack,1)    
+        table.remove(playerAttack,1)
         updateAttackCurrent()
-    end          
+    end        
 end
+
  
 local function endGame()
     composer.gotoScene( "fimGame", { time=800, effect="crossFade" } )
@@ -349,9 +339,10 @@ local function onCollision( event )
         then
             --bossLife = bossLife - 1
             contadorAttack = contadorAttack + 1
-            contadorText.text = "Dano Acumulado: " .. contadorAttack
+            --func.addTable("attack1")
             table.insert(playerAttack, "attack1")
-            updateAttackCurrent()
+            updateAttackCurrent(contadorAttack)
+            contadorText.text = "Dano Acumulado: " .. contadorAttack
             display.remove(obj1)
             --hp_boss.width = hp_boss.width - hp_bossLost      
         end
@@ -360,9 +351,10 @@ local function onCollision( event )
         then
             --bossLife = bossLife - 3
             contadorAttack = contadorAttack + 3
-            contadorText.text = "Dano Acumulado: " .. contadorAttack
+            --func.addTable("attack2")
             table.insert(playerAttack, "attack2")
-            updateAttackCurrent()
+            updateAttackCurrent(contadorAttack)
+            contadorText.text = "Dano Acumulado: " .. contadorAttack
             display.remove(obj1)           
         end
         if ( ( obj1.myName == "boss" and obj2.myName == "attack3" ) or
@@ -429,6 +421,35 @@ local function optionShow()
     uiOption.isVisible = true
 end    
 
+local function muteChange( event )
+    if(event.target.myName == "muteOn" or event.target.myName == "muteOff") then
+        if(muteOff.isVisible == true) then
+            muteOff.isVisible = false
+            muteOn.isVisible = true
+            muteOff:removeEventListener("tap", muteChange)
+            muteOn:addEventListener( "tap", muteChange)
+        else
+            muteOff.isVisible = true
+            muteOn.isVisible = false
+            muteOn:removeEventListener("tap", muteChange)
+            muteOff:addEventListener( "tap", muteChange)
+        end    
+    end    
+    if(event.target.myName == "muteOn1" or event.target.myName == "muteOff1") then
+        if(muteOff1.isVisible == true) then
+            muteOff1.isVisible = false
+            muteOn1.isVisible = true
+            muteOff1:removeEventListener("tap", muteChange)
+            muteOn1:addEventListener( "tap", muteChange)
+        else
+            muteOff1.isVisible = true
+            muteOn1.isVisible = false
+            muteOn1:removeEventListener("tap", muteChange)
+            muteOff1:addEventListener( "tap", muteChange)
+        end    
+    end     
+end    
+
 local function volumeChange(event)
     if(event.target.myName == "down") then
         if(volumeCurrent ~= 0) then
@@ -485,7 +506,7 @@ local function pauseGame( event )
         timer.pause(gerenation)
         transition.pause()
         bossMage:pause()
-        ship:removeEventListener("touch", dragShip)
+        ship:removeEventListener("touch", func.dragShip)
         audio.pause( 1 )
         menuShow( event ) 
     if(explosionAttack ~= nil) then
@@ -501,7 +522,7 @@ local function pauseGame( event )
         timer.resume(gerenation)
         transition.resume()
         bossMage:play()
-        ship:addEventListener("touch", dragShip )
+        ship:addEventListener("touch", func.dragShip )
         audio.resume( 1 )
         menuShow( event )
         if(explosionAttack ~= nil) then
@@ -537,12 +558,12 @@ local function generationItem()
         onComplete = function() display.remove(player_attack2) end
         })
     end
-end
+end         
 
     bossFire = timer.performWithDelay( 2000, fireLaser, 0)
     bossMove = timer.performWithDelay( 300, bossMove, 0 )
     gerenation = timer.performWithDelay( 4000, generationItem, 0)
-    ship:addEventListener( "touch", dragShip )
+    ship:addEventListener( "touch", func.dragShip )
     ship:addEventListener( "tap", attack )
     Runtime:addEventListener( "collision", onCollision )
     menu_pause:addEventListener( "tap", pauseGame)
@@ -553,6 +574,8 @@ end
     volumeDown1:addEventListener( "tap", volumeChange)
     volumeUp:addEventListener( "tap", volumeChange)
     volumeUp1:addEventListener( "tap", volumeChange)
+    muteOff:addEventListener( "tap", muteChange)
+    muteOff1:addEventListener( "tap", muteChange)
     return_text_button:addEventListener ( "tap", menuShow)
 
 function scene:create( event )
@@ -611,8 +634,8 @@ function scene:hide( event )
 		-- Code here runs immediately after the scene goes entirely off screen
         Runtime:removeEventListener( "collision", onCollision )
         physics.pause()
-        composer.removeScene( "fase1" )
         audio.stop( 1 )
+        composer.removeScene( "fase1" )
 	end
 end
 
