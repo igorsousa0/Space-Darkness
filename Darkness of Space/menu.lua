@@ -1,11 +1,12 @@
 local composer = require( "composer" )
+local image = require("loadImage")
 
 local scene = composer.newScene()
 
 local backgroundSong = audio.loadSound("audio/menu/spacewalk.mp3")
 
 local function gotoSelect()
-	composer.gotoScene( "fase2", { time=200, effect="crossFade" } )
+	composer.gotoScene( "fase1", { time=200, effect="crossFade" } )
 end
 
 
@@ -24,8 +25,19 @@ function scene:create( event )
 	sceneGroup:insert( backGroup )
 	mainGroup = display.newGroup()
 	sceneGroup:insert( mainGroup )
-    local playButton = display.newText( sceneGroup, "Play", display.contentCenterX, display.contentCenterY + 200, native.systemFont, 34 )
-	playButton:setFillColor( 0.82, 0.86, 1 )
+	local playButton = image.loadUi("menu panel",2,sceneGroup)
+	local guideButton = image.loadUi("menu panel",2,sceneGroup)
+	playButton:scale(2,1.8)
+	playButton.x = display.contentCenterX
+	playButton.y = display.contentCenterY + 120
+	guideButton:scale(2,1.8)
+	guideButton.x = display.contentCenterX
+	guideButton.y = playButton.y + 80
+	
+	local playText = display.newText( sceneGroup, "Jogar", playButton.x, playButton.y, "Font/prstart.ttf", 32 )
+	local guideText = display.newText( sceneGroup, "Guia", guideButton.x, guideButton.y, "Font/prstart.ttf", 32 )
+	playText:setFillColor( 0.82, 0.86, 1 )
+	guideText:setFillColor( 0.82, 0.86, 1 )
 	
 	musicButton = display.newImageRect( sceneGroup, "UI/Menu/flatDark16.png", 40, 40 )
 	musicButton.x = display.contentCenterX + 130
@@ -33,7 +45,7 @@ function scene:create( event )
 	musicButton.alpha = 0.8
 	musicButton:scale(0.8,0.8)
 
-    local titleGame = display.newText( sceneGroup, "Escuridão Espacial", display.contentCenterX, display.contentCenterY - 180, native.systemFont, 32 )
+    local titleGame = display.newText( sceneGroup, "Escuridão Espacial", display.contentCenterX, display.contentCenterY - 180, "Font/ARCADECLASSIC.TTF", 32 )
     titleGame:setFillColor( 0.75, 0.78, 1 )
 
 	local function changeState()

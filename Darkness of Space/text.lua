@@ -21,25 +21,11 @@ function text.loadText(number,type,group)
         if(number == 3) then
             return display.newText(group,"Sair" ,display.contentCenterX ,display.contentCenterY, native.systemFont, 14)
         end    
-    end 
-    if(type == "option") then
-        if(number == 1) then
-            return display.newText(group,"Musica" ,display.contentCenterX ,display.contentCenterY, native.systemFont, 14)
-        end
-        if(number == 2) then
-            return display.newText(group,10,display.contentCenterX,display.contentCenterY, native.systemFont, 14)
-        end
-        if(number == 3) then
-           return display.newText(group,"Efeitos" ,display.contentCenterX ,display.contentCenterY, native.systemFont, 14)
-        end  
-        if(number == 4) then
-            return display.newText(group,"Salvar e Voltar" ,display.contentCenterX ,display.contentCenterY, native.systemFont, 14)
-        end   
-    end   
+    end  
 end    
 
 function text.generateText(name,group)
-    return display.newText(group,name ,display.contentCenterX ,display.contentCenterY, native.systemFont, 14) 
+    return display.newText(group,name ,display.contentCenterX ,display.contentCenterY, native.systemFont, 14.5) 
 end    
 
 

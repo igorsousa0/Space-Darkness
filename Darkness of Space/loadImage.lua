@@ -150,8 +150,8 @@ function img.loadUi(target, type, group)
         if(type == 1) then
             local menu_option_panel = uiGame.loadUi(target,type,group)
             menu_option_panel.x = display.contentCenterX
-            menu_option_panel.y = display.contentCenterY 
-            menu_option_panel:scale(1.4,1.4)
+            menu_option_panel.y = display.contentCenterY + 20
+            menu_option_panel:scale(1.55,1.55)
             menu_option_panel.alpha = 0.6
             return menu_option_panel
         end   
@@ -164,24 +164,18 @@ function img.loadUi(target, type, group)
         end    
         if(type == 3) then
             local volumeBar = uiGame.loadUi(target,type,group)
-            volumeBar.x = display.contentCenterX + 13.5
-            volumeBar.y = display.contentCenterY - 25.5
             volumeBar:scale(1.61,1.61)
             volumeBar.width = 64
             return volumeBar
         end  
         if(type == 4) then
             local volumeDown = uiGame.loadUi(target,type,group)
-            volumeDown.x = display.contentCenterX - 87
-            volumeDown.y = display.contentCenterY - 25
             volumeDown.myName = "down"
             volumeDown:scale(2.3,2.1)
             return volumeDown
         end    
         if(type == 5) then
             local volumeUp = uiGame.loadUi(target,type,group)
-            volumeUp.x = display.contentCenterX + 80.5    
-            volumeUp.y = display.contentCenterY - 24.5
             volumeUp.myName = "up"
             volumeUp:scale(2.3,2.3)
             return volumeUp
@@ -189,8 +183,8 @@ function img.loadUi(target, type, group)
         if(type == 6) then
             local button_back_option = uiGame.loadUi(target,type,group)
             button_back_option.x = display.contentCenterX 
-            button_back_option.y = display.contentCenterY + 85
-            button_back_option:scale(3.2,1.6)
+            button_back_option.y = display.contentCenterY + 95
+            button_back_option:scale(3.3,1.7)
             button_back_option.alpha = 0.6
             return button_back_option
         end

@@ -165,7 +165,7 @@ local sequences_magic =
     -- Interface Menu --
     local menu_pause_panel = image.loadUi("menu panel",1,uiPause)
 
-    menu_text_top = display.newText(uiPause,"Jogo Pausado" ,display.contentCenterX ,display.contentCenterY - 93, native.systemFont, 15)
+    menu_text_top = text.loadText(1,"top",uiPause)
 
     local button_resume = image.loadUi("menu panel",2,uiPause)
 
@@ -191,9 +191,11 @@ local sequences_magic =
     local menu_option_panel = image.loadUi("option",1,uiOption)
 
     menu_option_top = text.loadText(2,"top",uiOption)
+    menu_option_top.y = menu_option_panel.y - 120
     local volumePanel = image.loadUi("option",2,uiOption)
+    volumePanel.y = menu_option_panel.y - 25
     local volumePanel1 = image.loadUi("option",2,uiOption)
-    volumePanel1.y = volumePanel.y + 60
+    volumePanel1.y = volumePanel.y + 70
 
     menu_option_music = text.generateText("Musica",uiOption)
     menu_option_volumeIndicator = text.generateText(10,uiOption)
@@ -203,26 +205,53 @@ local sequences_magic =
     menu_option_music.y = volumePanel.y - 30
     menu_option_volumeIndicator.x = volumePanel.x - 54
     menu_option_volumeIndicator.y = volumePanel.y
-    menu_option_volumeIndicator1.x = menu_option_volumeIndicator.x
-    menu_option_volumeIndicator1.y = volumePanel.y + 60
+    menu_option_volumeIndicator1.x = volumePanel1.x - 54
+    menu_option_volumeIndicator1.y = volumePanel1.y
 
     local volumeBar = image.loadUi("option",3,uiOption)
+    volumeBar.y = volumePanel.y
+    volumeBar.x = volumePanel.x + 20
     local volemeBarCurrent = volumeBar.width/volumeCurrent
     local volumeBar1 = image.loadUi("option",3,uiOption)
-    volumeBar1.y = volumePanel.y + 59.4
+    volumeBar1.y = volumePanel1.y 
+    volumeBar1.x = volumePanel1.x + 20
     local volumeDown = image.loadUi("option",4,uiOption)
     local volumeDown1 = image.loadUi("option",4,uiOption)
-    volumeDown1.y = volumePanel.y + 60
+    volumeDown.y = volumePanel.y
+    volumeDown.x = volumePanel.x - 85
+    volumeDown1.y = volumePanel1.y
+    volumeDown1.x = volumePanel1.x - 85
     volumeDown1.myName = "down1"
     local volumeUp = image.loadUi("option",5,uiOption)
     local volumeUp1 = image.loadUi("option",5,uiOption)
-    volumeUp1.y = volumePanel.y + 60
+    volumeUp.y = volumePanel.y
+    volumeUp.x = volumePanel.x + 84
+    volumeUp1.y = volumePanel1.y
+    volumeUp1.x = volumePanel1.x + 84
     volumeUp1.myName = "up1"
     local volume = volumeBar.width/volumeCurrent
-    menu_option_effect = text.loadText(3,"option",uiOption)
+    menu_option_effect = text.generateText("Efeitos",uiOption)
     menu_option_effect.x = volumePanel1.x
     menu_option_effect.y = volumePanel1.y - 30
+    local muteOff = image.loadUi("option",7,uiOption)
+    muteOff.myName = "muteOff"
+    muteOff.x = menu_option_music.x + 40
+    muteOff.y = menu_option_music.y 
+    local muteOn = image.loadUi("option",8,uiOption)
+    muteOn.myName = "muteOn"
+    muteOn.x = muteOff.x
+    muteOn.y = muteOff.y
+    local muteOff1 = image.loadUi("option",7,uiOption)
+    muteOff1.myName = "muteOff1"
+    muteOff1.x = menu_option_effect.x + 40
+    muteOff1.y = menu_option_effect.y 
+    local muteOn1 = image.loadUi("option",8,uiOption)
+    muteOn1.myName = "muteOn1"
+    muteOn1.x = muteOff1.x
+    muteOn1.y = muteOff1.y
     local button_back_option = image.loadUi("option",6,uiOption)
+    button_back_option.y = menu_option_panel.y + 95
+    button_back_option.x = menu_option_panel.x 
 
     return_text_button = text.generateText("Voltar",uiOption)
     return_text_button.x = button_back_option.x
@@ -304,8 +333,6 @@ local function fireLaser()
         explosion.y = hitboxExplosion.y
         explosion.isVisible = false
         explosion.isBodyActive = false
-        --[[explosion.x = math.random(25, 295) 
-        explosion.y = math.random(116, 494)--]]
         explosion:toBack()
         explosion.myName = "explosion"
         transition.to(hitboxExplosion, {time=1000, alpha = 0,
@@ -318,26 +345,9 @@ local function fireLaser()
             })
         end   end
         })  
-        --[[transition.to(explosion, {time=2000,
-        onComplete = function() display.remove(explosion) end
-        })--]]
     end    
 end
 
---[[local function bossAttack()
-    local direcionX = 0
-    local x = math.random(25, 295)
-    local y = math.random(116, 494)
-    local explosionAttack = display.newSprite(mainGroup, sheet_explosionAttack, sequences_explosionAttack)
-    physics.addBody( explosionAttack, "dynamic", { radius=20, filter = filterCollision} )
-    explosionAttack.myName = "explosion"
-    explosionAttack:setSequence("standAnimation")
-    explosionAttack:play()
-    explosionAttack.x = x - direcionX
-    explosionAttack.y = y  
-    direcionX = direcionX + 20    
-    direcionX = 0
-end--]]
 
 local function restoreShip()
  
@@ -386,7 +396,6 @@ local function attack()
             attack1.myName = "attack3"
             contadorAttack = contadorAttack - 1
             contadorText.text = "Dano Acumulado: " .. contadorAttack
-            audio.play(shotEffect, {channel = 2} ) 
             transition.to(attack1, {time=1000, y = bossMage.y, 
             onComplete = function() display.remove(attack1) end
             })
@@ -399,7 +408,6 @@ local function attack()
             attack2.myName = "attack4"
             contadorAttack = contadorAttack - 3
             contadorText.text = "Dano Acumulado: " .. contadorAttack
-            audio.play(shotEffect, {channel = 2} )  
             transition.to(attack2, {time=1000, y = bossMage.y, 
             onComplete = function() display.remove(attack2) end
             })
@@ -408,6 +416,9 @@ local function attack()
             attackCurrent = 0
             attackText.text = "Dano Atual: " .. attackCurrent
         end
+        if(muteOff1.isVisible == true) then
+            audio.play(shotEffect, {channel = 2} ) 
+        end 
         table.remove(playerAttack,1)    
         updateAttackCurrent()
     end          
@@ -543,6 +554,38 @@ local function optionShow()
     uiOption.isVisible = true
 end 
 
+local function muteChange( event )
+    if(event.target.myName == "muteOn" or event.target.myName == "muteOff") then
+        if(muteOff.isVisible == true) then
+            muteOff.isVisible = false
+            muteOn.isVisible = true
+            audio.stop(1)
+            muteOff:removeEventListener("tap", muteChange)
+            muteOn:addEventListener( "tap", muteChange)
+        else
+            muteOff.isVisible = true
+            muteOn.isVisible = false
+            muteOn:removeEventListener("tap", muteChange)
+            muteOff:addEventListener( "tap", muteChange)   
+        end    
+    end    
+    if(event.target.myName == "muteOn1" or event.target.myName == "muteOff1") then
+        if(muteOff1.isVisible == true) then
+            muteOff1.isVisible = false
+            muteOn1.isVisible = true
+            audio.stop(2)
+            audio.stop(3)
+            muteOff1:removeEventListener("tap", muteChange)
+            muteOn1:addEventListener( "tap", muteChange)
+        else
+            muteOff1.isVisible = true
+            muteOn1.isVisible = false
+            muteOn1:removeEventListener("tap", muteChange)
+            muteOff1:addEventListener( "tap", muteChange)
+        end    
+    end     
+end 
+
 local function volumeChange(event)
     if(event.target.myName == "down") then
         if(volumeCurrent ~= 0) then
@@ -599,6 +642,7 @@ local function pauseGame(event)
     timer.pause(gerenation)
     transition.pause()
     bossMage:pause()
+    ship:removeEventListener("tap", attack)
     ship:removeEventListener("touch", dragShip)
     audio.pause( 1 )
     if(explosionAttack ~= nil) then
@@ -614,6 +658,7 @@ local function pauseGame(event)
         timer.resume(gerenation)
         transition.resume()
         bossMage:play()
+        ship:addEventListener( "tap", attack )
         ship:addEventListener( "touch", dragShip )
         audio.resume( 1 )
         if(explosionAttack ~= nil) then
@@ -621,7 +666,10 @@ local function pauseGame(event)
                 explosionAttack:play()
             end
         end
-        menuShow( event )     
+        menuShow( event )  
+        if(uiOption.isVisible == false and uiPause.isVisible == false and muteOff.isVisible == true) then
+            audio.play(backgroundSong, {channel = 1, loops = -1 } )
+        end
     end    
 end
 
@@ -708,7 +756,9 @@ volumeDown:addEventListener( "tap", volumeChange)
 volumeDown1:addEventListener( "tap", volumeChange)
 volumeUp:addEventListener( "tap", volumeChange)
 volumeUp1:addEventListener( "tap", volumeChange)
-return_text_button:addEventListener ( "tap", menuShow)
+muteOff:addEventListener( "tap", muteChange)
+muteOff1:addEventListener( "tap", muteChange)
+button_back_option:addEventListener ( "tap", menuShow)
 
 function scene:create( event )
 
