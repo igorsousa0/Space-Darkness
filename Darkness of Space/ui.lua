@@ -1,6 +1,14 @@
 local ui = {}
 
 function ui.loadUi(target, type, group)
+    if(target == "menu") then
+        if(type == 1) then
+            return display.newImageRect(group, "UI/Menu/panel.png", 221,197 )
+        end
+        if(type == 2) then
+            return display.newImageRect(group, "UI/Menu/tapIcon.png", 512,512 )
+        end    
+    end    
     if(target == "hp") then
         if(type == 1) then
             return display.newImageRect(group, "UI/Hp/2/Glass3.png", 120,18 )

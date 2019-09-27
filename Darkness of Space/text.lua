@@ -28,5 +28,9 @@ function text.generateText(name,group)
     return display.newText(group,name ,display.contentCenterX ,display.contentCenterY, native.systemFont, 14.5) 
 end    
 
+function text.generateTextMenu(name,group,x,y,font,size)
+    return display.newText(group,name ,x ,y, font, size) 
+end 
+
 
 return text    
