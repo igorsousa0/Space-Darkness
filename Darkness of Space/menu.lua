@@ -7,8 +7,22 @@ local scene = composer.newScene()
 local backgroundSong = audio.loadSound("audio/menu/spacewalk.mp3")
 
 local function gotoSelect()
-	composer.gotoScene( "fase1", { time=200, effect="crossFade" } )
+	composer.gotoScene( "fase1", { time=400, effect="crossFade" } )
 end
+
+local options = {
+    text = "Toque e arraste a nave\n para movimentar",
+	fontSize = 12.5,
+	font = "Font/prstart.ttf",
+    align = "center"
+}
+
+local options1 = {
+    text = "Toque na nave para\n atirar",
+	fontSize = 12.5,
+	font = "Font/prstart.ttf",
+    align = "center"
+}
 
 
 function scene:create( event )
@@ -30,6 +44,8 @@ function scene:create( event )
 	sceneGroup:insert( guideGroup )
 	guideUiGroup = display.newGroup()
 	sceneGroup:insert( guideUiGroup )
+	guideUiGroup1 = display.newGroup()
+	sceneGroup:insert( guideUiGroup1 )
 
     local titleGame = display.newText( mainGroup, "Escuridão Espacial", display.contentCenterX, display.contentCenterY - 180, "Font/ARCADECLASSIC.TTF", 32 )
     titleGame:setFillColor( 0.75, 0.78, 1 )
@@ -63,13 +79,31 @@ function scene:create( event )
 	buttonBack.y = guidePanel.y + 190
 	buttonBack:scale(1.5,1.5)
 
+	local buttonNext = image.loadUi("menu panel",2,guideGroup)
+	buttonNext.x = buttonBack.x
+	buttonNext.y = buttonBack.y - 60
+	buttonNext:scale(1.5,1.5)
+
 	local buttonBackText = text.generateTextMenu("Voltar",guideGroup,buttonBack.x,buttonBack.y,"Font/prstart.ttf",20)
+	local buttonNextText = text.generateTextMenu("Próximo",guideGroup,buttonNext.x,buttonNext.y,"Font/prstart.ttf",18)
 	local guideTopText = text.generateTextMenu("Como  Jogar",guideGroup,display.contentCenterX,display.contentCenterY - 220,"Font/ARCADECLASSIC.TTF",32)
 	local moveShipText = text.generateTextMenu("Movimentação",guideUiGroup,guidePanel.x,guidePanel.y - 130,"Font/prstart.ttf",15)
+	local shotShipText = text.generateTextMenu("Atirar",guideUiGroup1,guidePanel.x,guidePanel.y - 130,"Font/prstart.ttf",15)
 	local shipImg = image.loadImgShip(guidePanel.x,guidePanel.y,guideUiGroup,"img")
+	local shipImg1 = image.loadImgShip(guidePanel.x,guidePanel.y + 45,guideUiGroup1,"img")
+	local moveGuideText = display.newText( options )
+	local shotGuideText = display.newText( options1 )
+	moveGuideText.x = shipImg.x + 4
+	moveGuideText.y = shipImg.y + 100
+	shotGuideText.x = shipImg.x + 4
+	shotGuideText.y = shipImg.y + 100
+	guideUiGroup:insert( moveGuideText )
+	guideUiGroup1:insert( shotGuideText )
 	local touchIcon = image.loadUi("menu",2,guideUiGroup)
 	guideUiGroup.isVisible = false
 	guideUiGroup.alpha = 0
+	guideUiGroup1.isVisible = false
+	guideUiGroup1.alpha = 0
 
 	local function changeState()
 		if(guideGroup.isVisible == false) then
@@ -86,13 +120,57 @@ function scene:create( event )
 			})
 			transition.to( guideUiGroup, { time=500, delay=1000, alpha = 1
 			})
-			transition.to( touchIcon, { time=800, delay=1200, y = shipImg.y
-		})
+			transition.to( touchIcon, { time=800, delay=1200, y = shipImg.y,tag="teste",
+			onCancel = function()
+				touchIcon.x = display.contentCenterX
+				touchIcon.y = display.contentCenterY - 30
+			end	
+			})
+			transition.to( touchIcon, { time=800, delay=2100, x = shipImg.x + 90,tag="teste1",
+			onCancel = function()
+				touchIcon.x = display.contentCenterX
+				touchIcon.y = display.contentCenterY - 30
+			end	
+			})
+			transition.to( touchIcon, { time=800, delay=3000, x = shipImg.x,tag="teste2",
+			onCancel = function()
+				touchIcon.x = display.contentCenterX
+				touchIcon.y = display.contentCenterY - 30
+			end	
+			})
+			transition.to( touchIcon, { time=800, delay=3900, x = shipImg.x - 90,tag="teste3",
+			onCancel = function()
+				touchIcon.x = display.contentCenterX
+				touchIcon.y = display.contentCenterY - 30
+			end	
+			})
+			transition.to( touchIcon, { time=800, delay=4800, x = shipImg.x,tag="teste4",
+			onCancel = function()
+				touchIcon.x = display.contentCenterX
+				touchIcon.y = display.contentCenterY - 30
+			end	
+			})
+			transition.to( touchIcon, { time=800, delay=5700, alpha = 0,tag="teste5",
+			onCancel = function()
+				touchIcon.x = display.contentCenterX
+				touchIcon.y = display.contentCenterY - 30
+			end	
+			})
+
 		else
 		transition.to(guideGroup, {time=500, alpha = 0,
 		onComplete = function() 
 			guideGroup.isVisible = false
 			mainGroup.isVisible = true
+			transition.cancel("teste")
+			transition.cancel("teste1")
+			transition.cancel("teste2")
+			transition.cancel("teste3")
+			transition.cancel("teste4")
+			transition.cancel("teste5")
+			touchIcon.x = display.contentCenterX
+			touchIcon.y = display.contentCenterY - 30
+			touchIcon.alpha = 1
 		end
 		})
 		transition.to( guideUiGroup, { time=500, alpha = 0,
@@ -106,31 +184,28 @@ function scene:create( event )
 		end	
 		})
 		end	
-		--[[if (musicState == true) then
-			musicState = false
-			display.remove(musicButton)
-			musicButton = display.newImageRect( sceneGroup, "UI/Menu/flatDark18.png", 40, 40 )
-			musicButton.x = display.contentCenterX + 130
-			musicButton.y = display.contentCenterY - 245
-			musicButton.alpha = 0.8
-			musicButton:scale(0.8,0.8)
-			audio.pause( 1 )
-			musicButton:addEventListener( "tap", changeState )
-		else
-			musicState = true
-			display.remove(musicButton)
-			musicButton = display.newImageRect( sceneGroup, "UI/Menu/flatDark16.png", 40, 40 )
-			musicButton.x = display.contentCenterX + 130
-			musicButton.y = display.contentCenterY - 245
-			musicButton.alpha = 0.8
-			musicButton:scale(0.8,0.8)
-			audio.resume( 1 )
-			musicButton:addEventListener( "tap", changeState )
-		end	--]]	
+		if(guideUiGroup1.isVisible == true) then
+			transition.to(guideUiGroup1, {time=500, alpha = 0,
+			onComplete = function() 
+				guideUiGroup1.isVisible = false
+				mainGroup.isVisible = true
+			end
+			})
+			transition.to( mainGroup, { time=500, delay=1000, alpha = 1})
+		end	
+	end	
+
+	local function nextGuide()
+		transition.to( guideUiGroup, { time=500, alpha = 0,
+		onComplete = function()
+			guideUiGroup1.isVisible = true
+		end	
+		})
+		transition.to( guideUiGroup1, { time=500, delay = 500, alpha = 1})
 	end	
 
 	playButton:addEventListener( "tap", gotoSelect )
-	--musicButton:addEventListener( "tap", changeState )
+	buttonNext:addEventListener( "tap", nextGuide)
 	guideButton:addEventListener( "tap", changeState )
 	buttonBackText:addEventListener( "tap", changeState )
 

@@ -264,7 +264,7 @@ local sequences_magic =
         if (playerAttack[1] ~= nil) then
             if (playerAttack[1] == "attack1") then
                 local attack1 = display.newImageRect(mainGroup, "Sprites/Item/damage1.png", 36,37 )
-                physics.addBody( attack1, "dynamic", { box=offsetRectParams } )
+                physics.addBody( attack1, "dynamic", { box=offsetRectParams, filter = filterCollision } )
                 attack1.isBullet = true
                 attack1.x = ship.x
                 attack1.y = ship.y
@@ -276,7 +276,7 @@ local sequences_magic =
                 })
             elseif (playerAttack[1] == "attack2") then
                 local attack2 = display.newImageRect(mainGroup, "Sprites/Item/damage2.png", 46,47 )
-                physics.addBody( attack2, "dynamic", { box=offsetRectParams } )
+                physics.addBody( attack2, "dynamic", { box=offsetRectParams, filter = filterCollision } )
                 attack2.isBullet = true
                 attack2.x = ship.x
                 attack2.y = ship.y
@@ -415,6 +415,7 @@ local sequences_magic =
                 end
             end     
             if ( bossLife <= 0) then
+                display.remove(menu_pause)
                 bossMage:setSequence("deadMage")
                 bossMage:play()
                 print(bossLife)

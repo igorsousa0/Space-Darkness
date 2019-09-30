@@ -524,7 +524,7 @@ local function onCollision( event )
             end
         end
         if ( bossLife <= 0) then
-            print(bossLife)
+            display.remove(menu_pause)
             --timer.cancel(hitbox)
             timer.cancel(bossFire)
             timer.cancel(gerenation)

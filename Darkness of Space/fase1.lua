@@ -404,6 +404,7 @@ local function onCollision( event )
             end
         end
         if ( bossLife <= 0) then
+            display.remove(menu_pause)
             bossMage:setSequence("deadMage")
             bossMage:play()
             print(bossLife)
