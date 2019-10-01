@@ -36,8 +36,8 @@ function img.loadShip(group)
     return ship
 end
 
-function img.loadImgShip(x,y,group,type)
-    local ship = player.loadPlayer(group,type)
+function img.loadImgShip(x,y,group)
+    local ship = player.loadPlayer(group,nil)
     ship.x = x 
     ship.y = y - 50
     ship:scale(2.5,2.5)

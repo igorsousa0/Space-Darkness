@@ -1,6 +1,7 @@
 local composer = require( "composer" )
 local image = require("loadImage")
 local text = require("text")
+local func = require("shipFunction")
 
 local scene = composer.newScene()
 
@@ -10,16 +11,23 @@ local function gotoSelect()
 	composer.gotoScene( "fase1", { time=400, effect="crossFade" } )
 end
 
-local options = {
+local move = {
     text = "Toque e arraste a nave\n para movimentar",
 	fontSize = 12.5,
 	font = "Font/prstart.ttf",
     align = "center"
 }
 
-local options1 = {
+local shot = {
     text = "Toque na nave para\n atirar",
-	fontSize = 12.5,
+	fontSize = 12,
+	font = "Font/prstart.ttf",
+    align = "center"
+}
+
+local shotNote = {
+	text = "Observação: Só\n poderá atirar se tiver\n coletado o item de dano",
+	fontSize = 11.5,
 	font = "Font/prstart.ttf",
     align = "center"
 }
@@ -74,32 +82,50 @@ function scene:create( event )
 	guideGroup.isVisible = false
 	guideGroup.alpha = 0
 
-	local buttonBack = image.loadUi("menu panel",2,guideGroup)
-	buttonBack.x = guidePanel.x
-	buttonBack.y = guidePanel.y + 190
-	buttonBack:scale(1.5,1.5)
+	local buttonExit = image.loadUi("menu panel",2,guideGroup)
+	buttonExit.x = guidePanel.x
+	buttonExit.y = guidePanel.y + 190
+	buttonExit:scale(1.5,1.5)
 
 	local buttonNext = image.loadUi("menu panel",2,guideGroup)
-	buttonNext.x = buttonBack.x
-	buttonNext.y = buttonBack.y - 60
+	local buttonNext1 = image.loadUi("menu panel",2,guideUiGroup1)
+	buttonNext.x = buttonExit.x
+	buttonNext.y = buttonExit.y - 60
+	buttonNext.myName = "next"
+	buttonNext1.x = buttonExit.x + 70
+	buttonNext1.y = buttonNext.y
+	buttonNext1.myName = "next1"
 	buttonNext:scale(1.5,1.5)
+	buttonNext1:scale(1.3,1.5)
 
-	local buttonBackText = text.generateTextMenu("Voltar",guideGroup,buttonBack.x,buttonBack.y,"Font/prstart.ttf",20)
+	local buttonBack = image.loadUi("menu panel",2,guideUiGroup1)
+	buttonBack.x = buttonExit.x - 65
+	buttonBack.y = buttonNext.y
+	buttonBack.myName = "back"
+	buttonBack:scale(1.3,1.5)
+
+	local buttonExitText = text.generateTextMenu("Sair",guideGroup,buttonExit.x,buttonExit.y,"Font/prstart.ttf",20)
 	local buttonNextText = text.generateTextMenu("Próximo",guideGroup,buttonNext.x,buttonNext.y,"Font/prstart.ttf",18)
+	local buttonNextText1 = text.generateTextMenu("Próximo",guideUiGroup1,buttonNext1.x + 3,buttonNext1.y,"Font/prstart.ttf",17)
+	local buttonBackText1 = text.generateTextMenu("Voltar",guideUiGroup1,buttonBack.x,buttonBack.y,"Font/prstart.ttf",18)
 	local guideTopText = text.generateTextMenu("Como  Jogar",guideGroup,display.contentCenterX,display.contentCenterY - 220,"Font/ARCADECLASSIC.TTF",32)
 	local moveShipText = text.generateTextMenu("Movimentação",guideUiGroup,guidePanel.x,guidePanel.y - 130,"Font/prstart.ttf",15)
 	local shotShipText = text.generateTextMenu("Atirar",guideUiGroup1,guidePanel.x,guidePanel.y - 130,"Font/prstart.ttf",15)
-	local shipImg = image.loadImgShip(guidePanel.x,guidePanel.y,guideUiGroup,"img")
-	local shipImg1 = image.loadImgShip(guidePanel.x,guidePanel.y + 45,guideUiGroup1,"img")
-	local moveGuideText = display.newText( options )
-	local shotGuideText = display.newText( options1 )
-	moveGuideText.x = shipImg.x + 4
-	moveGuideText.y = shipImg.y + 100
-	shotGuideText.x = shipImg.x + 4
-	shotGuideText.y = shipImg.y + 100
+	local ship = image.loadImgShip(guidePanel.x,guidePanel.y,guideUiGroup)
+	local ship1 = image.loadImgShip(guidePanel.x,guidePanel.y + 30,guideUiGroup1)
+	local moveGuideText = display.newText( move )
+	local shotGuideText = display.newText( shot )
+	local shotNoteText = display.newText( shotNote )
+	moveGuideText.x = ship.x + 4
+	moveGuideText.y = ship.y + 80
+	shotGuideText.x = ship.x + 4
+	shotGuideText.y = ship.y + 80
+	shotNoteText.x = shotGuideText.x - 4
+	shotNoteText.y = shotGuideText.y + 40
 	guideUiGroup:insert( moveGuideText )
 	guideUiGroup1:insert( shotGuideText )
-	local touchIcon = image.loadUi("menu",2,guideUiGroup)
+	guideUiGroup1:insert( shotNoteText )
+	--local touchIcon = image.loadUi("menu",2,guideUiGroup)
 	guideUiGroup.isVisible = false
 	guideUiGroup.alpha = 0
 	guideUiGroup1.isVisible = false
@@ -111,6 +137,7 @@ function scene:create( event )
 			onComplete = function() 
 				mainGroup.isVisible = false
 				guideGroup.isVisible = true
+				ship:addEventListener( "touch", func.dragShipGuide )
 			end
 			})
 			transition.to( guideGroup, { time=500, delay=500, alpha = 1,
@@ -120,31 +147,31 @@ function scene:create( event )
 			})
 			transition.to( guideUiGroup, { time=500, delay=1000, alpha = 1
 			})
-			transition.to( touchIcon, { time=800, delay=1200, y = shipImg.y,tag="teste",
+			--[[transition.to( touchIcon, { time=800, delay=1200, y = ship.y,tag="teste",
 			onCancel = function()
 				touchIcon.x = display.contentCenterX
 				touchIcon.y = display.contentCenterY - 30
 			end	
 			})
-			transition.to( touchIcon, { time=800, delay=2100, x = shipImg.x + 90,tag="teste1",
+			transition.to( touchIcon, { time=800, delay=2100, x = ship.x + 90,tag="teste1",
 			onCancel = function()
 				touchIcon.x = display.contentCenterX
 				touchIcon.y = display.contentCenterY - 30
 			end	
 			})
-			transition.to( touchIcon, { time=800, delay=3000, x = shipImg.x,tag="teste2",
+			transition.to( touchIcon, { time=800, delay=3000, x = ship.x,tag="teste2",
 			onCancel = function()
 				touchIcon.x = display.contentCenterX
 				touchIcon.y = display.contentCenterY - 30
 			end	
 			})
-			transition.to( touchIcon, { time=800, delay=3900, x = shipImg.x - 90,tag="teste3",
+			transition.to( touchIcon, { time=800, delay=3900, x = ship.x - 90,tag="teste3",
 			onCancel = function()
 				touchIcon.x = display.contentCenterX
 				touchIcon.y = display.contentCenterY - 30
 			end	
 			})
-			transition.to( touchIcon, { time=800, delay=4800, x = shipImg.x,tag="teste4",
+			transition.to( touchIcon, { time=800, delay=4800, x = ship.x,tag="teste4",
 			onCancel = function()
 				touchIcon.x = display.contentCenterX
 				touchIcon.y = display.contentCenterY - 30
@@ -155,14 +182,18 @@ function scene:create( event )
 				touchIcon.x = display.contentCenterX
 				touchIcon.y = display.contentCenterY - 30
 			end	
-			})
+			})--]]
 
 		else
 		transition.to(guideGroup, {time=500, alpha = 0,
 		onComplete = function() 
 			guideGroup.isVisible = false
 			mainGroup.isVisible = true
-			transition.cancel("teste")
+			ship:removeEventListener("touch", func.dragShipGuide)
+			ship.x = guidePanel.x
+			ship.y = guidePanel.y - 50
+			ship:pause()
+			--[[transition.cancel("teste")
 			transition.cancel("teste1")
 			transition.cancel("teste2")
 			transition.cancel("teste3")
@@ -170,12 +201,12 @@ function scene:create( event )
 			transition.cancel("teste5")
 			touchIcon.x = display.contentCenterX
 			touchIcon.y = display.contentCenterY - 30
-			touchIcon.alpha = 1
+			touchIcon.alpha = 1--]]
 		end
 		})
 		transition.to( guideUiGroup, { time=500, alpha = 0,
 		onComplete = function() 
-			touchIcon.y = display.contentCenterY - 30
+			--touchIcon.y = display.contentCenterY - 30
 		end	
 		})
 		transition.to( mainGroup, { time=500, delay=1000, alpha = 1,
@@ -189,25 +220,48 @@ function scene:create( event )
 			onComplete = function() 
 				guideUiGroup1.isVisible = false
 				mainGroup.isVisible = true
+				ship:removeEventListener("touch", func.dragShipGuide)
 			end
 			})
+			transition.to( buttonNext, { time=500,delay = 500, alpha = 0.6})
+			transition.to( buttonNextText, { time=500,delay = 500, alpha = 1})
 			transition.to( mainGroup, { time=500, delay=1000, alpha = 1})
 		end	
 	end	
 
-	local function nextGuide()
-		transition.to( guideUiGroup, { time=500, alpha = 0,
-		onComplete = function()
-			guideUiGroup1.isVisible = true
+	local function changeGuide(event)
+		print(event.target.myName)
+		if(event.target.myName == "next") then
+			transition.to( guideUiGroup, { time=500, alpha = 0,
+			onComplete = function()
+				guideUiGroup1.isVisible = true
+				ship1:addEventListener( "tap", func.shotGuide )
+			end	
+			})
+			transition.to( buttonNext, { time=500, alpha = 0})
+			transition.to( buttonNextText, { time=500, alpha = 0})
+			transition.to( guideUiGroup1, { time=500, delay = 500, alpha = 1})
 		end	
-		})
-		transition.to( guideUiGroup1, { time=500, delay = 500, alpha = 1})
+		if(event.target.myName == "back") then
+			transition.to( guideUiGroup1, { time=500, alpha = 0,
+			onComplete = function()
+				guideUiGroup.isVisible = true
+				ship.x = guidePanel.x
+				ship.y = guidePanel.y - 50
+				ship1:removeEventListener("tap", func.shotGuide)
+			end	
+			})
+			transition.to( buttonNext, { time=500, delay = 500, alpha = 0.6})
+			transition.to( buttonNextText, { time=500,delay = 500, alpha = 1})
+			transition.to( guideUiGroup, { time=500, delay = 500, alpha = 1})
+		end	
 	end	
 
 	playButton:addEventListener( "tap", gotoSelect )
-	buttonNext:addEventListener( "tap", nextGuide)
+	buttonNext:addEventListener( "tap", changeGuide)
+	buttonBack:addEventListener( "tap", changeGuide)
 	guideButton:addEventListener( "tap", changeState )
-	buttonBackText:addEventListener( "tap", changeState )
+	buttonExitText:addEventListener( "tap", changeState )
 
 end
 
