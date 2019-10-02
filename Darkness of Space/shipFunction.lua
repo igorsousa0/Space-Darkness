@@ -79,11 +79,11 @@ function func.shotGuide(event)
         })
     end    
     if(attackType == 2) then
-        local attack1 = display.newImageRect(guideUiGroup1, "Sprites/Item/damage2.png", 46,47 )
-        attack1.x = ship.x
-        attack1.y = ship.y
-        transition.to(attack1, {time=500, y = 121, 
-        onComplete = function() display.remove(attack1) end
+        local attack = display.newImageRect(guideUiGroup1, "Sprites/Item/damage2.png", 46,47 )
+        attack.x = ship.x
+        attack.y = ship.y
+        transition.to(attack, {time=500, y = 121, 
+        onComplete = function() display.remove(attack) end
         })
     end  
 end

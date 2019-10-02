@@ -235,14 +235,12 @@ end
 function img.loadItem(type,group)
     if(type == 1) then
         local attack1 = uiGame.loadItem(type,group)
-        physics.addBody( attack1, "dynamic", { box=offsetRectParams, filter = filterCollision} )
         attack1.isBullet = true
         attack1.myName = "attack3"
         return attack1
     end 
     if(type == 2) then
         local attack2 = uiGame.loadItem(type,group)
-        physics.addBody( attack2, "dynamic", { box=offsetRectParams, filter = filterCollision} )
         attack2.isBullet = true
         attack2.myName = "attack4"
         return attack2
