@@ -51,7 +51,7 @@ function scene:create( event )
 
 	local sceneGroup = self.view
 	local musicState = true
-	local musicButton
+	local optionButton
 	local pageGuide = 1
 	-- Code here runs when the scene is first created but has not yet appeared on screen
     local background = display.newImageRect( sceneGroup, "Background/3/Background.jpg", 530, 570 )
@@ -91,11 +91,7 @@ function scene:create( event )
 	playText:setFillColor( 0.82, 0.86, 1 )
 	guideText:setFillColor( 0.82, 0.86, 1 )
 	
-	musicButton = display.newImageRect( mainGroup, "UI/Menu/flatDark16.png", 40, 40 )
-	musicButton.x = display.contentCenterX + 130
-	musicButton.y = display.contentCenterY - 245
-	musicButton.alpha = 0.8
-	musicButton:scale(0.8,0.8)
+	optionButton = image.loadUi("menu",3,mainGroup)
 
 	local guidePanel = image.loadUi("menu",1,guideGroup)
 	guideGroup.isVisible = false

@@ -8,6 +8,9 @@ function ui.loadUi(target, type, group)
         if(type == 2) then
             return display.newImageRect(group, "UI/Menu/tapIcon.png", 512,512 )
         end    
+        if(type == 3) then
+            return display.newImageRect(group, "UI/Menu/flatDark21.png", 48,48 )
+        end   
     end    
     if(target == "hp") then
         if(type == 1) then

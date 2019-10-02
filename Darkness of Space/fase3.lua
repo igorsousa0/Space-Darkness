@@ -9,6 +9,8 @@ physics.setGravity( 0, 0 )
 
 local image = require("loadImage")
 local text = require("text")
+local func = require("shipFunction")
+local vol = require("volumeSetting")
 
 math.randomseed( os.time() )
 
@@ -30,10 +32,6 @@ local hpText
 local scoreText
 local pauseTest = 0
 local contadorAttack = 0
-local volumeCurrent = 10
-local volumeCurrent1 = 10
-local volumeMusic = 1
-local volemeEffect = 1
 local contadorText
 local attackCurrent = 0
 local attackText
@@ -198,8 +196,8 @@ local sequences_magic =
     volumePanel1.y = volumePanel.y + 70
 
     menu_option_music = text.generateText("Musica",uiOption)
-    menu_option_volumeIndicator = text.generateText(10,uiOption)
-    menu_option_volumeIndicator1 = text.generateText(10,uiOption)
+    menu_option_volumeIndicator = text.generateText(vol.musicCurrent,uiOption)
+    menu_option_volumeIndicator1 = text.generateText(vol.effectCurrent,uiOption)
     
     menu_option_music.x = volumePanel.x 
     menu_option_music.y = volumePanel.y - 30
@@ -211,7 +209,6 @@ local sequences_magic =
     local volumeBar = image.loadUi("option",3,uiOption)
     volumeBar.y = volumePanel.y
     volumeBar.x = volumePanel.x + 20
-    local volemeBarCurrent = volumeBar.width/volumeCurrent
     local volumeBar1 = image.loadUi("option",3,uiOption)
     volumeBar1.y = volumePanel1.y 
     volumeBar1.x = volumePanel1.x + 20
@@ -229,7 +226,6 @@ local sequences_magic =
     volumeUp1.y = volumePanel1.y
     volumeUp1.x = volumePanel1.x + 84
     volumeUp1.myName = "up1"
-    local volume = volumeBar.width/volumeCurrent
     menu_option_effect = text.generateText("Efeitos",uiOption)
     menu_option_effect.x = volumePanel1.x
     menu_option_effect.y = volumePanel1.y - 30
@@ -267,39 +263,6 @@ local sequences_magic =
     fire:scale(1.5,1.5)
     fire.isVisible = false
     fire.isBodyActive = false    
-
-    -- Função de movimentação da Nave --
-    local function dragShip( event )
- 
-    local ship = event.target
-    local phase = event.phase
-
-    if ( "began" == phase ) then
-        display.currentStage:setFocus(ship)
-        ship.touchOffsetX = event.x - ship.x
-        ship.touchOffsetY = event.y - ship.y
-    elseif ( "moved" == phase ) then
-        -- Move the ship to the new touch position
-        if (ship.x < display.contentCenterX) then 
-            ship:setSequence("leftShip")
-            ship:play()
-        elseif (ship.x > display.contentCenterX) then
-            ship:setSequence("rightShip")
-            ship:play()
-        end
-        if(( event.x > 40 and event.x < display.contentWidth-40) and (event.y > 150 and event.y < display.contentHeight-30)) then
-            ship.x = event.x - ship.touchOffsetX
-            ship.y = event.y - ship.touchOffsetY
-        end       
-    elseif ( "ended" == phase or "cancelled" == phase ) then
-        -- Release touch focus on the ship
-        display.currentStage:setFocus( nil )
-        ship:setSequence("normalShip")
-        ship:play()    
-    end
-    
-    return true
-end
 
 local function bossMove()
     transition.to(bossMage, {time = 4000, x = ship.x})
@@ -417,7 +380,7 @@ local function attack()
             attackText.text = "Dano Atual: " .. attackCurrent
         end
         if(muteOff1.isVisible == true) then
-            audio.play(shotEffect, {channel = 2} ) 
+            audio.play(vol.effectWidth, {channel = 2} ) 
         end 
         table.remove(playerAttack,1)    
         updateAttackCurrent()
@@ -588,50 +551,50 @@ end
 
 local function volumeChange(event)
     if(event.target.myName == "down") then
-        if(volumeCurrent ~= 0) then
-            volumeCurrent = volumeCurrent - 1
-            transition.to(volumeBar, { width = volumeBar.width - volume, time=1}) 
-            volumeMusic = volumeMusic - 0.1
-            audio.setVolume( volumeMusic, { channel=1 } )
-            menu_option_volumeIndicator.text = volumeCurrent
+        if(vol.musicCurrent ~= 0) then
+            vol.musicCurrent = vol.musicCurrent - 1
+            transition.to(volumeBar, { width = vol.updateBar(volumeBar.width,"down"), time=1}) 
+            vol.music = vol.music - 0.1
+            audio.setVolume( vol.music, { channel=1 } )
+            menu_option_volumeIndicator.text = vol.musicCurrent
         end  
     end
     if(event.target.myName == "up") then
-        if(volumeCurrent ~= 10) then
-            volumeCurrent = volumeCurrent + 1
-            transition.to(volumeBar, { width = volumeBar.width + volume, time=1})  
-            volumeMusic = volumeMusic + 0.1
-            audio.setVolume( volumeMusic, { channel=1 } )
-            menu_option_volumeIndicator.text = volumeCurrent
+        if(vol.musicCurrent ~= 10) then
+            vol.musicCurrent = vol.musicCurrent + 1
+            transition.to(volumeBar, { width = vol.updateBar(volumeBar.width,"up"), time=1})  
+            vol.music = vol.music + 0.1
+            audio.setVolume( vol.music, { channel=1 } )
+            menu_option_volumeIndicator.text = vol.musicCurrent
         end    
     end
     if(event.target.myName == "down1") then
-        if(volumeCurrent1 ~= 0) then
-            volumeCurrent1 = volumeCurrent1 - 1
-            transition.to(volumeBar1, { width = volumeBar1.width - volume, time=1})  
-            volemeEffect = volemeEffect - 0.1
-            audio.setVolume( volemeEffect, { channel=2})
-            audio.setVolume( volemeEffect, { channel=3})
-            menu_option_volumeIndicator1.text = volumeCurrent1
+        if(vol.effectCurrent ~= 0) then
+            vol.effectCurrent = vol.effectCurrent - 1
+            transition.to(volumeBar1, { width = vol.updateBar(volumeBar1.width,"down"), time=1})  
+            vol.effect = vol.effect - 0.1
+            audio.setVolume( vol.effect, { channel=2})
+            audio.setVolume( vol.effect, { channel=3})
+            menu_option_volumeIndicator1.text = vol.effectCurrent
         end
     end
     if(event.target.myName == "up1") then
-        if(volumeCurrent1 ~= 10) then
-            volumeCurrent1 = volumeCurrent1 + 1
-            transition.to(volumeBar1, { width = volumeBar1.width + volume, time=1})  
-            volemeEffect = volemeEffect + 0.1
-            audio.setVolume( volemeEffect, { channel=2})
-            audio.setVolume( volemeEffect, { channel=3})
-            menu_option_volumeIndicator1.text = volumeCurrent1
+        if(vol.effectCurrent ~= 10) then
+            vol.effectCurrent = vol.effectCurrent + 1
+            transition.to(volumeBar1, { width = vol.updateBar(volumeBar1.width,"up"), time=1})  
+            vol.effect = vol.effect + 0.1
+            audio.setVolume( vol.effect, { channel=2})
+            audio.setVolume( vol.effect, { channel=3})
+            menu_option_volumeIndicator1.text = vol.effectCurrent
         end    
     end
-    if(volumeCurrent == 0) then
+    if(vol.musicCurrent == 0) then
         volumeBar.width = 0
     end    
-    if(volumeCurrent1 == 0) then
+    if(vol.effectCurrent == 0) then
         volumeBar1.width = 0
     end   
-end    
+end      
 
 local function pauseGame(event)
     
@@ -643,7 +606,7 @@ local function pauseGame(event)
     transition.pause()
     bossMage:pause()
     ship:removeEventListener("tap", attack)
-    ship:removeEventListener("touch", dragShip)
+    ship:removeEventListener("touch", func.dragShip)
     audio.pause( 1 )
     if(explosionAttack ~= nil) then
         if(explosionAttack.isPlaying == true) then
@@ -659,7 +622,7 @@ local function pauseGame(event)
         transition.resume()
         bossMage:play()
         ship:addEventListener( "tap", attack )
-        ship:addEventListener( "touch", dragShip )
+        ship:addEventListener( "touch", func.dragShip )
         audio.resume( 1 )
         if(explosionAttack ~= nil) then
             if(explosionAttack.isPlaying == false) then
@@ -745,7 +708,7 @@ end
 Runtime:addEventListener( "enterFrame", specialAttack )
 bossFire = timer.performWithDelay( 1300, fireLaser, 0)
 gerenation = timer.performWithDelay( 4000, generationItem, 0)
-ship:addEventListener( "touch", dragShip )
+ship:addEventListener( "touch", func.dragShip )
 ship:addEventListener( "tap", attack )
 Runtime:addEventListener( "collision", onCollision )
 menu_pause:addEventListener( "tap", pauseGame)
@@ -797,7 +760,9 @@ function scene:show( event )
         -- Code here runs when the scene is entirely on screen
         physics.start()
         backgroundMusicChannel = audio.play(backgroundSong, {channel = 1, loops = -1 } )
-        audio.setVolume( 0.3, { channel=1 } )
+        audio.setVolume( vol.music, { channel=1 } )
+        volumeBar.width = vol.musicWidth
+        volumeBar1.width = vol.effectWidth
 	end
 end
 

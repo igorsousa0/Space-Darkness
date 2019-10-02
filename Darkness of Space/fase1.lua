@@ -10,6 +10,7 @@ physics.setGravity( 0, 0 )
 local image = require("loadImage")
 local text = require("text")
 local func = require("shipFunction")
+local vol = require("volumeSetting")
 
 math.randomseed( os.time() )
 
@@ -29,10 +30,6 @@ local hpText
 local scoreText
 local pauseTest = 0
 local contadorAttack = 0
-local volumeCurrent = 10
-local volumeCurrent1 = 10
-local volumeMusic = 1
-local volemeEffect = 1
 local contadorText
 local attackCurrent = 0
 local attackText
@@ -159,9 +156,9 @@ local sequences_flameball = {
     menu_option_volumeIndicator1.y = volumePanel1.y
 
     local volumeBar = image.loadUi("option",3,uiOption)
+    vol.setWidth(volumeBar.width)
     volumeBar.y = volumePanel.y
     volumeBar.x = volumePanel.x + 20
-    local volemeBarCurrent = volumeBar.width/volumeCurrent
     local volumeBar1 = image.loadUi("option",3,uiOption)
     volumeBar1.y = volumePanel1.y 
     volumeBar1.x = volumePanel1.x + 20
@@ -179,7 +176,6 @@ local sequences_flameball = {
     volumeUp1.y = volumePanel1.y
     volumeUp1.x = volumePanel1.x + 84
     volumeUp1.myName = "up1"
-    local volume = volumeBar.width/volumeCurrent
     menu_option_effect = text.generateText("Efeitos",uiOption)
     menu_option_effect.x = volumePanel1.x
     menu_option_effect.y = volumePanel1.y - 30
@@ -223,7 +219,9 @@ local function fireLaser()
     flameball.myName = "flameball"
     flameball.x = bossMage.x
     flameball.y = bossMage.y
-    audio.play(fireEffect, {channel = 3} )
+    if(muteOff1.isVisible == true) then
+        audio.play(fireEffect, {channel = 3} )
+    end    
     transition.to(flameball, {x = ship.x, y=800, time=2500, 
         onComplete = function() display.remove(flameball) end
     }) 
@@ -470,47 +468,47 @@ end
 
 local function volumeChange(event)
     if(event.target.myName == "down") then
-        if(volumeCurrent ~= 0) then
-            volumeCurrent = volumeCurrent - 1
-            transition.to(volumeBar, { width = volumeBar.width - volume, time=1}) 
-            volumeMusic = volumeMusic - 0.1
-            audio.setVolume( volumeMusic, { channel=1 } )
-            menu_option_volumeIndicator.text = volumeCurrent
+        if(vol.musicCurrent ~= 0) then
+            vol.musicCurrent = vol.musicCurrent - 1
+            transition.to(volumeBar, { width = vol.updateBar(volumeBar.width,"down"), time=1}) 
+            vol.music = vol.music - 0.1
+            audio.setVolume( vol.music, { channel=1 } )
+            menu_option_volumeIndicator.text = vol.musicCurrent
         end  
     end
     if(event.target.myName == "up") then
-        if(volumeCurrent ~= 10) then
-            volumeCurrent = volumeCurrent + 1
-            transition.to(volumeBar, { width = volumeBar.width + volume, time=1})  
-            volumeMusic = volumeMusic + 0.1
-            audio.setVolume( volumeMusic, { channel=1 } )
-            menu_option_volumeIndicator.text = volumeCurrent
+        if(vol.musicCurrent ~= 10) then
+            vol.musicCurrent = vol.musicCurrent + 1
+            transition.to(volumeBar, { width = vol.updateBar(volumeBar.width,"up"), time=1})  
+            vol.music = vol.music + 0.1
+            audio.setVolume( vol.music, { channel=1 } )
+            menu_option_volumeIndicator.text = vol.musicCurrent
         end    
     end
     if(event.target.myName == "down1") then
-        if(volumeCurrent1 ~= 0) then
-            volumeCurrent1 = volumeCurrent1 - 1
-            transition.to(volumeBar1, { width = volumeBar1.width - volume, time=1})  
-            volemeEffect = volemeEffect - 0.1
-            audio.setVolume( volemeEffect, { channel=2})
-            audio.setVolume( volemeEffect, { channel=3})
-            menu_option_volumeIndicator1.text = volumeCurrent1
+        if(vol.effectCurrent ~= 0) then
+            vol.effectCurrent = vol.effectCurrent - 1
+            transition.to(volumeBar1, { width = vol.updateBar(volumeBar1.width,"down"), time=1})  
+            vol.effect = vol.effect - 0.1
+            audio.setVolume( vol.effect, { channel=2})
+            audio.setVolume( vol.effect, { channel=3})
+            menu_option_volumeIndicator1.text = vol.effectCurrent
         end
     end
     if(event.target.myName == "up1") then
-        if(volumeCurrent1 ~= 10) then
-            volumeCurrent1 = volumeCurrent1 + 1
-            transition.to(volumeBar1, { width = volumeBar1.width + volume, time=1})  
-            volemeEffect = volemeEffect + 0.1
-            audio.setVolume( volemeEffect, { channel=2})
-            audio.setVolume( volemeEffect, { channel=3})
-            menu_option_volumeIndicator1.text = volumeCurrent1
+        if(vol.effectCurrent ~= 10) then
+            vol.effectCurrent = vol.effectCurrent + 1
+            transition.to(volumeBar1, { width = vol.updateBar(volumeBar1.width,"up"), time=1})  
+            vol.effect = vol.effect + 0.1
+            audio.setVolume( vol.effect, { channel=2})
+            audio.setVolume( vol.effect, { channel=3})
+            menu_option_volumeIndicator1.text = vol.effectCurrent
         end    
     end
-    if(volumeCurrent == 0) then
+    if(vol.musicCurrent == 0) then
         volumeBar.width = 0
     end    
-    if(volumeCurrent1 == 0) then
+    if(vol.effectCurrent == 0) then
         volumeBar1.width = 0
     end   
 end    
@@ -638,7 +636,7 @@ function scene:show( event )
         -- Code here runs when the scene is entirely on screen
         physics.start()
         audio.play(backgroundSong, {channel = 1, loops = -1 } )
-        audio.setVolume( volumeMusic, { channel=1 } )
+        audio.setVolume( vol.music, { channel=1 } )
 		--som.somTema();
 	end
 end
@@ -657,6 +655,7 @@ function scene:hide( event )
 		-- Code here runs immediately after the scene goes entirely off screen
         Runtime:removeEventListener( "collision", onCollision )
         physics.pause()
+        vol.setGeneralWidth(volumeBar.width,volumeBar1.width)
         audio.stop( 1 )
         composer.removeScene( "fase1" )
 	end

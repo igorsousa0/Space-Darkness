@@ -98,6 +98,14 @@ function img.loadUi(target, type, group)
             touchIcon.alpha = 0.8
             return touchIcon
         end    
+        if(type == 3) then
+            local optionButton = uiGame.loadUi(target, type, group)
+            optionButton.x = display.contentCenterX + 130
+            optionButton.y = display.contentCenterY - 230
+            optionButton.alpha = 0.8
+            optionButton:scale(0.8,0.8)
+            return option
+        end   
     end    
     if(target == "hp") then
         if(type == 1) then
