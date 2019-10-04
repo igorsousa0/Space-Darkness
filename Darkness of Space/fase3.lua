@@ -17,8 +17,6 @@ math.randomseed( os.time() )
 local backgroundSong = audio.loadSound("audio/fase03/Dimensions(Main Theme).mp3")
 local backgroundSong2 = audio.loadSound("audio/fase03/Orbital Colossus.mp3")
 local shotEffect = audio.loadSound("audio/effect/ship/laser.wav")
-audio.setVolume( 1, { channel=2 } )
-
 
 local hp = 5
 local died = false
@@ -206,46 +204,65 @@ local sequences_magic =
     menu_option_volumeIndicator1.x = volumePanel1.x - 54
     menu_option_volumeIndicator1.y = volumePanel1.y
 
-    local volumeBar = image.loadUi("option",3,uiOption)
+    local volumeBar = image.loadUi("option",5,uiOption)
     volumeBar.y = volumePanel.y
     volumeBar.x = volumePanel.x + 20
-    local volumeBar1 = image.loadUi("option",3,uiOption)
+    local volumeBar1 = image.loadUi("option",5,uiOption)
     volumeBar1.y = volumePanel1.y 
     volumeBar1.x = volumePanel1.x + 20
-    local volumeDown = image.loadUi("option",4,uiOption)
-    local volumeDown1 = image.loadUi("option",4,uiOption)
+    local volumeDown = image.loadUi("option",6,uiOption)
+    local volumeBarLeft = image.loadUi("option",3,uiOption)
+    volumeBarLeft.x = volumePanel.x - 85
+    volumeBarLeft.y = volumePanel.y
+    volumeBarLeft.myName = "down"
+    volumeDown:toFront()
+    local volumeDown1 = image.loadUi("option",6,uiOption)
+    local volumeBarLeft1 = image.loadUi("option",3,uiOption)
+    volumeDown1:toFront()
+    volumeBarLeft1.x = volumePanel1.x - 85
+    volumeBarLeft1.y = volumePanel1.y
+    volumeBarLeft1.myName = "down1"
     volumeDown.y = volumePanel.y
-    volumeDown.x = volumePanel.x - 85
-    volumeDown1.y = volumePanel1.y
-    volumeDown1.x = volumePanel1.x - 85
+    volumeDown.x = volumeBarLeft.x
+    volumeDown1.y = volumeBarLeft1.y
+    volumeDown1.x = volumeBarLeft1.x
     volumeDown1.myName = "down1"
-    local volumeUp = image.loadUi("option",5,uiOption)
-    local volumeUp1 = image.loadUi("option",5,uiOption)
-    volumeUp.y = volumePanel.y
-    volumeUp.x = volumePanel.x + 84
-    volumeUp1.y = volumePanel1.y
-    volumeUp1.x = volumePanel1.x + 84
-    volumeUp1.myName = "up1"
+    local volumeUp = image.loadUi("option",7,uiOption)
+    local volumeBarRight = image.loadUi("option",4,uiOption)
+    volumeUp:toFront()
+    volumeBarRight.x = volumePanel.x + 84
+    volumeBarRight.y = volumePanel.y
+    volumeBarRight.myName = "up"
+    local volumeUp1 = image.loadUi("option",7,uiOption)
+    local volumeBarRight1 = image.loadUi("option",4,uiOption)
+    volumeUp1:toFront()
+    volumeBarRight1.x = volumePanel1.x + 84
+    volumeBarRight1.y = volumePanel1.y
+    volumeBarRight1.myName = "up1"
+    volumeUp.y = volumeBarRight.y
+    volumeUp.x = volumeBarRight.x
+    volumeUp1.y = volumeBarRight1.y
+    volumeUp1.x = volumeBarRight1.x
     menu_option_effect = text.generateText("Efeitos",uiOption)
     menu_option_effect.x = volumePanel1.x
     menu_option_effect.y = volumePanel1.y - 30
-    local muteOff = image.loadUi("option",7,uiOption)
+    local muteOff = image.loadUi("option",9,uiOption)
     muteOff.myName = "muteOff"
     muteOff.x = menu_option_music.x + 40
     muteOff.y = menu_option_music.y 
-    local muteOn = image.loadUi("option",8,uiOption)
+    local muteOn = image.loadUi("option",10,uiOption)
     muteOn.myName = "muteOn"
     muteOn.x = muteOff.x
     muteOn.y = muteOff.y
-    local muteOff1 = image.loadUi("option",7,uiOption)
+    local muteOff1 = image.loadUi("option",9,uiOption)
     muteOff1.myName = "muteOff1"
     muteOff1.x = menu_option_effect.x + 40
     muteOff1.y = menu_option_effect.y 
-    local muteOn1 = image.loadUi("option",8,uiOption)
+    local muteOn1 = image.loadUi("option",10,uiOption)
     muteOn1.myName = "muteOn1"
     muteOn1.x = muteOff1.x
     muteOn1.y = muteOff1.y
-    local button_back_option = image.loadUi("option",6,uiOption)
+    local button_back_option = image.loadUi("option",8,uiOption)
     button_back_option.y = menu_option_panel.y + 95
     button_back_option.x = menu_option_panel.x 
 
@@ -380,7 +397,7 @@ local function attack()
             attackText.text = "Dano Atual: " .. attackCurrent
         end
         if(muteOff1.isVisible == true) then
-            audio.play(vol.effectWidth, {channel = 2} ) 
+            audio.play(shotEffect, {channel = 2} ) 
         end 
         table.remove(playerAttack,1)    
         updateAttackCurrent()
@@ -715,10 +732,10 @@ menu_pause:addEventListener( "tap", pauseGame)
 button_back:addEventListener( "tap", menuGame)
 button_resume:addEventListener( "tap", pauseGame )
 button_option:addEventListener ( "tap", optionShow)
-volumeDown:addEventListener( "tap", volumeChange)
-volumeDown1:addEventListener( "tap", volumeChange)
-volumeUp:addEventListener( "tap", volumeChange)
-volumeUp1:addEventListener( "tap", volumeChange)
+volumeBarLeft:addEventListener( "tap", volumeChange)
+volumeBarLeft1:addEventListener( "tap", volumeChange)
+volumeBarRight:addEventListener( "tap", volumeChange)
+volumeBarRight1:addEventListener( "tap", volumeChange)
 muteOff:addEventListener( "tap", muteChange)
 muteOff1:addEventListener( "tap", muteChange)
 button_back_option:addEventListener ( "tap", menuShow)
@@ -761,6 +778,7 @@ function scene:show( event )
         physics.start()
         backgroundMusicChannel = audio.play(backgroundSong, {channel = 1, loops = -1 } )
         audio.setVolume( vol.music, { channel=1 } )
+        audio.setVolume( vol.effect, { channel=2 } )
         volumeBar.width = vol.musicWidth
         volumeBar1.width = vol.effectWidth
 	end

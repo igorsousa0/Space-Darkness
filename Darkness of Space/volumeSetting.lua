@@ -4,9 +4,9 @@ vol.music = 1
 vol.effect = 1
 vol.musicCurrent = 10
 vol.effectCurrent = 10
-vol.musicWidth = 0 
-vol.effectWidth = 0
-local volume
+vol.musicWidth = 64
+vol.effectWidth = 64
+local volume = 64/vol.musicCurrent
 
 function vol.updateBar(length,type)
     if(type == "up") then
@@ -17,11 +17,7 @@ function vol.updateBar(length,type)
     end    
 end    
 
-function vol.setWidth(length)
-    volume = length/vol.musicCurrent
-end
-
-function vol.setGeneralWidth(music,effect)
+function vol.setGeneral(music,effect)
     vol.musicWidth = music
     vol.effectWidth = effect
 end

@@ -21,10 +21,12 @@ function func.dragShip( event )
             ship:setSequence("rightShip")
             ship:play()
         end
-        if(( event.x > 40 and event.x < display.contentWidth-40) and (event.y > 150 and event.y < display.contentHeight-30)) then
-            ship.x = event.x - ship.touchOffsetX
-            ship.y = event.y - ship.touchOffsetY
-        end       
+        if(ship.touchOffsetX or ship.touchOffsetY ~= nil) then
+            if(( event.x > 40 and event.x < display.contentWidth-40) and (event.y > 150 and event.y < display.contentHeight-30)) then
+                ship.x = event.x - ship.touchOffsetX
+                ship.y = event.y - ship.touchOffsetY
+            end  
+        end         
     elseif ( "ended" == phase or "cancelled" == phase ) then
         -- Release touch focus on the ship
         display.currentStage:setFocus( nil )
