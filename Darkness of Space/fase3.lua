@@ -11,6 +11,7 @@ local image = require("loadImage")
 local text = require("text")
 local func = require("shipFunction")
 local vol = require("volumeSetting")
+local menu = require("menuPause")
 
 math.randomseed( os.time() )
 
@@ -28,7 +29,7 @@ local bossLife = 40
 local bossLifeDefault = 40
 local hpText
 local scoreText
-local pauseTest = 0
+local pauseState = false
 local contadorAttack = 0
 local contadorText
 local attackCurrent = 0
@@ -516,123 +517,48 @@ local function onCollision( event )
     end    
 end
 
+local function optionState()
+    if(menu.uiOption.isVisible == true) then
+        uiPause.isVisible = false
+    elseif (menu.uiOption.isVisible == false and pauseState == true) then
+        uiPause.isVisible = true
+    end    
+end    
+  
 local function menuShow( event ) 
-    if (event.target.myName == "uiPause" and uiOption.isVisible == true) then
-        uiOption.isVisible = false
-    elseif (uiOption.isVisible == true and uiPause.isVisible == false) then
-        uiOption.isVisible = false
+    if (event.target.myName == "uiPause" and menu.uiOption.isVisible == true) then
+        menu.uiOption.isVisible = false
+    elseif (menu.uiOption.isVisible == true and uiPause.isVisible == false) then
+        menu.uiOption.isVisible = false
+        menu.buttonOption.isVisible = false
         uiPause.isVisible = true   
     elseif (uiPause.isVisible == false) then
         uiPause.isVisible = true   
     elseif(uiPause.isVisible == true) then
         uiPause.isVisible = false
     end
-end  
-
-local function optionShow()
-    uiPause.isVisible = false
-    uiOption.isVisible = true
-end 
-
-local function muteChange( event )
-    if(event.target.myName == "muteOn" or event.target.myName == "muteOff") then
-        if(muteOff.isVisible == true) then
-            muteOff.isVisible = false
-            muteOn.isVisible = true
-            audio.stop(1)
-            muteOff:removeEventListener("tap", muteChange)
-            muteOn:addEventListener( "tap", muteChange)
-        else
-            muteOff.isVisible = true
-            muteOn.isVisible = false
-            muteOn:removeEventListener("tap", muteChange)
-            muteOff:addEventListener( "tap", muteChange)   
-        end    
-    end    
-    if(event.target.myName == "muteOn1" or event.target.myName == "muteOff1") then
-        if(muteOff1.isVisible == true) then
-            muteOff1.isVisible = false
-            muteOn1.isVisible = true
-            audio.stop(2)
-            audio.stop(3)
-            muteOff1:removeEventListener("tap", muteChange)
-            muteOn1:addEventListener( "tap", muteChange)
-        else
-            muteOff1.isVisible = true
-            muteOn1.isVisible = false
-            muteOn1:removeEventListener("tap", muteChange)
-            muteOff1:addEventListener( "tap", muteChange)
-        end    
-    end     
-end 
-
-local function volumeChange(event)
-    if(event.target.myName == "down") then
-        if(vol.musicCurrent ~= 0) then
-            vol.musicCurrent = vol.musicCurrent - 1
-            transition.to(volumeBar, { width = vol.updateBar(volumeBar.width,"down"), time=1}) 
-            vol.music = vol.music - 0.1
-            audio.setVolume( vol.music, { channel=1 } )
-            menu_option_volumeIndicator.text = vol.musicCurrent
-        end  
-    end
-    if(event.target.myName == "up") then
-        if(vol.musicCurrent ~= 10) then
-            vol.musicCurrent = vol.musicCurrent + 1
-            transition.to(volumeBar, { width = vol.updateBar(volumeBar.width,"up"), time=1})  
-            vol.music = vol.music + 0.1
-            audio.setVolume( vol.music, { channel=1 } )
-            menu_option_volumeIndicator.text = vol.musicCurrent
-        end    
-    end
-    if(event.target.myName == "down1") then
-        if(vol.effectCurrent ~= 0) then
-            vol.effectCurrent = vol.effectCurrent - 1
-            transition.to(volumeBar1, { width = vol.updateBar(volumeBar1.width,"down"), time=1})  
-            vol.effect = vol.effect - 0.1
-            audio.setVolume( vol.effect, { channel=2})
-            audio.setVolume( vol.effect, { channel=3})
-            menu_option_volumeIndicator1.text = vol.effectCurrent
-        end
-    end
-    if(event.target.myName == "up1") then
-        if(vol.effectCurrent ~= 10) then
-            vol.effectCurrent = vol.effectCurrent + 1
-            transition.to(volumeBar1, { width = vol.updateBar(volumeBar1.width,"up"), time=1})  
-            vol.effect = vol.effect + 0.1
-            audio.setVolume( vol.effect, { channel=2})
-            audio.setVolume( vol.effect, { channel=3})
-            menu_option_volumeIndicator1.text = vol.effectCurrent
-        end    
-    end
-    if(vol.musicCurrent == 0) then
-        volumeBar.width = 0
-    end    
-    if(vol.effectCurrent == 0) then
-        volumeBar1.width = 0
-    end   
-end      
+end   
+   
 
 local function pauseGame(event)
-    
-    pauseTest = pauseTest + 1
-    if (pauseTest == 1) then
-    physics.pause()
-    timer.pause(bossFire)
-    timer.pause(gerenation)
-    transition.pause()
-    bossMage:pause()
-    ship:removeEventListener("tap", attack)
-    ship:removeEventListener("touch", func.dragShip)
-    audio.pause( 1 )
-    if(explosionAttack ~= nil) then
-        if(explosionAttack.isPlaying == true) then
-            explosionAttack:pause()
+    if (pauseState == false) then
+        pauseState = true
+        physics.pause()
+        timer.pause(bossFire)
+        timer.pause(gerenation)
+        transition.pause()
+        bossMage:pause()
+        ship:removeEventListener("tap", attack)
+        ship:removeEventListener("touch", func.dragShip)
+        audio.pause( 1 )
+        if(explosionAttack ~= nil) then
+            if(explosionAttack.isPlaying == true) then
+                explosionAttack:pause()
+            end
         end
-    end
-    menuShow( event )         
+        menuShow( event )         
     else 
-        pauseTest = 0
+        pauseState = false
         physics.start()
         timer.resume(bossFire)
         timer.resume(gerenation)
@@ -647,7 +573,7 @@ local function pauseGame(event)
             end
         end
         menuShow( event )  
-        if(uiOption.isVisible == false and uiPause.isVisible == false and muteOff.isVisible == true) then
+        if(uiOption.isVisible == false and uiPause.isVisible == false and menu.muteOff.isVisible == true) then
             audio.play(backgroundSong, {channel = 1, loops = -1 } )
         end
     end    
@@ -721,7 +647,7 @@ local function specialAttack( event )
     end        
 end
  
-
+Runtime:addEventListener( "enterFrame", optionState )
 Runtime:addEventListener( "enterFrame", specialAttack )
 bossFire = timer.performWithDelay( 1300, fireLaser, 0)
 gerenation = timer.performWithDelay( 4000, generationItem, 0)
@@ -731,14 +657,8 @@ Runtime:addEventListener( "collision", onCollision )
 menu_pause:addEventListener( "tap", pauseGame)
 button_back:addEventListener( "tap", menuGame)
 button_resume:addEventListener( "tap", pauseGame )
-button_option:addEventListener ( "tap", optionShow)
-volumeBarLeft:addEventListener( "tap", volumeChange)
-volumeBarLeft1:addEventListener( "tap", volumeChange)
-volumeBarRight:addEventListener( "tap", volumeChange)
-volumeBarRight1:addEventListener( "tap", volumeChange)
-muteOff:addEventListener( "tap", muteChange)
-muteOff1:addEventListener( "tap", muteChange)
-button_back_option:addEventListener ( "tap", menuShow)
+button_option:addEventListener ( "tap", menu.optionShow)
+
 
 function scene:create( event )
 

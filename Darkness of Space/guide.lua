@@ -2,8 +2,11 @@ local composer = require( "composer" )
 local image = require("loadImage")
 local text = require("text")
 local func = require("shipFunction")
+local vol = require("volumeSetting")
  
 local scene = composer.newScene()
+
+local backgroundSong = audio.loadSound("audio/guia/ObservingTheStar.ogg")
  
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
@@ -222,7 +225,8 @@ function scene:show( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
- 
+        audio.play(backgroundSong, {channel = 1, loops = -1 })
+        audio.setVolume( vol.music, { channel=1 } )
     end
 end
  
@@ -238,6 +242,7 @@ function scene:hide( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs immediately after the scene goes entirely off screen
+        audio.stop( 1 )
         composer.removeScene( "guide" )
     end
 end

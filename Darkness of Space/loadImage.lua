@@ -104,7 +104,7 @@ function img.loadUi(target, type, group)
             optionButton.y = display.contentCenterY - 230
             optionButton.alpha = 0.8
             optionButton:scale(0.8,0.8)
-            return option
+            return optionButton
         end   
     end    
     if(target == "hp") then
