@@ -625,13 +625,13 @@ local function specialAttack( event )
                 bossMage:setSequence("normalMage")
                 bossMage:play()
             end
-            }) 
-            if(menu.muteOn.isVisible == true) then
-                audio.stop( backgroundMusicChannel )
-            end    
+            })  
             if(menu.muteOff.isVisible == true) then
+                audio.stop( backgroundMusicChannel )
                 audio.play(backgroundSong2, {channel = 1, loops = -1 } )
             end    
+            timer.cancel(bossFire)
+            bossFire = timer.performWithDelay( 1000, fireLaser, 0)
             audioState = true
         end    
         timerAttack = true

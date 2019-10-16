@@ -82,8 +82,9 @@ local sheet_options_boss4 =
 local sheet_boss1 = graphics.newImageSheet( "Sprites/Boss/disciple.png", sheet_options_boss1)
 local sheet_boss2 = graphics.newImageSheet( "Sprites/Boss/boss2.png", sheet_options_boss2 )
 local sheet_boss3 = graphics.newImageSheet( "Sprites/Boss/mage1.png", sheet_options_boss3)
+local sheet_boss4 = graphics.newImageSheet( "Sprites/Boss/mage-3-87x110.png", sheet_options_boss4)
 
-function sprite.loadBoss(level,group,type)
+function sprite.loadBoss(level,group)
     if(level == 1) then
         return display.newSprite(group,sheet_boss1,sequences_boss1)
     end   
@@ -93,6 +94,9 @@ function sprite.loadBoss(level,group,type)
     if(level == 3) then
         return display.newSprite(group,sheet_boss3,sequences_boss3) 
     end    
+    if(level == 4) then
+        return display.newSprite(group,sheet_boss4,sequences_boss3)
+    end
 end    
 
 return sprite

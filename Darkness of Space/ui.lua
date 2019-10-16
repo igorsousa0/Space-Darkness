@@ -86,5 +86,9 @@ function ui.loadItem(type,group)
     end    
 end
 
+function ui.loadImgScenario(group)
+    return display.newImageRect(group,"Sprites/Scenario/planet.png", 480,480 )
+end    
+
 
 return ui

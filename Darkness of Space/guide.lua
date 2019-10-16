@@ -149,44 +149,42 @@ function scene:create( event )
     local pageGuide = 1
 
     local function changeGuide(event)
-        if(event.numTaps == 1) then
-            if(event.target.myName == "next") then
-                guideUiGroup.isVisible = false
+        if(event.target.myName == "next") then
+            guideUiGroup.isVisible = false
+            pageGuide = pageGuide + 1
+            guideUiGroup1.isVisible = true
+            ship1:addEventListener( "tap", func.shotGuide )
+            guideGroup1.isVisible = true
+            buttonNext.isVisible = false
+            buttonNextText.isVisible = false
+        end	
+        if(event.target.myName == "next1") then
+            if(pageGuide == 2) then
+                guideUiGroup1.isVisible = false
                 pageGuide = pageGuide + 1
-                guideUiGroup1.isVisible = true
-                ship1:addEventListener( "tap", func.shotGuide )
-                guideGroup1.isVisible = true
-                buttonNext.isVisible = false
-                buttonNextText.isVisible = false
-            end	
-            if(event.target.myName == "next1") then
-                if(pageGuide == 2) then
-                    guideUiGroup1.isVisible = false
-                    pageGuide = pageGuide + 1
-                    guideUiGroup2.isVisible = true
-                    ship1:removeEventListener("tap", func.shotGuide)
-                end	
-            end	
-            if(event.target.myName == "back") then
-                if(pageGuide == 2) then
-                    guideUiGroup1.isVisible = false
-                    pageGuide = pageGuide - 1
-                    guideUiGroup.isVisible = true
-                    ship.x = guidePanel.x
-                    ship.y = guidePanel.y - 50
-                    ship:addEventListener("touch", func.dragShipGuide)
-                    guideGroup1.isVisible = false
-                    buttonNext.isVisible = true
-                    buttonNextText.isVisible = true
-                end	
-                if(pageGuide == 3) then
-                    guideUiGroup2.isVisible = false
-                    pageGuide = pageGuide - 1
-                    guideUiGroup1.isVisible = true
-                    ship1:addEventListener("tap", func.shotGuide)
-                end	
+                guideUiGroup2.isVisible = true
+                ship1:removeEventListener("tap", func.shotGuide)
             end	
         end	
+        if(event.target.myName == "back") then
+            if(pageGuide == 2) then
+                guideUiGroup1.isVisible = false
+                pageGuide = pageGuide - 1
+                guideUiGroup.isVisible = true
+                ship.x = guidePanel.x
+                ship.y = guidePanel.y - 50
+                ship:addEventListener("touch", func.dragShipGuide)
+                guideGroup1.isVisible = false
+                buttonNext.isVisible = true
+                buttonNextText.isVisible = true
+            end	
+            if(pageGuide == 3) then
+                guideUiGroup2.isVisible = false
+                pageGuide = pageGuide - 1
+                guideUiGroup1.isVisible = true
+                ship1:addEventListener("tap", func.shotGuide)
+            end	
+        end		
     end	
     
     

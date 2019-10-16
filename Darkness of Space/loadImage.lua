@@ -10,6 +10,14 @@ local hitboxBoss3 = { halfWidth=38, halfHeight=51}
 
 local img = {}
 
+function img.loadImgScenario(group)
+    local planet = uiGame.loadImgScenario(group)
+    planet.x = display.contentCenterX
+    planet.y = display.contentCenterY
+    planet:scale(0.8,0.8)
+    return planet
+end    
+
 function img.loadBackground(level,group)
     if(level == 1) then
         local background = back.loadBackground(level,group)
@@ -45,6 +53,7 @@ function img.loadImgShip(x,y,group)
 end
 
 function img.loadBoss(level,group)
+    print(type)
     if(level == 1) then
         local bossMage = boss.loadBoss(level,group)
         bossMage.x = display.contentCenterX
@@ -78,6 +87,17 @@ function img.loadBoss(level,group)
         bossMage:play()
         return bossMage    
     end   
+    if(level == 4) then
+        local bossMage = boss.loadBoss(level,group)
+        bossMage.x = display.contentCenterX
+        bossMage.y = display.contentCenterY - 165
+        physics.addBody( bossMage, "dynamic", { box=hitboxBoss3, filter = 1} )
+        bossMage:scale(1.15,1.15)
+        bossMage.myName = "boss"
+        bossMage:setSequence("normalMage")
+        bossMage:play()
+        return bossMage
+    end    
 end    
 
 function img.loadUi(target, type, group)

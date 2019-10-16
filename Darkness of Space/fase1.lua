@@ -31,6 +31,7 @@ local hpText
 local scoreText
 local difficulty = 50
 local TimerAttack = 2000
+local TimerMove = 300
 local pauseState = false
 local contadorAttack = 0
 local contadorText
@@ -139,7 +140,7 @@ exit_text_button.x = button_back.x
 exit_text_button.y = button_back.y
 
 local function bossMove()
-    transition.to(bossMage, {time = 4000, x = ship.x})
+    transition.to(bossMage, {time = 3500, x = ship.x})
 end
 
 local function fireLaser()
@@ -251,15 +252,12 @@ end
 
 local function difficultyModify(type)
     if(TimerAttack > 1000) then
-        timer.cancel(bossFire)
         if(type == "attack3") then
-            TimerAttack = TimerAttack - difficulty
-            print(TimerAttack)   
+            bossFire._delay = bossFire._delay - difficulty 
         else 
-            TimerAttack = TimerAttack - (difficulty * 3)
-            print(TimerAttack)  
-        end
-        bossFire = timer.performWithDelay( TimerAttack, fireLaser, 0)        
+            bossFire._delay = bossFire._delay - (difficulty * 3) 
+        end   
+        bossMove._delay = bossMove._delay - 10 
     end    
 end    
 
@@ -458,7 +456,7 @@ end
 
     Runtime:addEventListener( "enterFrame", optionState )
     bossFire = timer.performWithDelay( TimerAttack, fireLaser, 0)
-    bossMove = timer.performWithDelay( 300, bossMove, 0 )
+    bossMove = timer.performWithDelay( TimerMove, bossMove, 0 )
     gerenation = timer.performWithDelay( 4000, generationItem, 0)
     ship:addEventListener( "touch", func.dragShip )
     ship:addEventListener( "tap", attack )
