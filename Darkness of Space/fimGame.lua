@@ -1,4 +1,5 @@
 local composer = require( "composer" )
+local image = require("loadImage")
 
 local scene = composer.newScene()
 
@@ -23,11 +24,15 @@ function scene:create( event )
     background.x = display.contentCenterX
     background.y = display.contentCenterY
 
-    local lostText = display.newText( sceneGroup, "Você foi derrotado!", display.contentCenterX, display.contentCenterY - 200, native.systemFont, 34 )
+    local lostText = display.newText( sceneGroup, "Você foi derrotado!", display.contentCenterX + 8, display.contentCenterY - 200, "Font/ARCADECLASSIC.TTF", 32 )
     lostText:setFillColor( 0.82, 0.86, 1 )
 
-    local continueButton = display.newText( sceneGroup, "Avançar", display.contentCenterX, display.contentCenterY + 100, native.systemFont, 20 )
-    continueButton:setFillColor( 0.75, 0.78, 1 )
+	local continueButton = image.loadUi("menu panel",2,uiGroup)
+	continueButton.x = display.contentCenterX
+	continueButton.y = display.contentCenterY + 100
+	continueButton:scale(2,1.8)
+    local continueText = display.newText( sceneGroup, "Avançar", display.contentCenterX, display.contentCenterY + 100, "Font/prstart.ttf", 20 )
+    continueText:setFillColor( 0.75, 0.78, 1 )
  
     continueButton:addEventListener( "tap", gotoSelect )
 	

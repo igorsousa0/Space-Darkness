@@ -20,6 +20,7 @@ function scene:create( event )
 
 	local sceneGroup = self.view
 	local musicState = true
+	local pauseMute = true
 	-- Code here runs when the scene is first created but has not yet appeared on screen
     local background = display.newImageRect( sceneGroup, "Background/3/Background.jpg", 530, 570 )
     background.x = display.contentCenterX
@@ -61,6 +62,19 @@ function scene:create( event )
 		end	
 	end	
 
+	local function muteState()
+		if(menu.muteOn.isVisible == true) then
+			pauseMute = false
+		end	
+		if(menu.muteOn.isVisible == false) then
+			if(pauseMute == false) then
+				pauseMute = true
+				audio.play(backgroundSong, {channel = 1, loops = -1 })
+			end	
+		end	
+	end	
+
+	muteTimer = timer.performWithDelay( 1000, muteState, 0 )
 	Runtime:addEventListener( "enterFrame", statePause )
 	playButton:addEventListener( "tap", gotoSelect )
 	guideButton:addEventListener( "tap", gotoGuide )
@@ -79,7 +93,9 @@ function scene:show( event )
 		-- Code here runs when the scene is still off screen (but is about to come on screen)
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
-		audio.play(backgroundSong, {channel = 1, loops = -1 })
+		if(menu.muteOff.isVisible == true) then
+			audio.play(backgroundSong, {channel = 1, loops = -1 })
+		end	
 		audio.setVolume( vol.music, { channel=1 } )
 		--som.somTema();
 	end
@@ -96,7 +112,9 @@ function scene:hide( event )
 		-- Code here runs when the scene is on screen (but is about to go off screen)
 	elseif ( phase == "did" ) then
 		-- Code here runs immediately after the scene goes entirely off screen
+		timer.cancel(muteTimer)
 		audio.stop( 1 )
+		composer.removeScene( "menu" )
 	end
 end
 

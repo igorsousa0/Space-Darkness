@@ -29,6 +29,8 @@ local gameLoopTimer
 local bossLife = 20
 local hpText
 local scoreText
+local difficulty = 50
+local TimerAttack = 2000
 local pauseState = false
 local contadorAttack = 0
 local contadorText
@@ -146,13 +148,15 @@ local function fireLaser()
     flameball.isBullet = true
     flameball.myName = "flameball"
     flameball.x = bossMage.x
-    flameball.y = bossMage.y
-    if(menu.muteOff1.isVisible == true) then
-        audio.play(fireEffect, {channel = 3} )
-    end    
-    transition.to(flameball, {x = ship.x, y=800, time=2500, 
-        onComplete = function() display.remove(flameball) end
+    flameball.y = bossMage.y   
+    transition.to(flameball, {x = ship.x, y=800, time=2000, 
+    onComplete = function() 
+        display.remove(flameball) 
+    end
     }) 
+    if(menu.muteOff1.isVisible == true) then
+        audio.play(fireEffect)
+    end 
     flameball:scale(1.5,1.5)
     flameball:play()
 end
@@ -225,7 +229,7 @@ local function attack()
             attackText.text = "Dano Atual: " .. attackCurrent
         end
         if(menu.muteOff1.isVisible == true) then
-            audio.play(shotEffect, {channel = 2} ) 
+            audio.play(shotEffect) 
         end  
         table.remove(playerAttack,1)
         updateAttackCurrent()
@@ -243,6 +247,20 @@ end
 
 local function victoryEnd()
     composer.gotoScene( "victory", { time=1100, effect="crossFade", params= {hp1 = hp, fase = 1} } )
+end    
+
+local function difficultyModify(type)
+    if(TimerAttack > 1000) then
+        timer.cancel(bossFire)
+        if(type == "attack3") then
+            TimerAttack = TimerAttack - difficulty
+            print(TimerAttack)   
+        else 
+            TimerAttack = TimerAttack - (difficulty * 3)
+            print(TimerAttack)  
+        end
+        bossFire = timer.performWithDelay( TimerAttack, fireLaser, 0)        
+    end    
 end    
 
 local function onCollision( event )
@@ -308,8 +326,10 @@ local function onCollision( event )
             timer.performWithDelay( 1000, restoreBoss ) 
             transition.to(hp_boss, { width = hp_boss_lost, time=500,}) 
             if (obj1.myName == "attack3") then
+                difficultyModify(obj1.myName)
                 display.remove(obj1)
             else
+                difficultyModify(obj2.myName)
                 display.remove(obj2)
             end         
         end
@@ -324,8 +344,10 @@ local function onCollision( event )
             timer.performWithDelay( 1000, restoreBoss ) 
             transition.to(hp_boss, { width = hp_boss_lost, time=500,})
             if (obj1.myName == "attack4") then
+                difficultyModify(obj1.myName)
                 display.remove(obj1)
             else
+                difficultyModify(obj2.myName)
                 display.remove(obj2)
             end
         end
@@ -435,7 +457,7 @@ local function generationItem()
 end         
 
     Runtime:addEventListener( "enterFrame", optionState )
-    bossFire = timer.performWithDelay( 2000, fireLaser, 0)
+    bossFire = timer.performWithDelay( TimerAttack, fireLaser, 0)
     bossMove = timer.performWithDelay( 300, bossMove, 0 )
     gerenation = timer.performWithDelay( 4000, generationItem, 0)
     ship:addEventListener( "touch", func.dragShip )
@@ -482,7 +504,9 @@ function scene:show( event )
 	elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
         physics.start()
-        audio.play(backgroundSong, {channel = 1, loops = -1 } )
+        if(menu.muteOff.isVisible == true) then
+            audio.play(backgroundSong, {channel = 1, loops = -1 } )
+        end    
         audio.setVolume( vol.music, { channel=1 } )
         audio.setVolume( vol.effect, { channel=2 } )
         audio.setVolume( vol.effect, { channel=3 } )

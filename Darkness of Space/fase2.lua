@@ -26,6 +26,7 @@ local explosionEffect = audio.loadSound("audio/effect/mage02/DeathFlash.mp3")
 
 local hp = 5
 local died = false
+local bossDied = false
 
 local playerAttack = {}
 local gameLoopTimer
@@ -312,14 +313,17 @@ local sequences_magic =
                 end
             end     
             if ( bossLife <= 0) then
-                display.remove(menu_pause)
-                bossMage:setSequence("deadMage")
-                bossMage:play()
-                customParams.hp = hp
-                transition.to(bossMage, {time=1400, 
-                onComplete = function() display.remove(bossMage) victoryEnd() end
-                })
-            end    
+                if(bossDied == false) then
+                    bossDied = true
+                    display.remove(menu_pause)
+                    bossMage:setSequence("deadMage")
+                    bossMage:play()
+                    customParams.hp = hp
+                    transition.to(bossMage, {time=1400, 
+                    onComplete = function() display.remove(bossMage) victoryEnd() end
+                    })
+                end   
+            end       
         end 
     end   
 
@@ -528,7 +532,9 @@ function scene:show( event )
     elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
         physics.start()
-        audio.play(backgroundSong, {channel = 1, loops = -1 })
+        if(menu.muteOff.isVisible == true) then
+            audio.play(backgroundSong, {channel = 1, loops = -1 } )
+        end  
         audio.setVolume( vol.music, { channel=1 } )
         audio.setVolume( vol.effect, { channel=2 } )
         audio.setVolume( vol.effect, { channel=3 } )

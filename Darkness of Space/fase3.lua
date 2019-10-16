@@ -21,6 +21,7 @@ local shotEffect = audio.loadSound("audio/effect/ship/laser.wav")
 
 local hp = 5
 local died = false
+local bossDied = false
 
 local playerAttack = {}
 local attackTest = {}
@@ -505,14 +506,17 @@ local function onCollision( event )
             end
         end
         if ( bossLife <= 0) then
-            display.remove(menu_pause)
-            --timer.cancel(hitbox)
-            timer.cancel(bossFire)
-            timer.cancel(gerenation)
-            customParams.hp = hp
-            transition.to(bossMage, {time=1000, 
-            onComplete = function() display.remove(bossMage) victoryEnd() end
-            })
+            if(bossDied == false) then
+                bossDied = true
+                display.remove(menu_pause)
+                --timer.cancel(hitbox)
+                timer.cancel(bossFire)
+                timer.cancel(gerenation)
+                customParams.hp = hp
+                transition.to(bossMage, {time=1000, 
+                onComplete = function() display.remove(bossMage) victoryEnd() end
+                })
+            end    
         end      
     end    
 end
@@ -614,18 +618,21 @@ local function specialAttack( event )
                 bossMage = nil
                 bossMage = display.newSprite(mainGroup, sheet_bossMage2, sequences_bossMage)
                 bossMage.x = display.contentCenterX
-                bossMage.y = display.contentCenterY - 185
-                physics.addBody( bossMage, "dynamic", { box=hitboxBoss} )
-                bossMage:scale(1.2,1.2)
+                bossMage.y = display.contentCenterY - 165
+                physics.addBody( bossMage, "dynamic", { box=hitboxBoss, filter = 1} )
+                bossMage:scale(1.15,1.15)
                 bossMage.myName = "boss"
                 bossMage:setSequence("normalMage")
                 bossMage:play()
             end
             }) 
-            audio.stop( backgroundMusicChannel )
-            audio.play(backgroundSong2, {channel = 1, loops = -1 } )
+            if(menu.muteOn.isVisible == true) then
+                audio.stop( backgroundMusicChannel )
+            end    
+            if(menu.muteOff.isVisible == true) then
+                audio.play(backgroundSong2, {channel = 1, loops = -1 } )
+            end    
             audioState = true
-            print("teste")
         end    
         timerAttack = true
         attackPause = true
@@ -696,7 +703,9 @@ function scene:show( event )
 	elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
         physics.start()
-        backgroundMusicChannel = audio.play(backgroundSong, {channel = 1, loops = -1 } )
+        if(menu.muteOff.isVisible == true) then
+            backgroundMusicChannel = audio.play(backgroundSong, {channel = 1, loops = -1 } )
+        end  
         audio.setVolume( vol.music, { channel=1 } )
         audio.setVolume( vol.effect, { channel=2 } )
         volumeBar.width = vol.musicWidth
