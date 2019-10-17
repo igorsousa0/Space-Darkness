@@ -1,9 +1,10 @@
 local composer = require( "composer" )
 local image = require("loadImage")
+local score = require("score")
  
 local scene = composer.newScene()
 
-local backGroup = display.newGroup()
+local mainGroup = display.newGroup()
 local scene1 = display.newGroup()
 local scene2 = display.newGroup()
  
@@ -13,7 +14,10 @@ local scene2 = display.newGroup()
 -- -----------------------------------------------------------------------------------
  
  
- 
+local function gotoVictory()
+    score.level = 4
+	composer.gotoScene( "victory", { time=600, effect="crossFade"})
+end	
  
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
@@ -29,9 +33,24 @@ function scene:create( event )
  
     sceneGroup:insert( scene2 )
 
+    sceneGroup:insert( mainGroup )
+
+    local victoryText = display.newText( mainGroup, "Missão Completa!", display.contentCenterX, display.contentCenterY - 230, "Font/ARCADECLASSIC.TTF", 32 )
+    victoryText:setFillColor( 0.82, 0.86, 1 ) 
+    
+    local continueButton = image.loadUi("menu panel",2,mainGroup)
+	continueButton.x = display.contentCenterX
+	continueButton.y = display.contentCenterY + 230
+    continueButton:scale(2,1.8)
+    
+    local continueText = display.newText( mainGroup, "Avançar", continueButton.x, continueButton.y, "Font/prstart.ttf", 20 )
+	continueText:setFillColor( 0.75, 0.78, 1 )
+
     local scene1background = image.loadBackground(2,scene1)
     local scene2background = image.loadBackground(1,scene2)
 
+    mainGroup.isVisible = false
+    mainGroup.alpha = 0
     scene2.isVisible = false
     scene2.alpha = 0
 
@@ -56,16 +75,15 @@ function scene:create( event )
     end 
     }) 
     transition.to(scene2, {time=1000,delay = 5000, alpha = 1})
-    transition.to(scene2Ship, {time=2500,delay = 6000, y = 255,
-    onComplete = function() 
-        --display.remove(scene2Ship)
-    end    
-    })
+    transition.to(scene2Ship, {time=2500,delay = 6000, y = 255})
     transition.to(scene2Ship, {time=2000,delay = 7000, xScale = 0, yScale = 0,
     onComplete = function() 
-        --display.remove(scene2Ship)
+        display.remove(scene2Ship)
+        mainGroup.isVisible = true
     end    
     })
+    transition.to(mainGroup, {time=1000,delay = 9000, alpha = 1})
+    continueButton:addEventListener( "tap", gotoVictory )
 end
  
  
@@ -92,10 +110,10 @@ function scene:hide( event )
  
     if ( phase == "will" ) then
         -- Code here runs when the scene is on screen (but is about to go off screen)
- 
+        score.Finalized = true
     elseif ( phase == "did" ) then
         -- Code here runs immediately after the scene goes entirely off screen
- 
+        composer.removeScene( "cutScene" )
     end
 end
  

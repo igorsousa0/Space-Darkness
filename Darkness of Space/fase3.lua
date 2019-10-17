@@ -12,6 +12,7 @@ local text = require("text")
 local func = require("shipFunction")
 local vol = require("volumeSetting")
 local menu = require("menuPause")
+local score = require("score")
 
 math.randomseed( os.time() )
 
@@ -54,9 +55,9 @@ local uiOption = display.newGroup()
 local hitboxAttack = 35
 local offsetRectParams = { halfWidth=10, halfHeight=10}
 
-local customParams = {
+--[[local customParams = {
     hp = 0
-}
+}--]]
 
 local sheet_options_ship =
 {
@@ -415,7 +416,11 @@ local function menuGame()
 end 
 
 local function victoryEnd()
-    composer.gotoScene( "victory", { time=500, effect="crossFade", params= {hp3 = hp, fase = 3} } )
+    if(score.Finalized == false) then
+        composer.gotoScene( "cutScene", { time=500, effect="crossFade"})
+    else
+        composer.gotoScene( "victory", { time=500, effect="crossFade"})
+    end    
 end    
 
 local function onCollision( event )
@@ -512,7 +517,9 @@ local function onCollision( event )
                 --timer.cancel(hitbox)
                 timer.cancel(bossFire)
                 timer.cancel(gerenation)
-                customParams.hp = hp
+                score.level = 3
+                score.setScore(hp)
+                --customParams.hp = hp
                 transition.to(bossMage, {time=1000, 
                 onComplete = function() display.remove(bossMage) victoryEnd() end
                 })
@@ -636,14 +643,16 @@ local function specialAttack( event )
         end    
         timerAttack = true
         attackPause = true
-        fire.isVisible = true
-        fire.isBodyActive = true
-        physics.addBody(fire, "dynamic", {radius=hitboxAttack, filter = filterCollision})
-        timerTest = timerTest + 1 
-        Runtime:removeEventListener( "enterFrame", specialAttack )
-        transition.to(fire, {time = 1000, x = ship.x, y = ship.y,
-        onComplete = function() Runtime:addEventListener( "enterFrame", specialAttack ) end
-        })   
+        if(fire ~= nil) then
+            fire.isVisible = true
+            fire.isBodyActive = true
+            physics.addBody(fire, "dynamic", {radius=hitboxAttack, filter = filterCollision})
+            timerTest = timerTest + 1 
+            Runtime:removeEventListener( "enterFrame", specialAttack )
+            transition.to(fire, {time = 1000, x = ship.x, y = ship.y,
+            onComplete = function() Runtime:addEventListener( "enterFrame", specialAttack ) end
+            })   
+        end    
         if (timerTest == 30) then
             Runtime:removeEventListener( "enterFrame", specialAttack )
             transition.cancel( fire )

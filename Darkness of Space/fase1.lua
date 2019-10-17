@@ -12,6 +12,7 @@ local text = require("text")
 local func = require("shipFunction")
 local vol = require("volumeSetting")
 local menu = require("menuPause")
+local score = require("score")
 
 math.randomseed( os.time() )
 
@@ -52,9 +53,9 @@ local uiOption = display.newGroup()
 
 local offsetRectParams = { halfWidth=10, halfHeight=10}
 
-local customParams = {
+--[[local customParams = {
     hp = 0
-}
+}--]]
 
 local sheet_options_flameball =
 {
@@ -247,7 +248,7 @@ local function menuGame()
 end    
 
 local function victoryEnd()
-    composer.gotoScene( "victory", { time=1100, effect="crossFade", params= {hp1 = hp, fase = 1} } )
+    composer.gotoScene( "victory", { time=1100, effect="crossFade"})
 end    
 
 local function difficultyModify(type)
@@ -356,7 +357,9 @@ local function onCollision( event )
             print(bossLife)
             timer.cancel(bossFire)
             timer.cancel(gerenation)
-            customParams.hp = hp
+            score.setScore(hp)
+            score.level = 1
+            --customParams.hp = hp
             transition.to(bossMage, {time=1000, 
             onComplete = function() display.remove(bossMage) victoryEnd() end
             })

@@ -1,19 +1,20 @@
 local composer = require( "composer" )
 local image = require("loadImage")
+local score = require("score")
 
 local scene = composer.newScene()
 
-local score = 200
-local level = 0
+--[[local score = 200
+local level = 0--]]
 local highScoresButton
-scoreCalc = 0
+--scoreCalc = 0
 
 local function nextLevel()
-	if (level == 1) then
+	if (score.level == 1) then
 		composer.gotoScene( "fase2", { time=200, effect="crossFade" } )
-	elseif (level == 2) then
+	elseif (score.level == 2) then
 		composer.gotoScene( "fase3", { time=200, effect="crossFade" } )
-	elseif (level == 3) then
+	elseif (score.level == 3 or score.level == 4) then
 		composer.gotoScene( "menu", { time=200, effect="crossFade" } )
 	end		
 end
@@ -42,7 +43,7 @@ function scene:create( event )
     local victoryText = display.newText( sceneGroup, "Você Venceu!", display.contentCenterX, display.contentCenterY - 200, "Font/ARCADECLASSIC.TTF", 34 )
 	victoryText:setFillColor( 0.82, 0.86, 1 )
 	
-	highScoresButton = display.newText( sceneGroup, "High Scores: " .. scoreCalc , display.contentCenterX, display.contentCenterY - 100, "Font/prstart.ttf", 15 )
+	highScoresButton = display.newText( sceneGroup, "High Scores: " .. score.getScore() , display.contentCenterX, display.contentCenterY - 100, "Font/prstart.ttf", 15 )
 	highScoresButton:setFillColor( 0.75, 0.78, 1 )
 
 	local continueButton = image.loadUi("menu panel",2,mainGroup)
@@ -75,15 +76,14 @@ function scene:show( event )
 
 	if ( phase == "will" ) then
 		-- Code here runs when the scene is still off screen (but is about to come on screen)
-		if(event.params.fase == 1) then
+		--[[if(event.params.fase == 1) then
 			scoreCalc = score * event.params.hp1
 		elseif (event.params.fase == 2) then
 			scoreCalc = score * event.params.hp2 + scoreCalc
 		elseif (event.params.fase == 3) then
 			scoreCalc = score * event.params.hp3 + scoreCalc
-		end	
-		highScoresButton.text = "High Scores: " .. scoreCalc
-		level = event.params.fase
+		end--]]
+		highScoresButton.text = "High Scores: " .. score.getScore()
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
 		--audio.play(musicaFundo, {channel = 1, loops = -1 } )

@@ -3,6 +3,7 @@ local image = require("loadImage")
 local text = require("text")
 local menu = require("menuPause")
 local vol = require("volumeSetting")
+local score = require("score")
 
 local scene = composer.newScene()
 
@@ -93,6 +94,7 @@ function scene:show( event )
 		-- Code here runs when the scene is still off screen (but is about to come on screen)
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
+		score.scoreTotal = 0
 		if(menu.muteOff.isVisible == true) then
 			audio.play(backgroundSong, {channel = 1, loops = -1 })
 		end	

@@ -16,6 +16,7 @@ local text = require("text")
 local func = require("shipFunction")
 local vol = require("volumeSetting")
 local menu = require("menuPause")
+local score = require("score")
 
 math.randomseed( os.time() )
 
@@ -54,9 +55,9 @@ local uiGroup = display.newGroup()
 local uiPause = display.newGroup()
 local uiOption = display.newGroup()
 
-local customParams = {
+--[[local customParams = {
     hp = 0
-}
+}--]]
 
 local sheet_options_magic = 
 {
@@ -225,7 +226,9 @@ local sequences_magic =
     end   
     
     local function victoryEnd()
-        composer.gotoScene( "victory", { time=1400, effect="crossFade", params={hp2 = hp, fase = 2} } )
+        score.setScore(hp)
+        score.level = 2
+        composer.gotoScene( "victory", { time=1400, effect="crossFade"})
     end
     
     local function onCollision( event )
@@ -315,10 +318,13 @@ local sequences_magic =
             if ( bossLife <= 0) then
                 if(bossDied == false) then
                     bossDied = true
+                    timer.cancel(vortexAttack)
+                    timer.cancel(gerenation)  
+                    physics.pause()
                     display.remove(menu_pause)
                     bossMage:setSequence("deadMage")
                     bossMage:play()
-                    customParams.hp = hp
+                    --customParams.hp = hp
                     transition.to(bossMage, {time=1400, 
                     onComplete = function() display.remove(bossMage) victoryEnd() end
                     })
@@ -557,9 +563,6 @@ function scene:hide( event )
         Runtime:removeEventListener( "touch", dragShip )
         Runtime:removeEventListener( "tap", attack )
         Runtime:removeEventListener( "tap", pauseGame)
-        timer.cancel(vortexAttack)
-        timer.cancel(gerenation)  
-        physics.pause()
         composer.removeScene( "fase2" )
         audio.stop( 1 )
     end
