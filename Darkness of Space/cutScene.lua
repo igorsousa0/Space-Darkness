@@ -56,11 +56,11 @@ function scene:create( event )
 
     --local bossMage = image.loadBoss(4,scene1)
 
-    local scene1Ship = image.loadShip(scene1)
+    local scene1Ship = image.cutSceneShip(scene1)
     scene1Ship:setSequence("normalShip")
     scene1Ship:play()   
     local planet = image.loadImgScenario(scene2)
-    local scene2Ship = image.loadShip(scene2)
+    local scene2Ship = image.cutSceneShip(scene2)
     scene2Ship.y = 580
     scene2Ship:setSequence("normalShip")
     scene2Ship:play() 

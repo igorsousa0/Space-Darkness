@@ -52,6 +52,15 @@ function img.loadImgShip(x,y,group)
     return ship
 end
 
+function img.cutSceneShip(group)
+    local ship = player.loadPlayer(group,nil)
+    ship.x = display.contentCenterX
+    ship.y = display.contentCenterY + 210
+    ship.myName = "ship"
+    ship:scale(2.5,2.5)
+    return ship
+end    
+
 function img.loadBoss(level,group)
     print(type)
     if(level == 1) then
