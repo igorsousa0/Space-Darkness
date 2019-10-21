@@ -39,8 +39,15 @@ function scene:create( event )
     local sceneBackground = image.loadBackground(1,mainGroup)
     local planet = image.loadImgScenario(mainGroup)
     planet.y = display.contentCenterY + 60
+    local skipButton = image.loadUi("menu panel",2,mainGroup)
+    skipButton.x = display.contentCenterX + 90
+    skipButton.y = display.contentCenterY + 230
+    skipButton:scale(1.1,1.1)
+    local skipText = display.newText( mainGroup, "Pular Cena",  skipButton.x, skipButton.y, "Font/prstart.ttf", 9.5 )
     local sceneShip = image.cutSceneShip(mainGroup)
     local dialogPanel = image.loadUi("menu", 1, uiGroup)
+    skipText.alpha = 0.8
+    skipButton.alpha = 0.5
     dialogPanel.y = display.contentCenterY - 200
     dialogPanel:scale(0.3,0.2)
     dialogPanel.alpha = 0
@@ -93,6 +100,7 @@ function scene:create( event )
     transition.to(sceneShip, {time=2500,delay = 28500,  y = -255 })
 
     timer.performWithDelay( 31000, gotoMenu, 1)
+    skipButton:addEventListener( "tap", gotoMenu )
 end
  
  

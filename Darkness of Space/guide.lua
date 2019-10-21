@@ -48,6 +48,13 @@ local item1 = {
     align = "center"
 }
 
+local goal = {
+	text = "Seu objetivo é eliminar\n os inimigos, portanto,\n cuidado para não ser\n derrotado!",
+	fontSize = 11.5,
+	font = "Font/prstart.ttf",
+    align = "center"
+}
+
 local function gotoMenu()
     composer.gotoScene( "menu", { time=600, effect="crossFade" } )
 end    
@@ -68,16 +75,17 @@ function scene:create( event )
     background.alpha = 0.5
 
     guideGroup = display.newGroup()
-	sceneGroup:insert( guideGroup )
 	guideGroup1 = display.newGroup()
-	sceneGroup:insert( guideGroup1 )
 	guideUiGroup = display.newGroup()
-	sceneGroup:insert( guideUiGroup )
 	guideUiGroup1 = display.newGroup()
-	sceneGroup:insert( guideUiGroup1 )
-	guideUiGroup2 = display.newGroup()
+    guideUiGroup2 = display.newGroup()
+    guideUiGroup3 = display.newGroup()
+    sceneGroup:insert( guideGroup )
+    sceneGroup:insert( guideGroup1 )
+    sceneGroup:insert( guideUiGroup )
+    sceneGroup:insert( guideUiGroup1 )
     sceneGroup:insert( guideUiGroup2 )
-
+    sceneGroup:insert( guideUiGroup3 )
     
 	local guidePanel = image.loadUi("menu",1,guideGroup)
 	guideGroup.isVisible = false
@@ -110,10 +118,11 @@ function scene:create( event )
 	local buttonNextText1 = text.generateTextMenu("Próximo",guideGroup1,buttonNext1.x + 3,buttonNext1.y,"Font/prstart.ttf",17)
 	local buttonBackText1 = text.generateTextMenu("Voltar",guideGroup1,buttonBack.x,buttonBack.y,"Font/prstart.ttf",18)
 	local guideTopText = text.generateTextMenu("Como  Jogar",guideGroup,display.contentCenterX,display.contentCenterY - 220,"Font/ARCADECLASSIC.TTF",32)
-	local moveShipText = text.generateTextMenu("Movimentação",guideUiGroup,guidePanel.x,guidePanel.y - 130,"Font/prstart.ttf",15)
-	local shotShipText = text.generateTextMenu("Atirar",guideUiGroup1,guidePanel.x,guidePanel.y - 130,"Font/prstart.ttf",15)
-	local itemShipText = text.generateTextMenu("Itens",guideUiGroup2,guidePanel.x,guidePanel.y - 130,"Font/prstart.ttf",15)
-	local ship = image.loadImgShip(guidePanel.x,guidePanel.y,guideUiGroup)
+	local moveShipText = text.generateTextMenu("Movimentação",guideUiGroup,guidePanel.x + 5,guidePanel.y - 130,"Font/prstart.ttf",15)
+	local shotShipText = text.generateTextMenu("Atirar",guideUiGroup1,guidePanel.x + 5,guidePanel.y - 130,"Font/prstart.ttf",15)
+	local itemShipText = text.generateTextMenu("Itens",guideUiGroup2,guidePanel.x + 5,guidePanel.y - 130,"Font/prstart.ttf",15)
+    local goalTopText = text.generateTextMenu("Objetivo",guideUiGroup3,guidePanel.x + 5,guidePanel.y - 130,"Font/prstart.ttf",15)
+    local ship = image.loadImgShip(guidePanel.x,guidePanel.y,guideUiGroup)
 	local ship1 = image.loadImgShip(guidePanel.x,guidePanel.y + 30,guideUiGroup1)
 	local attack = image.loadItem(1,guideUiGroup2)
 	local attack1 = image.loadItem(2,guideUiGroup2)
@@ -121,7 +130,8 @@ function scene:create( event )
 	local shotGuideText = display.newText( shot )
 	local shotNoteText = display.newText( shotNote )
 	local itemGuideText = display.newText( item )
-	local itemGuideText1 = display.newText( item1 )
+    local itemGuideText1 = display.newText( item1 )
+    local goalGuideText = display.newText( goal )
 	attack.x = display.contentCenterX
 	attack.y = guidePanel.y - 80
 	attack1.x = attack.x 
@@ -135,16 +145,20 @@ function scene:create( event )
 	itemGuideText.x = attack.x
 	itemGuideText.y = attack.y + 45
 	itemGuideText1.x = attack1.x
-	itemGuideText1.y = attack1.y + 45
+    itemGuideText1.y = attack1.y + 45
+    goalGuideText.x = goalTopText.x
+    goalGuideText.y = goalTopText.y + 40
 	guideUiGroup:insert( moveGuideText )
 	guideUiGroup1:insert( shotGuideText )
 	guideUiGroup1:insert( shotNoteText )
 	guideUiGroup2:insert( itemGuideText )
-	guideUiGroup2:insert( itemGuideText1 )
+    guideUiGroup2:insert( itemGuideText1 )
+    guideUiGroup3:insert( goalGuideText )
 	guideGroup1.isVisible = false
 	guideUiGroup.isVisible = false
 	guideUiGroup1.isVisible = false
     guideUiGroup2.isVisible = false
+    guideUiGroup3.isVisible = false
 
     local pageGuide = 1
 
@@ -165,6 +179,11 @@ function scene:create( event )
                 guideUiGroup2.isVisible = true
                 ship1:removeEventListener("tap", func.shotGuide)
             end	
+            if(pageGuide == 3) then
+                guideUiGroup2.isVisible = false
+                pageGuide = pageGuide + 1
+                guideUiGroup3.isVisible = true
+            end    
         end	
         if(event.target.myName == "back") then
             if(pageGuide == 2) then
@@ -184,6 +203,11 @@ function scene:create( event )
                 guideUiGroup1.isVisible = true
                 ship1:addEventListener("tap", func.shotGuide)
             end	
+            if(pageGuide == 4) then
+                guideUiGroup3.isVisible = false
+                pageGuide = pageGuide - 1
+                guideUiGroup2.isVisible = true
+            end    
         end		
     end	
     
