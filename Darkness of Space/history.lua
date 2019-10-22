@@ -21,6 +21,8 @@ for i = 1, 5, 1 do
 end
  
 local function gotoMenu()
+    timer.cancel(Menu)
+    transition.cancel()
     composer.gotoScene( "menu", { time=600, effect="crossFade" } )
 end    
 -- -----------------------------------------------------------------------------------
@@ -99,7 +101,7 @@ function scene:create( event )
     transition.to(sceneShip, {time=1000,delay = 27500, xScale = 2.5, yScale = 2.5 })
     transition.to(sceneShip, {time=2500,delay = 28500,  y = -255 })
 
-    timer.performWithDelay( 31000, gotoMenu, 1)
+    Menu = timer.performWithDelay( 31000, gotoMenu, 1)
     skipButton:addEventListener( "tap", gotoMenu )
 end
  

@@ -80,12 +80,14 @@ function scene:create( event )
 	guideUiGroup1 = display.newGroup()
     guideUiGroup2 = display.newGroup()
     guideUiGroup3 = display.newGroup()
+    buttonGroup = display.newGroup()
     sceneGroup:insert( guideGroup )
     sceneGroup:insert( guideGroup1 )
     sceneGroup:insert( guideUiGroup )
     sceneGroup:insert( guideUiGroup1 )
     sceneGroup:insert( guideUiGroup2 )
     sceneGroup:insert( guideUiGroup3 )
+    sceneGroup:insert( buttonGroup )
     
 	local guidePanel = image.loadUi("menu",1,guideGroup)
 	guideGroup.isVisible = false
@@ -96,27 +98,27 @@ function scene:create( event )
 	buttonExit.y = guidePanel.y + 190
 	buttonExit:scale(1.5,1.5)
 
-	local buttonNext = image.loadUi("menu panel",2,guideGroup)
-	local buttonNext1 = image.loadUi("menu panel",2,guideGroup1)
-	buttonNext.x = buttonExit.x
+	--local buttonNext = image.loadUi("menu panel",2,guideGroup)
+	local buttonNext1 = image.loadUi("menu panel",2,buttonGroup)
+	--[[buttonNext.x = buttonExit.x
 	buttonNext.y = buttonExit.y - 60
-	buttonNext.myName = "next"
+	buttonNext.myName = "next"--]]
 	buttonNext1.x = buttonExit.x + 70
-	buttonNext1.y = buttonNext.y
-	buttonNext1.myName = "next1"
-	buttonNext:scale(1.5,1.5)
+	buttonNext1.y = buttonExit.y - 60
+	buttonNext1.myName = "next"
+	--buttonNext:scale(1.5,1.5)
 	buttonNext1:scale(1.3,1.5)
 
-	local buttonBack = image.loadUi("menu panel",2,guideGroup1)
+	local buttonBack = image.loadUi("menu panel",2,buttonGroup)
 	buttonBack.x = buttonExit.x - 65
-	buttonBack.y = buttonNext.y
+	buttonBack.y = buttonExit.y - 60
 	buttonBack.myName = "back"
 	buttonBack:scale(1.3,1.5)
 
 	local buttonExitText = text.generateTextMenu("Sair",guideGroup,buttonExit.x,buttonExit.y,"Font/prstart.ttf",20)
-	local buttonNextText = text.generateTextMenu("Próximo",guideGroup,buttonNext.x,buttonNext.y,"Font/prstart.ttf",18)
-	local buttonNextText1 = text.generateTextMenu("Próximo",guideGroup1,buttonNext1.x + 3,buttonNext1.y,"Font/prstart.ttf",17)
-	local buttonBackText1 = text.generateTextMenu("Voltar",guideGroup1,buttonBack.x,buttonBack.y,"Font/prstart.ttf",18)
+	--local buttonNextText = text.generateTextMenu("Próximo",guideGroup,buttonNext.x,buttonNext.y,"Font/prstart.ttf",18)
+	local buttonNextText1 = text.generateTextMenu("Próximo",buttonGroup,buttonNext1.x + 3,buttonNext1.y,"Font/prstart.ttf",17)
+	local buttonBackText1 = text.generateTextMenu("Voltar",buttonGroup,buttonBack.x,buttonBack.y,"Font/prstart.ttf",18)
 	local guideTopText = text.generateTextMenu("Como  Jogar",guideGroup,display.contentCenterX,display.contentCenterY - 220,"Font/ARCADECLASSIC.TTF",32)
 	local moveShipText = text.generateTextMenu("Movimentação",guideUiGroup,guidePanel.x + 5,guidePanel.y - 130,"Font/prstart.ttf",15)
 	local shotShipText = text.generateTextMenu("Atirar",guideUiGroup1,guidePanel.x + 5,guidePanel.y - 130,"Font/prstart.ttf",15)
@@ -147,13 +149,14 @@ function scene:create( event )
 	itemGuideText1.x = attack1.x
     itemGuideText1.y = attack1.y + 45
     goalGuideText.x = goalTopText.x
-    goalGuideText.y = goalTopText.y + 40
+    goalGuideText.y = goalTopText.y + 50
 	guideUiGroup:insert( moveGuideText )
 	guideUiGroup1:insert( shotGuideText )
 	guideUiGroup1:insert( shotNoteText )
 	guideUiGroup2:insert( itemGuideText )
     guideUiGroup2:insert( itemGuideText1 )
     guideUiGroup3:insert( goalGuideText )
+    buttonGroup.isVisible = false
 	guideGroup1.isVisible = false
 	guideUiGroup.isVisible = false
 	guideUiGroup1.isVisible = false
@@ -164,50 +167,58 @@ function scene:create( event )
 
     local function changeGuide(event)
         if(event.target.myName == "next") then
-            guideUiGroup.isVisible = false
-            pageGuide = pageGuide + 1
-            guideUiGroup1.isVisible = true
-            ship1:addEventListener( "tap", func.shotGuide )
-            guideGroup1.isVisible = true
-            buttonNext.isVisible = false
-            buttonNextText.isVisible = false
-        end	
-        if(event.target.myName == "next1") then
+            if(pageGuide == 1) then
+                guideUiGroup.isVisible = false
+                guideUiGroup1.isVisible = true
+                ship1:addEventListener( "tap", func.shotGuide )
+                guideGroup1.isVisible = true
+                buttonBack.alpha = 0.6
+                buttonBackText1.alpha = 1
+                buttonBack:addEventListener( "tap", changeGuide)
+                --[[buttonNext.isVisible = false
+                buttonNextText.isVisible = false--]]
+            end   
             if(pageGuide == 2) then
                 guideUiGroup1.isVisible = false
-                pageGuide = pageGuide + 1
                 guideUiGroup2.isVisible = true
                 ship1:removeEventListener("tap", func.shotGuide)
             end	
             if(pageGuide == 3) then
                 guideUiGroup2.isVisible = false
-                pageGuide = pageGuide + 1
                 guideUiGroup3.isVisible = true
-            end    
+                buttonNext1.alpha = 0.4
+                buttonNextText1.alpha = 0.5
+                buttonNext1:removeEventListener( "tap", changeGuide)
+            end   
+            pageGuide = pageGuide + 1 
         end	
         if(event.target.myName == "back") then
             if(pageGuide == 2) then
                 guideUiGroup1.isVisible = false
-                pageGuide = pageGuide - 1
                 guideUiGroup.isVisible = true
                 ship.x = guidePanel.x
                 ship.y = guidePanel.y - 50
                 ship:addEventListener("touch", func.dragShipGuide)
+                buttonBack:removeEventListener( "tap", changeGuide)
                 guideGroup1.isVisible = false
-                buttonNext.isVisible = true
-                buttonNextText.isVisible = true
+                buttonBack.alpha = 0.4
+                buttonBackText1.alpha = 0.5
+                --[[buttonNext.isVisible = true
+                buttonNextText.isVisible = true--]]
             end	
             if(pageGuide == 3) then
                 guideUiGroup2.isVisible = false
-                pageGuide = pageGuide - 1
                 guideUiGroup1.isVisible = true
                 ship1:addEventListener("tap", func.shotGuide)
             end	
             if(pageGuide == 4) then
                 guideUiGroup3.isVisible = false
-                pageGuide = pageGuide - 1
                 guideUiGroup2.isVisible = true
-            end    
+                buttonNext1.alpha = 0.6
+                buttonNextText1.alpha = 1
+                buttonNext1:addEventListener( "tap", changeGuide)
+            end   
+            pageGuide = pageGuide - 1 
         end		
     end	
     
@@ -216,9 +227,13 @@ function scene:create( event )
         if(guideGroup.isVisible == false) then
             guideGroup.isVisible = true
             ship:addEventListener( "touch", func.dragShipGuide )
+            buttonBack:removeEventListener( "tap", changeGuide)
             transition.to( guideGroup, { time=500, delay=200, alpha = 1,
             onComplete = function() 
                 guideUiGroup.isVisible = true
+                buttonGroup.isVisible = true
+                buttonBack.alpha = 0.4
+                buttonBackText1.alpha = 0.5
             end	
             })
             transition.to( guideUiGroup, { time=500, delay=1000, alpha = 1
@@ -227,7 +242,7 @@ function scene:create( event )
     end	
     
     
-	buttonNext:addEventListener( "tap", changeGuide)
+	--buttonNext:addEventListener( "tap", changeGuide)
 	buttonNext1:addEventListener( "tap", changeGuide)
 	buttonBack:addEventListener( "tap", changeGuide)
     buttonExit:addEventListener( "tap", gotoMenu )
