@@ -13,6 +13,7 @@ local func = require("shipFunction")
 local vol = require("volumeSetting")
 local menu = require("menuPause")
 local score = require("score")
+local sound = require("audioLoad")
 
 math.randomseed( os.time() )
 
@@ -299,8 +300,13 @@ local function fireLaser()
     flameball.myName = "flameball"
     flameball.x = bossMage.x
     flameball.y = bossMage.y
+    if(menu.muteOff1.isVisible == true) then
+        audio.play(sound.fireEffect)
+    end    
     transition.to(flameball, {x = ship.x, y=800, time=2500, 
-        onComplete = function() display.remove(flameball) end
+        onComplete = function() 
+            display.remove(flameball) 
+        end
     }) 
     flameball:scale(1.5,1.5)
     flameball:play()
@@ -323,8 +329,13 @@ local function fireLaser()
             if (hitboxExplosion.alpha == 0) then
             explosion.isVisible = true
             explosion.isBodyActive = true
+            if(menu.muteOff1.isVisible == true) then
+                audio.play(sound.explosionEffect)
+            end    
             transition.to(explosion, {time=2000,
-            onComplete = function() display.remove(explosion) end
+            onComplete = function() 
+                display.remove(explosion) 
+            end
             })
         end   end
         })  
@@ -399,8 +410,8 @@ local function attack()
             attackCurrent = 0
             attackText.text = "Dano Atual: " .. attackCurrent
         end
-        if(muteOff1.isVisible == true) then
-            audio.play(shotEffect, {channel = 2} ) 
+        if(menu.muteOff1.isVisible == true) then
+            audio.play(sound.shotEffect) 
         end 
         table.remove(playerAttack,1)    
         updateAttackCurrent()
@@ -446,6 +457,8 @@ local function onCollision( event )
                     transition.to(ship, {time=500, alpha = 0, 
                     onComplete = function() display.remove(ship) end
                     })
+                    score.level = 3
+                    score.tentativas = score.tentativas - 1
                     --timer.cancel(hitbox)
                     timer.cancel(bossFire)
                     timer.cancel(gerenation)
@@ -539,6 +552,7 @@ end
 local function menuShow( event ) 
     if (event.target.myName == "uiPause" and menu.uiOption.isVisible == true) then
         menu.uiOption.isVisible = false
+        menu.buttonOption.isVisible = false
     elseif (menu.uiOption.isVisible == true and uiPause.isVisible == false) then
         menu.uiOption.isVisible = false
         menu.buttonOption.isVisible = false
@@ -585,7 +599,7 @@ local function pauseGame(event)
         end
         menuShow( event )  
         if(uiOption.isVisible == false and uiPause.isVisible == false and menu.muteOff.isVisible == true) then
-            audio.play(backgroundSong, {channel = 1, loops = -1 } )
+            audio.play(fase3_Song, {channel = 1, loops = -1 } )
         end
     end    
 end
@@ -635,7 +649,7 @@ local function specialAttack( event )
             })  
             if(menu.muteOff.isVisible == true) then
                 audio.stop( backgroundMusicChannel )
-                audio.play(backgroundSong2, {channel = 1, loops = -1 } )
+                audio.play(sound.fase3_Song2, {channel = 1, loops = -1 } )
             end    
             timer.cancel(bossFire)
             bossFire = timer.performWithDelay( 1000, fireLaser, 0)
@@ -645,7 +659,7 @@ local function specialAttack( event )
         attackPause = true
         if(fire ~= nil) then
             fire.isVisible = true
-            fire.isBodyActive = true
+            fire.isBodyActive = true 
             physics.addBody(fire, "dynamic", {radius=hitboxAttack, filter = filterCollision})
             timerTest = timerTest + 1 
             Runtime:removeEventListener( "enterFrame", specialAttack )
@@ -713,10 +727,12 @@ function scene:show( event )
         -- Code here runs when the scene is entirely on screen
         physics.start()
         if(menu.muteOff.isVisible == true) then
-            backgroundMusicChannel = audio.play(backgroundSong, {channel = 1, loops = -1 } )
+            backgroundMusicChannel = audio.play(sound.fase3_Song, {channel = 1, loops = -1 } )
         end  
         audio.setVolume( vol.music, { channel=1 } )
-        audio.setVolume( vol.effect, { channel=2 } )
+        for i = 2, 32 do
+            audio.setVolume( vol.effect, { channel=i } )  
+        end
         volumeBar.width = vol.musicWidth
         volumeBar1.width = vol.effectWidth
 	end

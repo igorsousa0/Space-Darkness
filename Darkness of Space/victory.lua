@@ -1,6 +1,7 @@
 local composer = require( "composer" )
 local image = require("loadImage")
 local score = require("score")
+local song = require("audioLoad")
 
 local scene = composer.newScene()
 
@@ -103,7 +104,7 @@ function scene:hide( event )
 		--som.onClose();
 	elseif ( phase == "did" ) then
 		-- Code here runs immediately after the scene goes entirely off screen
-
+		audio.stop( 1 )
 	end
 end
 

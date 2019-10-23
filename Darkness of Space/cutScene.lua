@@ -1,12 +1,17 @@
 local composer = require( "composer" )
 local image = require("loadImage")
 local score = require("score")
+local vol = require("volumeSetting")
+local song = require("audioLoad")
+local menu = require("menuPause")
  
 local scene = composer.newScene()
 
 local mainGroup = display.newGroup()
 local scene1 = display.newGroup()
 local scene2 = display.newGroup()
+
+--local backgroundSong = audio.loadSound("audio/endGame/Beyond The Clouds.mp3")
  
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
@@ -16,7 +21,7 @@ local scene2 = display.newGroup()
  
 local function gotoVictory()
     score.level = 4
-	composer.gotoScene( "victory", { time=600, effect="crossFade"})
+    composer.gotoScene( "victory", { time=600, effect="crossFade"})
 end	
  
 -- -----------------------------------------------------------------------------------
@@ -80,6 +85,9 @@ function scene:create( event )
     onComplete = function() 
         display.remove(scene2Ship)
         mainGroup.isVisible = true
+        if(menu.muteOff.isVisible == true) then
+            audio.play(song.endGame, {channel = 1} )
+        end    
     end    
     })
     transition.to(mainGroup, {time=1000,delay = 9000, alpha = 1})
@@ -98,6 +106,7 @@ function scene:show( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
+        audio.setVolume( vol.music, { channel=1 } )
     end
 end
  

@@ -17,13 +17,9 @@ local func = require("shipFunction")
 local vol = require("volumeSetting")
 local menu = require("menuPause")
 local score = require("score")
+local sound = require("audioLoad")
 
 math.randomseed( os.time() )
-
-local backgroundSong = audio.loadSound("audio/fase02/boss02.mp3")
-local shotEffect = audio.loadSound("audio/effect/ship/laser.wav")
-local fireEffect = audio.loadSound("audio/effect/mage01/fire.wav")
-local explosionEffect = audio.loadSound("audio/effect/mage02/DeathFlash.mp3")
 
 local hp = 5
 local died = false
@@ -32,6 +28,7 @@ local bossDied = false
 local playerAttack = {}
 local gameLoopTimer
 local bossLife = 20
+local bossLifeDefault = 20
 local hpText
 local scoreText
 local pauseState = false
@@ -54,10 +51,6 @@ local mainGroup = display.newGroup()
 local uiGroup = display.newGroup()
 local uiPause = display.newGroup()
 local uiOption = display.newGroup()
-
---[[local customParams = {
-    hp = 0
-}--]]
 
 local sheet_options_magic = 
 {
@@ -191,31 +184,12 @@ local sequences_magic =
                 attackText.text = "Dano Atual: " .. attackCurrent
             end
             if(menu.muteOff1.isVisible == true) then
-                audio.play(shotEffect, {channel = 2} ) 
+                audio.play(sound.shotEffect, {channel = 2} ) 
             end  
             table.remove(playerAttack,1)    
             updateAttackCurrent()
         end          
     end
-
-    --[[local function verificarHP()
-        if ( bossLife <= 6) then
-            bossMage:setSequence("normalMage")
-            bossMage:play()
-            transition.to(bossMage, {time=800, 
-            onComplete = function() bossMage:pause() end
-            })
-            local fire = display.newSprite(mainGroup, sheet_fire, sequences_magic)
-            physics.addBody( fire, { box=offsetRectParams } )
-            fire:setSequence("normalAnimation")
-            fire:play()
-            fire:scale(1.5,1.5)
-            fire.x = ship.x
-            fire.y = ship.y
-            fire:toBack()
-            print("Test")
-        end          
-    end  --]]
 
     local function endGame()
         composer.gotoScene( "fimGame", { time=800, effect="crossFade" } )
@@ -287,6 +261,7 @@ local sequences_magic =
             ( obj1.myName == "attack3" and obj2.myName == "boss" )) 
             then
                 bossLife = bossLife - 1
+                vortexAttack._delay = vortexAttack._delay - 50
                 if (bossMage.isBodyActive == true) then
                     hp_boss_lost = hp_boss.width - hp_bossLost
                 end     
@@ -303,6 +278,7 @@ local sequences_magic =
             ( obj1.myName == "attack4" and obj2.myName == "boss" )) 
             then
                 bossLife = bossLife - 3
+                vortexAttack._delay = vortexAttack._delay - 150
                 if (bossMage.isBodyActive == true) then
                     hp_boss_lost = hp_boss.width - (hp_bossLost * 3)
                 end    
@@ -336,6 +312,7 @@ local sequences_magic =
     local function menuShow( event ) 
         if (event.target.myName == "uiPause" and menu.uiOption.isVisible == true) then
             menu.uiOption.isVisible = false
+            menu.buttonOption.isVisible = false
         elseif (menu.uiOption.isVisible == true and uiPause.isVisible == false) then
             menu.uiOption.isVisible = false
             menu.buttonOption.isVisible = false
@@ -390,7 +367,7 @@ local sequences_magic =
             audio.resume( 1 )  
             menuShow( event )   
             if(uiOption.isVisible == false and uiPause.isVisible == false and menu.muteOff.isVisible == true) then
-                audio.play(backgroundSong, {channel = 1, loops = -1 } )
+                audio.play(sound.fase2_Song, {channel = 1, loops = -1 } )
             end 
         end     
     end
@@ -461,6 +438,10 @@ local sequences_magic =
             explosion:play()
             hitboxExplosion.x = math.random(25, 295) 
             hitboxExplosion.y = math.random(156, 454)
+            if(bossLife < bossLifeDefault/2) then
+                hitboxExplosion.x = ship.x
+                hitboxExplosion.y = ship.y
+            end    
             explosion.x = hitboxExplosion.x
             explosion.y = hitboxExplosion.y
             explosion.isVisible = false
@@ -474,7 +455,7 @@ local sequences_magic =
                 if (hitboxExplosion.alpha == 0) then
                 explosion.isVisible = true
                 explosion.isBodyActive = true
-                audio.play(explosionEffect, {channel = 3, duration = 1800})
+                audio.play(sound.explosionEffect, {channel = 3, duration = 1800})
                 transition.to(explosion, {time=2000,
                 onComplete = function() display.remove(explosion) end
                 })
@@ -539,7 +520,7 @@ function scene:show( event )
         -- Code here runs when the scene is entirely on screen
         physics.start()
         if(menu.muteOff.isVisible == true) then
-            audio.play(backgroundSong, {channel = 1, loops = -1 } )
+            audio.play(sound.fase2_Song, {channel = 1, loops = -1 } )
         end  
         audio.setVolume( vol.music, { channel=1 } )
         audio.setVolume( vol.effect, { channel=2 } )

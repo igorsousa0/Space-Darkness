@@ -111,17 +111,27 @@ return_text_button_menu.x = button_back_option.x
 return_text_button_menu.y = button_back_option.y
  
 function menu.menuShow( event ) 
-    print(event.target.myName)
     if (event.target.myName == "uiPause" and menu.uiOption.isVisible == true) then
+        print("TEste")
         menu.uiOption.isVisible = false
+        menu.buttonOption.isVisible = false
+        if(menu.muteOff.isVisible == true) then
+            audio.resume(1)
+        end
     elseif (menu.uiOption.isVisible == true and menu.uiPause.isVisible == false) then
         menu.uiOption.isVisible = false
         menu.buttonOption.isVisible = false
         menu.uiPause.isVisible = true   
+        for i = 2, 32 do
+            audio.setVolume( vol.effect, { channel=i } )  
+        end
     elseif (menu.uiPause.isVisible == false) then
         menu.uiPause.isVisible = true   
     elseif(menu.uiPause.isVisible == true) then
         menu.uiPause.isVisible = false
+        if(menu.muteOff.isVisible == true) then
+            audio.resume(1)
+        end
     end
 end  
 
@@ -146,12 +156,14 @@ local function muteChange( event )
         if(menu.muteOff.isVisible == true) then
             menu.muteOff.isVisible = false
             menu.muteOn.isVisible = true
-            audio.stop(1)
+            audio.setVolume( 0, { channel=1 } )
+            audio.pause(1)
             menu.muteOff:removeEventListener("tap", muteChange)
             menu.muteOn:addEventListener( "tap", muteChange)
         else
             menu.muteOff.isVisible = true
             menu.muteOn.isVisible = false
+            audio.setVolume( vol.music, { channel=1 } )
             menu.muteOn:removeEventListener("tap", muteChange)
             menu.muteOff:addEventListener( "tap", muteChange)   
         end    
@@ -195,8 +207,6 @@ function menu.volumeChange(event)
             vol.effectCurrent = vol.effectCurrent - 1
             transition.to(menu.volumeBar1, { width = vol.updateBar(menu.volumeBar1.width,"down"), time=1})  
             vol.effect = vol.effect - 0.1
-            audio.setVolume( vol.effect, { channel=2})
-            audio.setVolume( vol.effect, { channel=3})
         end
     end
     if(event.target.myName == "up1") then
@@ -204,8 +214,6 @@ function menu.volumeChange(event)
             vol.effectCurrent = vol.effectCurrent + 1
             transition.to(menu.volumeBar1, { width = vol.updateBar(menu.volumeBar1.width,"up"), time=1})  
             vol.effect = vol.effect + 0.1
-            audio.setVolume( vol.effect, { channel=2})
-            audio.setVolume( vol.effect, { channel=3})
         end    
     end
     if(vol.musicCurrent == 0) then

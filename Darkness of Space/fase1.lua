@@ -13,14 +13,9 @@ local func = require("shipFunction")
 local vol = require("volumeSetting")
 local menu = require("menuPause")
 local score = require("score")
+local sound = require("audioLoad")
 
 math.randomseed( os.time() )
-
-local backgroundSong = audio.loadSound("audio/fase01/magicspace.mp3")
-local shotEffect = audio.loadSound("audio/effect/ship/laser.wav")
-local fireEffect = audio.loadSound("audio/effect/mage01/fire.wav")
-audio.setVolume( 0.5, { channel=2 } )
-audio.setVolume( 1, { channel= 3} )
 
 local hp = 5
 local died = false
@@ -49,13 +44,7 @@ local uiGroup = display.newGroup()
 local uiPause = display.newGroup()
 local uiOption = display.newGroup()
 
-
-
 local offsetRectParams = { halfWidth=10, halfHeight=10}
-
---[[local customParams = {
-    hp = 0
-}--]]
 
 local sheet_options_flameball =
 {
@@ -157,7 +146,7 @@ local function fireLaser()
     end
     }) 
     if(menu.muteOff1.isVisible == true) then
-        audio.play(fireEffect)
+        audio.play(sound.fireEffect)
     end 
     flameball:scale(1.5,1.5)
     flameball:play()
@@ -231,7 +220,7 @@ local function attack()
             attackText.text = "Dano Atual: " .. attackCurrent
         end
         if(menu.muteOff1.isVisible == true) then
-            audio.play(shotEffect) 
+            audio.play(sound.shotEffect) 
         end  
         table.remove(playerAttack,1)
         updateAttackCurrent()
@@ -354,7 +343,7 @@ local function onCollision( event )
             display.remove(menu_pause)
             bossMage:setSequence("deadMage")
             bossMage:play()
-            print(bossLife)
+            timer.cancel(bossMove)
             timer.cancel(bossFire)
             timer.cancel(gerenation)
             score.setScore(hp)
@@ -378,6 +367,7 @@ end
 local function menuShow( event ) 
     if (event.target.myName == "uiPause" and menu.uiOption.isVisible == true) then
         menu.uiOption.isVisible = false
+        menu.buttonOption.isVisible = false
     elseif (menu.uiOption.isVisible == true and uiPause.isVisible == false) then
         menu.uiOption.isVisible = false
         menu.buttonOption.isVisible = false
@@ -421,7 +411,7 @@ local function pauseGame( event )
         audio.resume( 1 )
         menuShow( event )
         if(menu.uiOption.isVisible == false and uiPause.isVisible == false and menu.muteOff.isVisible == true) then
-            audio.play(backgroundSong, {channel = 1, loops = -1 } )
+            audio.play(sound.fase1_Song, {channel = 1, loops = -1 } )
         end 
         if(explosionAttack ~= nil) then
             if(explosionAttack.isPlaying == false) then
@@ -506,7 +496,7 @@ function scene:show( event )
         -- Code here runs when the scene is entirely on screen
         physics.start()
         if(menu.muteOff.isVisible == true) then
-            audio.play(backgroundSong, {channel = 1, loops = -1 } )
+            audio.play(sound.fase1_Song, {channel = 1, loops = -1 } )
         end    
         audio.setVolume( vol.music, { channel=1 } )
         audio.setVolume( vol.effect, { channel=2 } )

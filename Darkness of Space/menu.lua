@@ -17,6 +17,7 @@ local function gotoGuide()
 	composer.gotoScene( "guide", { time=600, effect="crossFade" } )
 end	
 
+
 function scene:create( event )
 
 	local sceneGroup = self.view
@@ -37,7 +38,7 @@ function scene:create( event )
 
 
     local titleGame = display.newText( mainGroup, "Escuridão Espacial", display.contentCenterX, display.contentCenterY - 180, "Font/ARCADECLASSIC.TTF", 32 )
-    titleGame:setFillColor( 0.75, 0.78, 1 )
+	titleGame:setFillColor( 0.75, 0.78, 1 )
 
 	local playButton = image.loadUi("menu panel",2,uiGroup)
 	local guideButton = image.loadUi("menu panel",2,uiGroup)
