@@ -100,6 +100,7 @@ function scene:show( event )
 			audio.play(backgroundSong, {channel = 1, loops = -1 })
 		end	
 		audio.setVolume( vol.music, { channel=1 } )
+		score.tentativas = 3
 		--som.somTema();
 	end
 end

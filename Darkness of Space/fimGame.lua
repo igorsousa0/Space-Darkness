@@ -5,7 +5,9 @@ local score = require("score")
 local scene = composer.newScene()
 
 local function gotoFase3()
-	composer.gotoScene( "fase3", { time=200, effect="crossFade" } )
+	if(score.tentativas ~= 0) then
+		composer.gotoScene( "fase3", { time=200, effect="crossFade" } )
+	end	
 end
 
 local function gotoSelect()
@@ -51,17 +53,21 @@ function scene:create( event )
 	continueButton.isVisible = false
 	continueText.isVisible = false
 	if(score.level == 3) then
+		if(score.tentativas == 1) then
+			tentativasText.text = "Você possui  " .. score.tentativas .."  tentativa"
+		end	
 		tentativasText.isVisible = true
 		continueButton.isVisible = true
 		continueText.isVisible = true
 	end	
 	if(score.tentativas == 0) then
-		--continueButton:removeEventListener( "tap", gotoFase3 )
+		tentativasText.text = "Suas tentativas acabaram"
+		continueButton:removeEventListener( "tap", gotoFase3 )
 		continueButton.alpha = 0.4
 		continueText.alpha = 0.5
 	end	
  
-	--continueButton:addEventListener( "tap", gotoFase3 )
+	continueButton:addEventListener( "tap", gotoFase3 )
     exitButton:addEventListener( "tap", gotoSelect )
 	
 end

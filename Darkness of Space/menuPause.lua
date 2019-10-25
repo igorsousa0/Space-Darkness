@@ -112,7 +112,6 @@ return_text_button_menu.y = button_back_option.y
  
 function menu.menuShow( event ) 
     if (event.target.myName == "uiPause" and menu.uiOption.isVisible == true) then
-        print("TEste")
         menu.uiOption.isVisible = false
         menu.buttonOption.isVisible = false
         if(menu.muteOff.isVisible == true) then
@@ -147,6 +146,9 @@ function menu.optionMenuShow()
 end    
 
 function menu.optionHide()
+    if(menu.muteOff.isVisible == true) then
+        audio.resume(1)
+    end    
     menu.uiOption.isVisible = false
     menu.buttonMenuOption.isVisible = false
 end    
@@ -162,7 +164,7 @@ local function muteChange( event )
             menu.muteOn:addEventListener( "tap", muteChange)
         else
             menu.muteOff.isVisible = true
-            menu.muteOn.isVisible = false
+            menu.muteOn.isVisible = false  
             audio.setVolume( vol.music, { channel=1 } )
             menu.muteOn:removeEventListener("tap", muteChange)
             menu.muteOff:addEventListener( "tap", muteChange)   

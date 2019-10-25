@@ -399,72 +399,74 @@ local sequences_magic =
     end
 
     local function generationAttack() 
-        local attackSelect = math.random(1,2)
-        if (attackPause == true) then
-            attackSelect = 2
-        end    
-        if (attackSelect == 1) then
-            local selectDirection = math.random(1,2)
-            if (selectDirection == 1) then
-                vortex = display.newSprite(mainGroup, sheet_vortex, sequences_magic)
-                physics.addBody( vortex, "dynamic", { radius=hitboxAttack, filter = filterCollision } )
-                vortex:setSequence("normalAnimation")
-                vortex:play() 
-                vortex.x = 20
-                vortex.y = 150
-                vortex:toBack()
-                vortex.myName = "vortex1"
-                transition.to(vortex, {time=1000, x = ship.x, y = ship.y,
-                onComplete = function() display.remove(vortex) end
-                })
-            elseif (selectDirection == 2) then
-                vortex2 = display.newSprite(mainGroup, sheet_vortex, sequences_magic)
-                physics.addBody( vortex2, "dynamic", { radius=hitboxAttack, filter = filterCollision } )
-                vortex2:setSequence("normalAnimation")
-                vortex2:play() 
-                vortex2.x = 290
-                vortex2.y = 150
-                vortex2:toBack()
-                vortex2.myName = "vortex2"
-                transition.to(vortex2, {time=1000, x = ship.x, y = ship.y,
-                onComplete = function() display.remove(vortex2) end
-                })
-            end 
-        elseif (attackSelect == 2) then
-            local explosion = display.newSprite(mainGroup, sheet_explosion, sequences_magic)
-            local hitboxExplosion = display.newImageRect(mainGroup, "Sprites/Effects/Boss01/hitbox.png", 46,47 )
-            physics.addBody(explosion, "dynamic", {radius=hitboxAttack, filter = filterCollision})
-            explosion:setSequence("normalAnimation")
-            explosion:play()
-            hitboxExplosion.x = math.random(25, 295) 
-            hitboxExplosion.y = math.random(156, 454)
-            if(bossLife < bossLifeDefault/2) then
-                hitboxExplosion.x = ship.x
-                hitboxExplosion.y = ship.y
+        if(bossDied ~= true) then
+            local attackSelect = math.random(1,2)
+            if (attackPause == true) then
+                attackSelect = 2
             end    
-            explosion.x = hitboxExplosion.x
-            explosion.y = hitboxExplosion.y
-            explosion.isVisible = false
-            explosion.isBodyActive = false
-            --[[explosion.x = math.random(25, 295) 
-            explosion.y = math.random(116, 494)--]]
-            explosion:toBack()
-            explosion.myName = "explosion"
-            transition.to(hitboxExplosion, {time=1000, alpha = 0,
-            onComplete = function() display.remove(hitboxExplosion)             
-                if (hitboxExplosion.alpha == 0) then
-                explosion.isVisible = true
-                explosion.isBodyActive = true
-                audio.play(sound.explosionEffect, {channel = 3, duration = 1800})
-                transition.to(explosion, {time=2000,
+            if (attackSelect == 1) then
+                local selectDirection = math.random(1,2)
+                if (selectDirection == 1) then
+                    vortex = display.newSprite(mainGroup, sheet_vortex, sequences_magic)
+                    physics.addBody( vortex, "dynamic", { radius=hitboxAttack, filter = filterCollision } )
+                    vortex:setSequence("normalAnimation")
+                    vortex:play() 
+                    vortex.x = 20
+                    vortex.y = 150
+                    vortex:toBack()
+                    vortex.myName = "vortex1"
+                    transition.to(vortex, {time=1000, x = ship.x, y = ship.y,
+                    onComplete = function() display.remove(vortex) end
+                    })
+                elseif (selectDirection == 2) then
+                    vortex2 = display.newSprite(mainGroup, sheet_vortex, sequences_magic)
+                    physics.addBody( vortex2, "dynamic", { radius=hitboxAttack, filter = filterCollision } )
+                    vortex2:setSequence("normalAnimation")
+                    vortex2:play() 
+                    vortex2.x = 290
+                    vortex2.y = 150
+                    vortex2:toBack()
+                    vortex2.myName = "vortex2"
+                    transition.to(vortex2, {time=1000, x = ship.x, y = ship.y,
+                    onComplete = function() display.remove(vortex2) end
+                    })
+                end 
+            elseif (attackSelect == 2) then
+                local explosion = display.newSprite(mainGroup, sheet_explosion, sequences_magic)
+                local hitboxExplosion = display.newImageRect(mainGroup, "Sprites/Effects/Boss01/hitbox.png", 46,47 )
+                physics.addBody(explosion, "dynamic", {radius=hitboxAttack, filter = filterCollision})
+                explosion:setSequence("normalAnimation")
+                explosion:play()
+                hitboxExplosion.x = math.random(25, 295) 
+                hitboxExplosion.y = math.random(156, 454)
+                if(bossLife < bossLifeDefault/2) then
+                    hitboxExplosion.x = ship.x
+                    hitboxExplosion.y = ship.y
+                end    
+                explosion.x = hitboxExplosion.x
+                explosion.y = hitboxExplosion.y
+                explosion.isVisible = false
+                explosion.isBodyActive = false
+                --[[explosion.x = math.random(25, 295) 
+                explosion.y = math.random(116, 494)--]]
+                explosion:toBack()
+                explosion.myName = "explosion"
+                transition.to(hitboxExplosion, {time=1000, alpha = 0,
+                onComplete = function() display.remove(hitboxExplosion)             
+                    if (hitboxExplosion.alpha == 0) then
+                    explosion.isVisible = true
+                    explosion.isBodyActive = true
+                    audio.play(sound.explosionEffect, {channel = 3, duration = 1800})
+                    transition.to(explosion, {time=2000,
+                    onComplete = function() display.remove(explosion) end
+                    })
+                end   end
+                })  
+                --[[transition.to(explosion, {time=2000,
                 onComplete = function() display.remove(explosion) end
-                })
-            end   end
-            })  
-            --[[transition.to(explosion, {time=2000,
-            onComplete = function() display.remove(explosion) end
-            })--]]
-        end    
+                })--]]
+            end 
+        end       
     end
   
     Runtime:addEventListener( "enterFrame", optionState )
