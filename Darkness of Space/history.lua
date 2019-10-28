@@ -101,6 +101,10 @@ function scene:create( event )
     transition.to(sceneShip, {time=1000,delay = 27500, xScale = 2.5, yScale = 2.5 })
     transition.to(sceneShip, {time=2500,delay = 28500,  y = -255 })
 
+    collectgarbage("collect")
+    local memUsage_str = string.format( "MEMORY= %.3f KB", collectgarbage( "count" ) )
+    print( memUsage_str .. " | TEXTURE= "..(system.getInfo("textureMemoryUsed")/1048576) ) 
+
     Menu = timer.performWithDelay( 31000, gotoMenu, 1)
     skipButton:addEventListener( "tap", gotoMenu )
 end

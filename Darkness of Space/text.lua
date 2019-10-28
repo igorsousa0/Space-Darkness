@@ -3,7 +3,7 @@ local text = {}
 local image = require("loadImage")
 
 local dialogueOption = {
-    text = "Chefe, nossos satelites\n pararam de funcionar!\n o que devemos fazer?",
+    text = "Chefe, nossos satelites\n pararam de funcionar!\n o que devemos fazer!?",
 	fontSize = 11,
 	font = "Font/prstart.ttf",
     align = "center"

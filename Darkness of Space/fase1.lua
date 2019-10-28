@@ -267,9 +267,12 @@ local function onCollision( event )
                 hp_player_lost = hp_player.width - hp_lost
                 transition.to(hp_player, { width = hp_player_lost, time=500,})   
                 if ( hp == 0 ) then
+                    display.remove(menu_pause)
                     transition.to(ship, {time=500, alpha = 0, 
                     onComplete = function() display.remove(ship) end
                     })
+                    score.level = 1
+                    score.tentativas = score.tentativas - 1
                     timer.cancel(bossFire)
                     timer.cancel(gerenation)
                     timer.performWithDelay( 2000, endGame )

@@ -454,6 +454,7 @@ local function onCollision( event )
                 hp_player_lost = hp_player.width - hp_lost
                 transition.to(hp_player, { width = hp_player_lost, time=500})   
                 if ( hp == 0 ) then
+                    display.remove(menu_pause)
                     transition.to(ship, {time=500, alpha = 0, 
                     onComplete = function() display.remove(ship) end
                     })

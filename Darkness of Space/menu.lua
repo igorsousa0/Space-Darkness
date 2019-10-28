@@ -37,7 +37,7 @@ function scene:create( event )
 	sceneGroup:insert( uiGroup )
 
 
-    local titleGame = display.newText( mainGroup, "Escuridão Espacial", display.contentCenterX, display.contentCenterY - 180, "Font/ARCADECLASSIC.TTF", 32 )
+    local titleGame = display.newText( mainGroup, "Escuridao\n Espacial", display.contentCenterX - 8, display.contentCenterY - 170, "Font/zerovelo.ttf", 34 )
 	titleGame:setFillColor( 0.75, 0.78, 1 )
 
 	local playButton = image.loadUi("menu panel",2,uiGroup)
