@@ -1,9 +1,9 @@
 local composer = require( "composer" )
-local image = require("loadImage")
-local score = require("score")
-local vol = require("volumeSetting")
-local song = require("audioLoad")
-local menu = require("menuPause")
+local image = require("src.imagens.loadImage")
+local score = require("src.pontuação.score")
+local vol = require("src.audio.volumeSetting")
+local song = require("src.audio.audioLoad")
+local menu = require("src.menu.menuPause")
  
 local scene = composer.newScene()
 
@@ -21,7 +21,7 @@ local scene2 = display.newGroup()
  
 local function gotoVictory()
     score.level = 4
-    composer.gotoScene( "victory", { time=600, effect="crossFade"})
+    composer.gotoScene( "src.telas.victory", { time=600, effect="crossFade"})
 end	
  
 -- -----------------------------------------------------------------------------------

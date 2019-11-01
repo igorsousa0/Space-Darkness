@@ -35,11 +35,11 @@ local sequences_ship = {
     }
 }
 
-local sheet_ship = graphics.newImageSheet( "Sprites/Ship/ship.png", sheet_options_ship )
+local sheet_ship = graphics.newImageSheet( "sprites/Ship/ship.png", sheet_options_ship )
 
 function sprite.loadPlayer(group,type)
     if(type == "img") then
-        return display.newImageRect( group, "Sprites/Ship/shipImg.png", 17, 24 )
+        return display.newImageRect( group, "sprites/Ship/shipImg.png", 17, 24 )
     else   
         return display.newSprite(group, sheet_ship, sequences_ship)
     end    

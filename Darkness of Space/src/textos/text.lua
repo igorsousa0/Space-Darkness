@@ -1,6 +1,6 @@
 local text = {}
 
-local image = require("loadImage")
+local image = require("src.imagens.loadImage")
 
 local dialogueOption = {
     text = "Chefe, nossos satelites\n pararam de funcionar!\n o que devemos fazer!?",
@@ -10,14 +10,14 @@ local dialogueOption = {
 }
 
 local dialogueOption1 = {
-    text = "Droga, logo agora\n que estamos planejando\n uma missão...",
+    text = "Droga, provalmente\n aquelas criaturas estão\n nos causando problemas\n novamente...",
 	fontSize = 11,
 	font = "Font/prstart.ttf",
     align = "center"
 }
 
 local dialogueOption2 = {
-    text = "Recruta, gostaria que\n você desse uma olhada\n nos satelites e descobrir\n qual foi o problema",
+    text = "Recruta, gostaria que\n você desse uma olhada\n nos satelites e descobrir\n o estar acontecendo",
 	fontSize = 11,
 	font = "Font/prstart.ttf",
     align = "center"

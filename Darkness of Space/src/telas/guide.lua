@@ -1,8 +1,8 @@
 local composer = require( "composer" )
-local image = require("loadImage")
-local text = require("text")
-local func = require("shipFunction")
-local vol = require("volumeSetting")
+local image = require("src.imagens.loadImage")
+local text = require("src.textos.text")
+local func = require("src.funções.shipFunction")
+local vol = require("src.audio.volumeSetting")
  
 local scene = composer.newScene()
 
@@ -56,7 +56,7 @@ local goal = {
 }
 
 local function gotoMenu()
-    composer.gotoScene( "menu", { time=600, effect="crossFade" } )
+    composer.gotoScene( "src.telas.menu", { time=600, effect="crossFade" } )
 end    
 
 -- -----------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ function scene:create( event )
     local sceneGroup = self.view
     -- Code here runs when the scene is first created but has not yet appeared on screen
 
-    local background = display.newImageRect( sceneGroup, "Background/3/Background.jpg", 530, 570 )
+    local background = display.newImageRect( sceneGroup, "background/3/Background.jpg", 530, 570 )
     background.x = display.contentCenterX
     background.y = display.contentCenterY
     background.alpha = 0.5

@@ -1,8 +1,8 @@
 local composer = require("composer")
-local player = require("spriteShip")
-local boss = require("spriteBoss")
-local uiGame = require("ui")
-local back = require("backgrounds")
+local player = require("src.sprites.spriteShip")
+local boss = require("src.sprites.spriteBoss")
+local uiGame = require("src.imagens.ui")
+local back = require("src.imagens.backgrounds")
 
 local hitboxBoss1 = { halfWidth=38, halfHeight=51}
 local hitboxBoss2 = { halfWidth=48, halfHeight=55}

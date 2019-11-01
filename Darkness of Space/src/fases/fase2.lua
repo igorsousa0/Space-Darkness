@@ -11,13 +11,13 @@ physics.start()
 physics.setGravity( 0, 0 )
 --physics.setDrawMode( "hybrid" )
 
-local image = require("loadImage")
-local text = require("text")
-local func = require("shipFunction")
-local vol = require("volumeSetting")
-local menu = require("menuPause")
-local score = require("score")
-local sound = require("audioLoad")
+local image = require("src.imagens.loadImage")
+local text = require("src.textos.text")
+local func = require("src.funções.shipFunction")
+local vol = require("src.audio.volumeSetting")
+local menu = require("src.menu.menuPause")
+local score = require("src.pontuação.score")
+local sound = require("src.audio.audioLoad")
 
 math.randomseed( os.time() )
 
@@ -69,8 +69,8 @@ local sequences_magic =
         loopDirection = "forward"
     }
 
-    local sheet_vortex = graphics.newImageSheet( "Sprites/Effects/Boss02/bossAttack.png", sheet_options_magic )
-    local sheet_explosion = graphics.newImageSheet( "Sprites/Effects/Boss02/bossAttack2.png", sheet_options_magic )
+    local sheet_vortex = graphics.newImageSheet( "sprites/Effects/Boss02/bossAttack.png", sheet_options_magic )
+    local sheet_explosion = graphics.newImageSheet( "sprites/Effects/Boss02/bossAttack2.png", sheet_options_magic )
     
     -- Segundo Boss --
     local bossMage = image.loadBoss(2,mainGroup)   
@@ -155,7 +155,7 @@ local sequences_magic =
     local function attack()
         if (playerAttack[1] ~= nil) then
             if (playerAttack[1] == "attack1") then
-                local attack1 = display.newImageRect(mainGroup, "Sprites/Item/damage1.png", 36,37 )
+                local attack1 = display.newImageRect(mainGroup, "sprites/Item/damage1.png", 36,37 )
                 physics.addBody( attack1, "dynamic", { box=offsetRectParams, filter = filterCollision } )
                 attack1.isBullet = true
                 attack1.x = ship.x
@@ -167,7 +167,7 @@ local sequences_magic =
                 onComplete = function() display.remove(attack1) end
                 })
             elseif (playerAttack[1] == "attack2") then
-                local attack2 = display.newImageRect(mainGroup, "Sprites/Item/damage2.png", 46,47 )
+                local attack2 = display.newImageRect(mainGroup, "sprites/Item/damage2.png", 46,47 )
                 physics.addBody( attack2, "dynamic", { box=offsetRectParams, filter = filterCollision } )
                 attack2.isBullet = true
                 attack2.x = ship.x
@@ -192,17 +192,17 @@ local sequences_magic =
     end
 
     local function endGame()
-        composer.gotoScene( "fimGame", { time=800, effect="crossFade" } )
+        composer.gotoScene( "src.telas.fimGame", { time=800, effect="crossFade" } )
     end
 
     local function menuGame()
-        composer.gotoScene( "menu", { time=800, effect="crossFade" } )
+        composer.gotoScene( "src.telas.menu", { time=800, effect="crossFade" } )
     end   
     
     local function victoryEnd()
         score.setScore(hp)
         score.level = 2
-        composer.gotoScene( "victory", { time=1400, effect="crossFade"})
+        composer.gotoScene( "src.telas.victory", { time=1400, effect="crossFade"})
     end
     
     local function onCollision( event )
@@ -381,7 +381,7 @@ local sequences_magic =
     
         local selectItem = math.random(1,2)
         if (selectItem == 1) then
-            player_attack1 = display.newImageRect(mainGroup, "Sprites/Item/damage1.png", 36,37 )
+            player_attack1 = display.newImageRect(mainGroup, "sprites/Item/damage1.png", 36,37 )
             physics.addBody( player_attack1, "dynamic", { box=offsetRectParams, filter = filterCollision } )
             player_attack1.x = math.random(25, 295)
             player_attack1.y = math.random(180, 445)
@@ -391,7 +391,7 @@ local sequences_magic =
             onComplete = function() display.remove(player_attack1) end
             })
         elseif (selectItem == 2) then
-            player_attack2 = display.newImageRect(mainGroup, "Sprites/Item/damage2.png", 46,47 )
+            player_attack2 = display.newImageRect(mainGroup, "sprites/Item/damage2.png", 46,47 )
             physics.addBody( player_attack2, "dynamic", { box=offsetRectParams, filter = filterCollision } )
             player_attack2.x = math.random(25, 295)
             player_attack2.y = math.random(180, 445)
@@ -438,7 +438,7 @@ local sequences_magic =
                 end 
             elseif (attackSelect == 2) then
                 local explosion = display.newSprite(mainGroup, sheet_explosion, sequences_magic)
-                local hitboxExplosion = display.newImageRect(mainGroup, "Sprites/Effects/Boss01/hitbox.png", 46,47 )
+                local hitboxExplosion = display.newImageRect(mainGroup, "sprites/Effects/Boss01/hitbox.png", 46,47 )
                 physics.addBody(explosion, "dynamic", {radius=hitboxAttack, filter = filterCollision})
                 explosion:setSequence("normalAnimation")
                 explosion:play()
@@ -551,7 +551,7 @@ function scene:hide( event )
         Runtime:removeEventListener( "touch", dragShip )
         Runtime:removeEventListener( "tap", attack )
         Runtime:removeEventListener( "tap", pauseGame)
-        composer.removeScene( "fase2" )
+        composer.removeScene( "src.fases.fase2" )
         audio.stop( 1 )
     end
 end

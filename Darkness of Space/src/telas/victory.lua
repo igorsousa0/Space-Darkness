@@ -1,7 +1,8 @@
 local composer = require( "composer" )
-local image = require("loadImage")
-local score = require("score")
-local song = require("audioLoad")
+local image = require("src.imagens.loadImage")
+local score = require("src.pontuação.score")
+local song = require("src.audio.audioLoad")
+local json = require( "json" )
 
 local scene = composer.newScene()
 
@@ -12,16 +13,16 @@ local highScoresButton
 
 local function nextLevel()
 	if (score.level == 1) then
-		composer.gotoScene( "fase2", { time=200, effect="crossFade" } )
+		composer.gotoScene( "src.fases.fase2", { time=200, effect="crossFade" } )
 	elseif (score.level == 2) then
-		composer.gotoScene( "fase3", { time=200, effect="crossFade" } )
+		composer.gotoScene( "src.fases.fase3", { time=200, effect="crossFade" } )
 	elseif (score.level == 3 or score.level == 4) then
-		composer.gotoScene( "menu", { time=200, effect="crossFade" } )
+		composer.gotoScene( "src.telas.menu", { time=200, effect="crossFade" } )
 	end		
 end
 
 local function exitGame()
-	composer.gotoScene( "menu", { time=200, effect="crossFade" } )
+	composer.gotoScene( "src.telas.menu", { time=200, effect="crossFade" } )
 end	
 
 function scene:create( event )
@@ -37,7 +38,7 @@ function scene:create( event )
     uiGroup = display.newGroup()    -- Display group for UI objects like the score
 	sceneGroup:insert( uiGroup ) 
 
-    local background = display.newImageRect(backGroup ,"Background/1/back.png", 360, 570)
+    local background = image.loadBackground(1,backGroup)
     background.x = display.contentCenterX
     background.y = display.contentCenterY
 
@@ -87,8 +88,22 @@ function scene:show( event )
 		highScoresButton.text = "High Scores: " .. score.getScore()
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
-		--audio.play(musicaFundo, {channel = 1, loops = -1 } )
-		--som.somTema();
+		--[[if(score.level == 3 or score.level == 4) then
+			local test = {10,0,4,5,6,10}
+			local path = system.pathForFile( "score.txt", system.DocumentsDirectory )
+			local file, errorString = io.open( path, "w" )
+			if not file then
+				-- Error occurred; output the cause
+				print( "File error: " .. errorString )
+			else
+			-- Write data to file
+			file:write( json.encode(test))
+			-- Close the file handle
+			io.close( file )
+			end
+
+			file = nil
+		end	--]]
 	end
 end
 

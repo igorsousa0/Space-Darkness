@@ -11,5 +11,5 @@ display.setStatusBar( display.HiddenStatusBar )
 
 math.randomseed( os.time() )
 
-composer.gotoScene( "history" )
+composer.gotoScene( "src.cenas.history" )
 

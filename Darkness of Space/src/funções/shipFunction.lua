@@ -1,5 +1,5 @@
-local image = require("loadImage")
-local ui = require("ui")
+local image = require("src.imagens.loadImage")
+local ui = require("src.imagens.ui")
 -- Função de movimentação da Nave --
 local func = {}
 local playerAttack = {}

@@ -7,13 +7,13 @@ physics.start()
 physics.setGravity( 0, 0 )
 --physics.setDrawMode( "hybrid" )
 
-local image = require("loadImage")
-local text = require("text")
-local func = require("shipFunction")
-local vol = require("volumeSetting")
-local menu = require("menuPause")
-local score = require("score")
-local sound = require("audioLoad")
+local image = require("src.imagens.loadImage")
+local text = require("src.textos.text")
+local func = require("src.funções.shipFunction")
+local vol = require("src.audio.volumeSetting")
+local menu = require("src.menu.menuPause")
+local score = require("src.pontuação.score")
+local sound = require("src.audio.audioLoad")
 
 math.randomseed( os.time() )
 
@@ -82,8 +82,8 @@ local sequences_flameball = {
     }
 }
 
-local sheet_flameball = graphics.newImageSheet( "Sprites/Boss/flameball.png", sheet_options_flameball )
-local sheet_explosionAttack = graphics.newImageSheet( "Sprites/Effects/Boss01/explosion.png", sheet_options_explosionAttack )
+local sheet_flameball = graphics.newImageSheet( "sprites/Boss/flameball.png", sheet_options_flameball )
+local sheet_explosionAttack = graphics.newImageSheet( "sprites/Effects/Boss01/explosion.png", sheet_options_explosionAttack )
 
 -- Primeiro Boss --
 local bossMage = image.loadBoss(1,mainGroup)
@@ -229,15 +229,15 @@ end
 
  
 local function endGame()
-    composer.gotoScene( "fimGame", { time=800, effect="crossFade" } )
+    composer.gotoScene( "src.telas.fimGame", { time=800, effect="crossFade" } )
 end
 
 local function menuGame()
-    composer.gotoScene( "menu", { time=800, effect="crossFade" } )
+    composer.gotoScene( "src.telas.menu", { time=800, effect="crossFade" } )
 end    
 
 local function victoryEnd()
-    composer.gotoScene( "victory", { time=1100, effect="crossFade"})
+    composer.gotoScene( "src.telas.victory", { time=1100, effect="crossFade"})
 end    
 
 local function difficultyModify(type)
@@ -428,7 +428,7 @@ local function generationItem()
     
     local selectItem = math.random(1,2)
     if (selectItem == 1) then
-        local player_attack1 = display.newImageRect(mainGroup, "Sprites/Item/damage1.png", 36,37 )
+        local player_attack1 = display.newImageRect(mainGroup, "sprites/Item/damage1.png", 36,37 )
         physics.addBody( player_attack1, "dynamic", { box=offsetRectParams, filter = filterCollision } )
         player_attack1.x = math.random(25, 295)
         player_attack1.y = math.random(180, 445)
@@ -438,7 +438,7 @@ local function generationItem()
         onComplete = function() display.remove(player_attack1) end
         })
     elseif (selectItem == 2) then
-        local player_attack2 = display.newImageRect(mainGroup, "Sprites/Item/damage2.png", 46,47 )
+        local player_attack2 = display.newImageRect(mainGroup, "sprites/Item/damage2.png", 46,47 )
         physics.addBody( player_attack2, "dynamic", { box=offsetRectParams, filter = filterCollision } )
         player_attack2.x = math.random(25, 295)
         player_attack2.y = math.random(180, 445)
@@ -522,7 +522,7 @@ function scene:hide( event )
         Runtime:removeEventListener( "collision", onCollision )
         physics.pause()
         audio.stop( 1 )
-        composer.removeScene( "fase1" )
+        composer.removeScene( "src.fases.fase1" )
 	end
 end
 

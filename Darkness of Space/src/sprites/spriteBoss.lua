@@ -79,10 +79,10 @@ local sheet_options_boss4 =
     numFrames = 8
 }
 
-local sheet_boss1 = graphics.newImageSheet( "Sprites/Boss/disciple.png", sheet_options_boss1)
-local sheet_boss2 = graphics.newImageSheet( "Sprites/Boss/boss2.png", sheet_options_boss2 )
-local sheet_boss3 = graphics.newImageSheet( "Sprites/Boss/mage1.png", sheet_options_boss3)
-local sheet_boss4 = graphics.newImageSheet( "Sprites/Boss/mage-3-87x110.png", sheet_options_boss4)
+local sheet_boss1 = graphics.newImageSheet( "sprites/Boss/disciple.png", sheet_options_boss1)
+local sheet_boss2 = graphics.newImageSheet( "sprites/Boss/boss2.png", sheet_options_boss2 )
+local sheet_boss3 = graphics.newImageSheet( "sprites/Boss/mage1.png", sheet_options_boss3)
+local sheet_boss4 = graphics.newImageSheet( "sprites/Boss/mage-3-87x110.png", sheet_options_boss4)
 
 function sprite.loadBoss(level,group)
     if(level == 1) then

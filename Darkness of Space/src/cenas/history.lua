@@ -1,6 +1,7 @@
 local composer = require( "composer" )
-local image = require("loadImage")
-local txt = require("text")
+local image = require("src.imagens.loadImage")
+local txt = require("src.textos.text")
+local sound = require("src.audio.audioLoad")
  
 local scene = composer.newScene()
 
@@ -23,7 +24,7 @@ end
 local function gotoMenu()
     timer.cancel(Menu)
     transition.cancel()
-    composer.gotoScene( "menu", { time=600, effect="crossFade" } )
+    composer.gotoScene( "src.telas.menu", { time=600, effect="crossFade" } )
 end    
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
@@ -97,13 +98,18 @@ function scene:create( event )
     transition.to(dialogueGroup[5], {time=1000,delay = 23500, alpha = 1})
     transition.to(dialogueGroup[5], {time=1000,delay = 26500, alpha = 0})
     transition.to(chefeText, {time=1000,delay = 26500, alpha = 0})
-    transition.to(dialogPanel, {time=1000,delay = 26500, alpha = 0})
-    transition.to(sceneShip, {time=1000,delay = 27500, xScale = 2.5, yScale = 2.5 })
+    transition.to(dialogPanel, {time=1000,delay = 26500, alpha = 0,
+    onComplete = function()
+        local ignition = audio.play(sound.ignition)
+        audio.stopWithDelay( 1150, { channel=ignition }  )
+    end
+    })
+    transition.to(sceneShip, {time=1000,delay = 27500, xScale = 2.5, yScale = 2.5,
+    onComplete = function()
+        local launch = audio.play(sound.launch)
+    end    
+    })
     transition.to(sceneShip, {time=2500,delay = 28500,  y = -255 })
-
-    collectgarbage("collect")
-    local memUsage_str = string.format( "MEMORY= %.3f KB", collectgarbage( "count" ) )
-    print( memUsage_str .. " | TEXTURE= "..(system.getInfo("textureMemoryUsed")/1048576) ) 
 
     Menu = timer.performWithDelay( 31000, gotoMenu, 1)
     skipButton:addEventListener( "tap", gotoMenu )
@@ -136,6 +142,7 @@ function scene:hide( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs immediately after the scene goes entirely off screen
+        audio.stop()
         composer.removeScene( "history" )
     end
 end

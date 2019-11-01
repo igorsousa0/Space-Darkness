@@ -17,5 +17,7 @@ sound.fase3_Song2 = audio.loadSound("audio/fase03/Orbital Colossus.mp3")
 sound.shotEffect = audio.loadSound("audio/effect/ship/laser.wav")
 sound.fireEffect = audio.loadSound("audio/effect/mage01/fire.wav")
 sound.explosionEffect = audio.loadSound("audio/effect/mage02/DeathFlash.mp3")
+sound.ignition = audio.loadSound("audio/effect/ship/ignition.mp3")
+sound.launch = audio.loadSound("audio/effect/ship/launch.wav")
 
 return sound

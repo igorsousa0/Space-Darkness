@@ -1,25 +1,25 @@
 local composer = require( "composer" )
-local image = require("loadImage")
-local score = require("score")
+local image = require("src.imagens.loadImage")
+local score = require("src.pontuação.score")
 
 local scene = composer.newScene()
 
 local function gotoFase()
 	if(score.tentativas ~= 0) then
 		if(score.level == 1) then
-			composer.gotoScene( "fase1", { time=200, effect="crossFade" } )
+			composer.gotoScene( "src.fases.fase1", { time=200, effect="crossFade" } )
 		end
 		if(score.level == 2) then
-			composer.gotoScene( "fase2", { time=200, effect="crossFade" } )
+			composer.gotoScene( "src.fases.fase2", { time=200, effect="crossFade" } )
 		end	
 		if(score.level == 3) then
-			composer.gotoScene( "fase3", { time=200, effect="crossFade" } )
+			composer.gotoScene( "src.fases.fase3", { time=200, effect="crossFade" } )
 		end	
 	end	
 end
 
 local function gotoSelect()
-	composer.gotoScene( "menu", { time=200, effect="crossFade" } )
+	composer.gotoScene( "src.telas.menu", { time=200, effect="crossFade" } )
 end
 
 function scene:create( event )
@@ -35,7 +35,7 @@ function scene:create( event )
     uiGroup = display.newGroup()    -- Display group for UI objects like the score
     sceneGroup:insert( uiGroup )
     -- Code here runs when the scene is first created but has not yet appeared on screen
-    local background = display.newImageRect(backGroup ,"Background/1/back.png", 360, 570)
+    local background = display.newImageRect(backGroup ,"background/1/back.png", 360, 570)
     background.x = display.contentCenterX
 	background.y = display.contentCenterY
 

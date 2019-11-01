@@ -1,9 +1,9 @@
 local menu = {}
 
 local composer = require( "composer" )
-local image = require("loadImage")
-local text = require("text")
-local vol = require("volumeSetting")
+local image = require("src.imagens.loadImage")
+local text = require("src.textos.text")
+local vol = require("src.audio.volumeSetting")
 
 menu.uiOption = display.newGroup()
 menu.buttonOption = display.newGroup()
