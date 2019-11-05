@@ -143,7 +143,7 @@ function scene:hide( event )
     elseif ( phase == "did" ) then
         -- Code here runs immediately after the scene goes entirely off screen
         audio.stop()
-        composer.removeScene( "history" )
+        composer.removeScene( "src.cenas.history" )
     end
 end
  

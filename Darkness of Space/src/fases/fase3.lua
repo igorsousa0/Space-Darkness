@@ -28,8 +28,8 @@ local bossDied = false
 local playerAttack = {}
 local attackTest = {}
 local gameLoopTimer
-local bossLife = 40
-local bossLifeDefault = 40
+local bossLife = 30
+local bossLifeDefault = 30
 local hpText
 local scoreText
 local pauseState = false
@@ -290,7 +290,7 @@ local function bossMove()
 end
 
 local function fireLaser()
-    local attackSelect = math.random(1.0,10.0)
+    local attackSelect = math.random(0, 10.0) 
     if (attackPause == true) then
         attackSelect = 0
     end 
@@ -316,8 +316,8 @@ local function fireLaser()
         physics.addBody(explosion, "dynamic", {radius=hitboxAttack, filter = filterCollision})
         explosion:setSequence("normalAnimation")
         explosion:play()
-        hitboxExplosion.x = math.random(25, 295) 
-        hitboxExplosion.y = math.random(156, 454)
+        hitboxExplosion.x = math.random(34, 274) 
+        hitboxExplosion.y = math.random(224, 483)
         explosion.x = hitboxExplosion.x
         explosion.y = hitboxExplosion.y
         explosion.isVisible = false
@@ -576,7 +576,7 @@ local function pauseGame(event)
         bossMage:pause()
         ship:removeEventListener("tap", attack)
         ship:removeEventListener("touch", func.dragShip)
-        audio.pause( 1 )
+        audio.pause()
         if(explosionAttack ~= nil) then
             if(explosionAttack.isPlaying == true) then
                 explosionAttack:pause()
@@ -592,7 +592,7 @@ local function pauseGame(event)
         bossMage:play()
         ship:addEventListener( "tap", attack )
         ship:addEventListener( "touch", func.dragShip )
-        audio.resume( 1 )
+        audio.resume()
         if(explosionAttack ~= nil) then
             if(explosionAttack.isPlaying == false) then
                 explosionAttack:play()

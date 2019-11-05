@@ -280,7 +280,7 @@ function scene:hide( event )
     elseif ( phase == "did" ) then
         -- Code here runs immediately after the scene goes entirely off screen
         audio.stop( 1 )
-        composer.removeScene( "guide" )
+        composer.removeScene( "src.telas.guide" )
     end
 end
  

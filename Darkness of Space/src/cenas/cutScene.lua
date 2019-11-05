@@ -66,7 +66,7 @@ function scene:create( event )
     scene1Ship:play()   
     local planet = image.loadImgScenario(scene2)
     local scene2Ship = image.cutSceneShip(scene2)
-    scene2Ship.y = 580
+    scene2Ship.y = 620
     scene2Ship:setSequence("normalShip")
     scene2Ship:play() 
     transition.to(scene1Ship, {time=4000,delay = 1000, y = -800,
@@ -80,7 +80,7 @@ function scene:create( event )
     end 
     }) 
     transition.to(scene2, {time=1000,delay = 5000, alpha = 1})
-    transition.to(scene2Ship, {time=2500,delay = 6000, y = 255})
+    transition.to(scene2Ship, {time=2500,delay = 6000, y = 290})
     transition.to(scene2Ship, {time=2000,delay = 7000, xScale = 0, yScale = 0,
     onComplete = function() 
         display.remove(scene2Ship)
@@ -122,7 +122,7 @@ function scene:hide( event )
         score.Finalized = true
     elseif ( phase == "did" ) then
         -- Code here runs immediately after the scene goes entirely off screen
-        composer.removeScene( "cutScene" )
+        composer.removeScene( "src.cenas.cutScene" )
     end
 end
  

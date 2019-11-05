@@ -118,7 +118,7 @@ function scene:hide( event )
 		-- Code here runs immediately after the scene goes entirely off screen
 		timer.cancel(muteTimer)
 		audio.stop( 1 )
-		composer.removeScene( "menu" )
+		composer.removeScene( "src.telas.menu" )
 	end
 end
 

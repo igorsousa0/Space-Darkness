@@ -5,7 +5,7 @@ local uiGame = require("src.imagens.ui")
 local back = require("src.imagens.backgrounds")
 
 local hitboxBoss1 = { halfWidth=38, halfHeight=51}
-local hitboxBoss2 = { halfWidth=48, halfHeight=55}
+local hitboxBoss2 = { halfWidth=48, halfHeight=45}
 local hitboxBoss3 = { halfWidth=38, halfHeight=51}
 
 local img = {}
@@ -62,7 +62,6 @@ function img.cutSceneShip(group)
 end    
 
 function img.loadBoss(level,group)
-    print(type)
     if(level == 1) then
         local bossMage = boss.loadBoss(level,group)
         bossMage.x = display.contentCenterX
@@ -78,7 +77,7 @@ function img.loadBoss(level,group)
         local bossMage = boss.loadBoss(level,group)
         bossMage.x = display.contentCenterX
         bossMage.y = display.contentCenterY - 180
-        physics.addBody( bossMage, "dynamic", { box=hitboxBoss2, filter = filterCollision } )
+        physics.addBody( bossMage, "dynamic", { box=hitboxBoss2, filter = 1} )
         bossMage.myName = "boss"
         bossMage:scale(1.4,1.4)
         bossMage:setSequence("normalMage")
