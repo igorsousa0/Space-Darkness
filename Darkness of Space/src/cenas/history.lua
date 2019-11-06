@@ -40,8 +40,10 @@ function scene:create( event )
     sceneGroup:insert( dialogueGroup )
 
     local sceneBackground = image.loadBackground(1,mainGroup)
-    local planet = image.loadImgScenario(mainGroup)
+    local planet = image.loadImgScenario(1,mainGroup)
+    local downArrow = image.loadImgScenario(2,mainGroup)
     planet.y = display.contentCenterY + 60
+    downArrow.y = planet.y - 10
     local skipButton = image.loadUi("menu panel",2,mainGroup)
     skipButton.x = display.contentCenterX + 90
     skipButton.y = display.contentCenterY + 230
@@ -49,6 +51,7 @@ function scene:create( event )
     local skipText = display.newText( mainGroup, "Pular Cena",  skipButton.x, skipButton.y, "Font/prstart.ttf", 9.5 )
     local sceneShip = image.cutSceneShip(mainGroup)
     local dialogPanel = image.loadUi("menu", 1, uiGroup)
+    downArrow.alpha = 0
     skipText.alpha = 0.8
     skipButton.alpha = 0.5
     dialogPanel.y = display.contentCenterY - 200
@@ -73,6 +76,7 @@ function scene:create( event )
     transition.to(dialogPanel, {time=1000,delay = 1500, yScale = 1.5,xScale = 2.5})
     transition.to(playerText, {time=1000,delay = 3500, alpha = 1})
     transition.to(dialogueGroup[1], {time=1000,delay = 3500, alpha = 1})
+    transition.to(downArrow, {time = 1000, delay = 3500, alpha = 1})
     transition.to(dialogueGroup[1], {time=1000,delay = 7500, alpha = 0,
     onComplete = function() 
         playerText.alpha = 0
@@ -100,13 +104,14 @@ function scene:create( event )
     transition.to(chefeText, {time=1000,delay = 26500, alpha = 0})
     transition.to(dialogPanel, {time=1000,delay = 26500, alpha = 0,
     onComplete = function()
-        local ignition = audio.play(sound.ignition)
+        local ignition = audio.play(sound.effectTable["ignition"])
         audio.stopWithDelay( 1150, { channel=ignition }  )
     end
     })
+    transition.to(downArrow, {time = 1000, delay = 26500, alpha = 0})
     transition.to(sceneShip, {time=1000,delay = 27500, xScale = 2.5, yScale = 2.5,
     onComplete = function()
-        local launch = audio.play(sound.launch)
+        local launch = audio.play(sound.effectTable["launch"])
     end    
     })
     transition.to(sceneShip, {time=2500,delay = 28500,  y = -255 })

@@ -9,10 +9,6 @@ function func.dragShip( event )
     local phase = event.phase
 
     if ( "began" == phase ) then
-        print("Altura Celular: " ..display.pixelHeight)
-        print("Eixo Y: " ..event.y)
-        print("Eixo X: " ..ship.x)
-        print(display.contentHeight)
         display.currentStage:setFocus(ship)
         ship.touchOffsetX = event.x - ship.x
         ship.touchOffsetY = event.y - ship.y

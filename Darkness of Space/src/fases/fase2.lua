@@ -185,7 +185,7 @@ local sequences_magic =
                 attackText.text = "Dano Atual: " .. attackCurrent
             end
             if(menu.muteOff1.isVisible == true) then
-                audio.play(sound.shotEffect, {channel = 2} ) 
+                audio.play(sound.effectTable["shotEffect"], {channel = 2} ) 
             end  
             table.remove(playerAttack,1)    
             updateAttackCurrent()
@@ -248,7 +248,8 @@ local sequences_magic =
                 --bossLife = bossLife - 1
                 contadorAttack = contadorAttack + 1
                 contadorText.text = "Dano Acumulado: " .. contadorAttack
-                table.insert(playerAttack, "attack1")
+                --table.insert(playerAttack, "attack1")
+                playerAttack[#playerAttack+1] = "attack1"
                 updateAttackCurrent()
                 display.remove(player_attack1)
                 --hp_boss.width = hp_boss.width - hp_bossLost      
@@ -259,7 +260,8 @@ local sequences_magic =
                 --bossLife = bossLife - 3
                 contadorAttack = contadorAttack + 3
                 contadorText.text = "Dano Acumulado: " .. contadorAttack
-                table.insert(playerAttack, "attack2")
+                --table.insert(playerAttack, "attack2")
+                playerAttack[#playerAttack+1] = "attack2"
                 updateAttackCurrent()
                 display.remove(player_attack2)           
             end
@@ -373,7 +375,7 @@ local sequences_magic =
             audio.resume()  
             menuShow( event )   
             if(uiOption.isVisible == false and uiPause.isVisible == false and menu.muteOff.isVisible == true) then
-                audio.play(sound.fase2_Song, {channel = 1, loops = -1 } )
+                audio.play(sound.musicTable["fase2_Song"], {channel = 1, loops = -1 } )
             end 
         end     
     end
@@ -460,7 +462,7 @@ local sequences_magic =
                     if (hitboxExplosion.alpha == 0) then
                     explosion.isVisible = true
                     explosion.isBodyActive = true
-                    audio.play(sound.explosionEffect, {channel = 3, duration = 1800})
+                    audio.play(sound.effectTable["explosionEffect"], {channel = 3, duration = 1800})
                     transition.to(explosion, {time=2000,
                     onComplete = function() display.remove(explosion) end
                     })
@@ -523,7 +525,7 @@ function scene:show( event )
         -- Code here runs when the scene is entirely on screen
         physics.start()
         if(menu.muteOff.isVisible == true) then
-            audio.play(sound.fase2_Song, {channel = 1, loops = -1 } )
+            audio.play(sound.musicTable["fase2_Song"], {channel = 1, loops = -1 } )
         end  
         audio.setVolume( vol.music, { channel=1 } )
         audio.setVolume( vol.effect, { channel=2 } )

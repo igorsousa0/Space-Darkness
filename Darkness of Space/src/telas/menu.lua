@@ -4,10 +4,9 @@ local text = require("src.textos.text")
 local menu = require("src.menu.menuPause")
 local vol = require("src.audio.volumeSetting")
 local score = require("src.pontuação.score")
+local sound = require("src.audio.audioLoad")
 
 local scene = composer.newScene()
-
-local backgroundSong = audio.loadSound("audio/menu/spacewalk.mp3")
 
 local function gotoSelect()
 	composer.gotoScene("src.fases.fase1", { time=400, effect="crossFade" } )
@@ -71,7 +70,7 @@ function scene:create( event )
 		if(menu.muteOn.isVisible == false) then
 			if(pauseMute == false) then
 				pauseMute = true
-				audio.play(backgroundSong, {channel = 1, loops = -1 })
+				audio.play(sound.musicTable["menu_Song"], {channel = 1, loops = -1 })
 			end	
 		end	
 	end	
@@ -97,7 +96,7 @@ function scene:show( event )
 		-- Code here runs when the scene is entirely on screen
 		score.scoreTotal = 0
 		if(menu.muteOff.isVisible == true) then
-			audio.play(backgroundSong, {channel = 1, loops = -1 })
+			audio.play(sound.musicTable["menu_Song"], {channel = 1, loops = -1 })
 		end	
 		audio.setVolume( vol.music, { channel=1 } )
 		score.tentativas = 3

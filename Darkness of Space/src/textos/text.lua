@@ -17,7 +17,7 @@ local dialogueOption1 = {
 }
 
 local dialogueOption2 = {
-    text = "Recruta, gostaria que\n você desse uma olhada\n nos satelites e descobrir\n o estar acontecendo",
+    text = "Recruta, gostaria que\n você desse uma olhada\n nos satelites e descobrir\n o que estar acontecendo",
 	fontSize = 11,
 	font = "Font/prstart.ttf",
     align = "center"

@@ -64,7 +64,7 @@ function scene:create( event )
     local scene1Ship = image.cutSceneShip(scene1)
     scene1Ship:setSequence("normalShip")
     scene1Ship:play()   
-    local planet = image.loadImgScenario(scene2)
+    local planet = image.loadImgScenario(1,scene2)
     local scene2Ship = image.cutSceneShip(scene2)
     scene2Ship.y = 620
     scene2Ship:setSequence("normalShip")
@@ -86,7 +86,7 @@ function scene:create( event )
         display.remove(scene2Ship)
         mainGroup.isVisible = true
         if(menu.muteOff.isVisible == true) then
-            audio.play(song.endGame, {channel = 1} )
+            audio.play(song.musicTable["endGame"], {channel = 1} )
         end    
     end    
     })

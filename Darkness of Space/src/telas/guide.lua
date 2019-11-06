@@ -3,11 +3,11 @@ local image = require("src.imagens.loadImage")
 local text = require("src.textos.text")
 local func = require("src.funções.shipFunction")
 local vol = require("src.audio.volumeSetting")
+local sound = require("src.audio.audioLoad")
+local menu = require("src.menu.menuPause")
  
 local scene = composer.newScene()
 
-local backgroundSong = audio.loadSound("audio/guia/ObservingTheStar.ogg")
- 
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
@@ -49,7 +49,7 @@ local item1 = {
 }
 
 local goal = {
-	text = "Seu objetivo é eliminar\n os inimigos, portanto,\n cuidado para não ser\n derrotado!",
+	text = "Seu objetivo é eliminar\n os inimigos que estão\n causando problemas no\n seu planeta natal.\n \nCada inimigo pode\n possuir ataques\n diferentes, portanto,\n cuidado para não ser\n acertado e eliminado\n logo de primeira!",
 	fontSize = 11.5,
 	font = "Font/prstart.ttf",
     align = "center"
@@ -149,7 +149,7 @@ function scene:create( event )
 	itemGuideText1.x = attack1.x
     itemGuideText1.y = attack1.y + 45
     goalGuideText.x = goalTopText.x
-    goalGuideText.y = goalTopText.y + 50
+    goalGuideText.y = goalTopText.y + 85
 	guideUiGroup:insert( moveGuideText )
 	guideUiGroup1:insert( shotGuideText )
 	guideUiGroup1:insert( shotNoteText )
@@ -262,7 +262,9 @@ function scene:show( event )
  
     elseif ( phase == "did" ) then
         -- Code here runs when the scene is entirely on screen
-        audio.play(backgroundSong, {channel = 1, loops = -1 })
+        if(menu.muteOff.isVisible == true) then
+            audio.play(sound.musicTable["guide_Song"], {channel = 1, loops = -1 })
+        end    
         audio.setVolume( vol.music, { channel=1 } )
     end
 end

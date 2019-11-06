@@ -86,8 +86,13 @@ function ui.loadItem(type,group)
     end    
 end
 
-function ui.loadImgScenario(group)
-    return display.newImageRect(group,"sprites/Scenario/planet.png", 480,480 )
+function ui.loadImgScenario(type,group)
+    if(type == 1) then
+        return display.newImageRect(group,"sprites/Scenario/planet.png", 480,480 )
+    end
+    if(type == 2) then
+        return display.newImageRect(group,"sprites/Scenario/downarrow.png", 32,32 )
+    end    
 end    
 
 

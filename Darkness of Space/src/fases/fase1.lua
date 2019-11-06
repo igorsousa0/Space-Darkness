@@ -146,7 +146,7 @@ local function fireLaser()
     end
     }) 
     if(menu.muteOff1.isVisible == true) then
-        audio.play(sound.fireEffect)
+        audio.play(sound.effectTable["fireEffect"])
     end 
     flameball:scale(1.5,1.5)
     flameball:play()
@@ -220,7 +220,7 @@ local function attack()
             attackText.text = "Dano Atual: " .. attackCurrent
         end
         if(menu.muteOff1.isVisible == true) then
-            audio.play(sound.shotEffect) 
+            audio.play(sound.effectTable["shotEffect"]) 
         end  
         table.remove(playerAttack,1)
         updateAttackCurrent()
@@ -289,7 +289,8 @@ local function onCollision( event )
             --bossLife = bossLife - 1
             contadorAttack = contadorAttack + 1
             --func.addTable("attack1")
-            table.insert(playerAttack, "attack1")
+            --table.insert(playerAttack, "attack1")
+            playerAttack[#playerAttack+1] = "attack1"
             updateAttackCurrent(contadorAttack)
             contadorText.text = "Dano Acumulado: " .. contadorAttack
             display.remove(obj1)
@@ -301,7 +302,8 @@ local function onCollision( event )
             --bossLife = bossLife - 3
             contadorAttack = contadorAttack + 3
             --func.addTable("attack2")
-            table.insert(playerAttack, "attack2")
+            --table.insert(playerAttack, "attack2")
+            playerAttack[#playerAttack+1] = "attack2"
             updateAttackCurrent(contadorAttack)
             contadorText.text = "Dano Acumulado: " .. contadorAttack
             display.remove(obj1)           
@@ -414,7 +416,7 @@ local function pauseGame( event )
         audio.resume( 1 )
         menuShow( event )
         if(menu.uiOption.isVisible == false and uiPause.isVisible == false and menu.muteOff.isVisible == true) then
-            audio.play(sound.fase1_Song, {channel = 1, loops = -1 } )
+            audio.play(sound.musicTable["fase1_Song"], {channel = 1, loops = -1 } )
         end 
         if(explosionAttack ~= nil) then
             if(explosionAttack.isPlaying == false) then
@@ -499,7 +501,7 @@ function scene:show( event )
         -- Code here runs when the scene is entirely on screen
         physics.start()
         if(menu.muteOff.isVisible == true) then
-            audio.play(sound.fase1_Song, {channel = 1, loops = -1 } )
+            audio.play(sound.musicTable["fase1_Song"], {channel = 1, loops = -1 } )
         end    
         audio.setVolume( vol.music, { channel=1 } )
         audio.setVolume( vol.effect, { channel=2 } )

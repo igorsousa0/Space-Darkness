@@ -301,7 +301,7 @@ local function fireLaser()
     flameball.x = bossMage.x
     flameball.y = bossMage.y
     if(menu.muteOff1.isVisible == true) then
-        audio.play(sound.fireEffect)
+        audio.play(sound.effectTable["fireEffect"])
     end    
     transition.to(flameball, {x = ship.x, y=800, time=2500, 
         onComplete = function() 
@@ -330,7 +330,7 @@ local function fireLaser()
             explosion.isVisible = true
             explosion.isBodyActive = true
             if(menu.muteOff1.isVisible == true) then
-                audio.play(sound.explosionEffect)
+                audio.play(sound.effectTable["explosionEffect"])
             end    
             transition.to(explosion, {time=2000,
             onComplete = function() 
@@ -411,7 +411,7 @@ local function attack()
             attackText.text = "Dano Atual: " .. attackCurrent
         end
         if(menu.muteOff1.isVisible == true) then
-            audio.play(sound.shotEffect) 
+            audio.play(sound.effectTable["shotEffect"]) 
         end 
         table.remove(playerAttack,1)    
         updateAttackCurrent()
@@ -477,7 +477,8 @@ local function onCollision( event )
             --bossLife = bossLife - 1
             contadorAttack = contadorAttack + 1
             contadorText.text = "Dano Acumulado: " .. contadorAttack
-            table.insert(playerAttack, "attack1")
+            --table.insert(playerAttack, "attack1")
+            playerAttack[#playerAttack+1] = "attack1"
             updateAttackCurrent()
             display.remove(obj1)
             --hp_boss.width = hp_boss.width - hp_bossLost      
@@ -488,7 +489,8 @@ local function onCollision( event )
             --bossLife = bossLife - 3
             contadorAttack = contadorAttack + 3
             contadorText.text = "Dano Acumulado: " .. contadorAttack
-            table.insert(playerAttack, "attack2")
+            --table.insert(playerAttack, "attack2")
+            playerAttack[#playerAttack+1] = "attack2"
             updateAttackCurrent()
             display.remove(obj1)           
         end
@@ -527,6 +529,12 @@ local function onCollision( event )
         if ( bossLife <= 0) then
             if(bossDied == false) then
                 bossDied = true
+                if(flameball ~= nil) then
+                    display.remove(flameball)
+                end    
+                if(explosion ~= nil) then
+                    display.remove(explosion)
+                end    
                 display.remove(menu_pause)
                 --timer.cancel(hitbox)
                 timer.cancel(bossFire)
@@ -600,7 +608,7 @@ local function pauseGame(event)
         end
         menuShow( event )  
         if(uiOption.isVisible == false and uiPause.isVisible == false and menu.muteOff.isVisible == true) then
-            audio.play(fase3_Song, {channel = 1, loops = -1 } )
+            audio.play(sound.musicTable["fase3_Song"], {channel = 1, loops = -1 } )
         end
     end    
 end
@@ -650,7 +658,7 @@ local function specialAttack( event )
             })  
             if(menu.muteOff.isVisible == true) then
                 audio.stop( backgroundMusicChannel )
-                audio.play(sound.fase3_Song2, {channel = 1, loops = -1 } )
+                audio.play(sound.musicTable["fase3_Song2"], {channel = 1, loops = -1 } )
             end    
             timer.cancel(bossFire)
             bossFire = timer.performWithDelay( 1000, fireLaser, 0)
@@ -728,7 +736,7 @@ function scene:show( event )
         -- Code here runs when the scene is entirely on screen
         physics.start()
         if(menu.muteOff.isVisible == true) then
-            backgroundMusicChannel = audio.play(sound.fase3_Song, {channel = 1, loops = -1 } )
+            backgroundMusicChannel = audio.play(sound.musicTable["fase3_Song"], {channel = 1, loops = -1 } )
         end  
         audio.setVolume( vol.music, { channel=1 } )
         for i = 2, 32 do

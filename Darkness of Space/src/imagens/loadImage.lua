@@ -10,12 +10,20 @@ local hitboxBoss3 = { halfWidth=38, halfHeight=51}
 
 local img = {}
 
-function img.loadImgScenario(group)
-    local planet = uiGame.loadImgScenario(group)
-    planet.x = display.contentCenterX
-    planet.y = display.contentCenterY
-    planet:scale(0.8,0.8)
-    return planet
+function img.loadImgScenario(type,group)
+    if(type == 1) then
+        local planet = uiGame.loadImgScenario(type,group)
+        planet.x = display.contentCenterX
+        planet.y = display.contentCenterY
+        planet:scale(0.8,0.8)
+        return planet
+    end
+    if(type == 2) then
+       local downArrow = uiGame.loadImgScenario(type,group)
+       downArrow.x = display.contentCenterX
+       downArrow.y = display.contentCenterY
+       return downArrow
+    end    
 end    
 
 function img.loadBackground(level,group)
