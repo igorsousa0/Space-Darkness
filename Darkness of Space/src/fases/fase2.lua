@@ -528,8 +528,9 @@ function scene:show( event )
             audio.play(sound.musicTable["fase2_Song"], {channel = 1, loops = -1 } )
         end  
         audio.setVolume( vol.music, { channel=1 } )
-        audio.setVolume( vol.effect, { channel=2 } )
-        audio.setVolume( vol.effect, { channel=3 } )
+        for i = 2, 32 do
+            audio.setVolume( vol.effect, { channel=i } )  
+        end
     end
 end
  

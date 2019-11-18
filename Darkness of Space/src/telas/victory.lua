@@ -42,7 +42,7 @@ function scene:create( event )
     background.x = display.contentCenterX
     background.y = display.contentCenterY
 
-    local victoryText = display.newText( sceneGroup, "Você Venceu!", display.contentCenterX, display.contentCenterY - 200, "Font/ARCADECLASSIC.TTF", 34 )
+    local victoryText = display.newText( sceneGroup, "Voce Venceu!", display.contentCenterX, display.contentCenterY - 200, "Font/ARCADECLASSIC.TTF", 34 )
 	victoryText:setFillColor( 0.82, 0.86, 1 )
 	
 	highScoresButton = display.newText( sceneGroup, "High Scores: " .. score.getScore() , display.contentCenterX, display.contentCenterY - 100, "Font/prstart.ttf", 15 )

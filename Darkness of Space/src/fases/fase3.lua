@@ -339,6 +339,15 @@ local function fireLaser()
             })
         end   end
         })  
+        if(bossDied == true) then
+            if(flameball ~= nil) then
+                transition.cancel(flameball)
+                display.remove(flameball)
+            end     
+            if(explosion ~= nil) then
+                display.remove(explosion)
+            end   
+        end    
     end    
 end
 
@@ -529,12 +538,7 @@ local function onCollision( event )
         if ( bossLife <= 0) then
             if(bossDied == false) then
                 bossDied = true
-                if(flameball ~= nil) then
-                    display.remove(flameball)
-                end    
-                if(explosion ~= nil) then
-                    display.remove(explosion)
-                end    
+                Runtime:removeEventListener( "collision", onCollision ) 
                 display.remove(menu_pause)
                 --timer.cancel(hitbox)
                 timer.cancel(bossFire)
@@ -666,22 +670,30 @@ local function specialAttack( event )
         end    
         timerAttack = true
         attackPause = true
-        if(fire ~= nil) then
-            fire.isVisible = true
-            fire.isBodyActive = true 
-            physics.addBody(fire, "dynamic", {radius=hitboxAttack, filter = filterCollision})
-            timerTest = timerTest + 1 
+        if(bossDied == true) then
+            if(fire ~= nil) then
+                display.remove(fire)
+            end  
             Runtime:removeEventListener( "enterFrame", specialAttack )
-            transition.to(fire, {time = 1000, x = ship.x, y = ship.y,
-            onComplete = function() Runtime:addEventListener( "enterFrame", specialAttack ) end
-            })   
         end    
-        if (timerTest == 30) then
-            Runtime:removeEventListener( "enterFrame", specialAttack )
-            transition.cancel( fire )
-            display.remove( fire )
-            attackPause = false
-        end  
+        if(bossDied ~= true) then
+            if(fire ~= nil) then
+                fire.isVisible = true
+                fire.isBodyActive = true 
+                physics.addBody(fire, "dynamic", {radius=hitboxAttack, filter = filterCollision})
+                timerTest = timerTest + 1 
+                Runtime:removeEventListener( "enterFrame", specialAttack )
+                transition.to(fire, {time = 1000, x = ship.x, y = ship.y,
+                onComplete = function() Runtime:addEventListener( "enterFrame", specialAttack ) end
+                })   
+            end    
+            if (timerTest == 30) then
+                Runtime:removeEventListener( "enterFrame", specialAttack )
+                transition.cancel( fire )
+                display.remove( fire )
+                attackPause = false
+            end  
+        end    
         print(timerTest)
     end        
 end

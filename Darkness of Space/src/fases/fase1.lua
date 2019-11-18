@@ -37,7 +37,6 @@ local hp_lost
 local hp_boss_lost
 local hp_player_lost
 local filterCollision = {groupIndex = -1}
-
 local backGroup = display.newGroup()
 local mainGroup = display.newGroup()
 local uiGroup = display.newGroup()
@@ -345,6 +344,7 @@ local function onCollision( event )
             end
         end
         if ( bossLife <= 0) then
+            Runtime:removeEventListener( "collision", onCollision )
             display.remove(menu_pause)
             bossMage:setSequence("deadMage")
             bossMage:play()
@@ -504,8 +504,9 @@ function scene:show( event )
             audio.play(sound.musicTable["fase1_Song"], {channel = 1, loops = -1 } )
         end    
         audio.setVolume( vol.music, { channel=1 } )
-        audio.setVolume( vol.effect, { channel=2 } )
-        audio.setVolume( vol.effect, { channel=3 } )
+        for i = 2, 32 do
+            audio.setVolume( vol.effect, { channel=i } )  
+        end
 	end
 end
 

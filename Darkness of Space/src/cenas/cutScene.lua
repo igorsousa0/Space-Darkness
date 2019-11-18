@@ -40,7 +40,7 @@ function scene:create( event )
 
     sceneGroup:insert( mainGroup )
 
-    local victoryText = display.newText( mainGroup, "Missão Completa!", display.contentCenterX, display.contentCenterY - 230, "Font/ARCADECLASSIC.TTF", 32 )
+    local victoryText = display.newText( mainGroup, "Missao Completa!", display.contentCenterX, display.contentCenterY - 230, "Font/ARCADECLASSIC.TTF", 32 )
     victoryText:setFillColor( 0.82, 0.86, 1 ) 
     
     local continueButton = image.loadUi("menu panel",2,mainGroup)

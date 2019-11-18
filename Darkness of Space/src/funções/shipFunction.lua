@@ -47,9 +47,6 @@ function func.dragShipGuide( event )
         display.currentStage:setFocus(ship)
         ship.touchOffsetX = event.x - ship.x
         ship.touchOffsetY = event.y - ship.y
-        print("Eixo X: " ..event.x)
-        print("Eixo Y: " ..event.y)
-        print(display.contentHeight)
     elseif ( "moved" == phase ) then
         -- Move the ship to the new touch position
         if (ship.x < display.contentCenterX) then 

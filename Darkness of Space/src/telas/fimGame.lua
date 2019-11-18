@@ -39,10 +39,10 @@ function scene:create( event )
     background.x = display.contentCenterX
 	background.y = display.contentCenterY
 
-    local lostText = display.newText( sceneGroup, "Você foi derrotado!", display.contentCenterX + 8, display.contentCenterY - 200, "Font/ARCADECLASSIC.TTF", 32 )
+    local lostText = display.newText( sceneGroup, "Voce foi derrotado!", display.contentCenterX + 8, display.contentCenterY - 200, "Font/ARCADECLASSIC.TTF", 32 )
 	lostText:setFillColor( 0.82, 0.86, 1 )
 	
-	local tentativasText = display.newText( sceneGroup, "Você possui  " .. score.tentativas .."  tentativas", display.contentCenterX, display.contentCenterY, "Font/ARCADECLASSIC.TTF", 25 )
+	local tentativasText = display.newText( sceneGroup, "Voce possui  " .. score.tentativas .."  tentativas", display.contentCenterX, display.contentCenterY, "Font/ARCADECLASSIC.TTF", 25 )
     tentativasText:setFillColor( 0.82, 0.86, 1 )
 
 	local continueButton = image.loadUi("menu panel",2,uiGroup)
@@ -107,7 +107,7 @@ function scene:hide( event )
 		--som.onClose();
 	elseif ( phase == "did" ) then
 		-- Code here runs immediately after the scene goes entirely off screen
-		composer.removeScene( "fimGame" )
+		composer.removeScene( "src.telas.fimGame" )
 	end
 end
 
